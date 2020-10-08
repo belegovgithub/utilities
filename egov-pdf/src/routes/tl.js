@@ -41,10 +41,12 @@ router.post(
           requestinfo
         );
       } catch (ex) {
-        console.log(ex.stack);
+        console.log("error",ex.stack);
         if (ex.response && ex.response.data) console.log(ex.response.data);
         return renderError(res, "Failed to query details of tradelicense", 500);
       }
+
+     
       var tradelicenses = restradelicense.data;
 
       if (
@@ -73,6 +75,105 @@ router.post(
         if (payments && payments.Payments && payments.Payments.length > 0) {
           var pdfResponse;
           var pdfkey = config.pdf.tlreceipt_pdf_template;
+          try {
+            pdfResponse = await create_pdf(
+              tenantId,
+              pdfkey,
+              payments,
+              requestinfo
+            );
+          } catch (ex) {
+            console.log(ex.stack);
+            if (ex.response && ex.response.data) console.log(ex.response.data);
+            return renderError(
+              res,
+              "Failed to generate PDF for tradelicense receipt",
+              500
+            );
+          }
+          var filename = `${pdfkey}_${new Date().getTime()}`;
+          res.writeHead(200, {
+            "Content-Type": "application/pdf",
+            "Content-Disposition": `attachment; filename=${filename}.pdf`,
+          });
+          pdfResponse.data.pipe(res);
+        } else {
+          return renderError(res, "There is no bill for this id", 404);
+        }
+      } else {
+        return renderError(
+          res,
+          "There is no tradelicense for you for this applicationNumber",
+          404
+        );
+      }
+    } catch (ex) {
+      console.log(ex.stack);
+    }
+  })
+);
+
+
+router.post(
+  "/tl-appl-receipt",
+  asyncMiddleware(async function (req, res, next) {
+    var tenantId = req.query.tenantId;
+    var applicationNumber = req.query.applicationNumber;
+    var requestinfo = req.body;
+    if (requestinfo == undefined) {
+      return renderError(res, "requestinfo can not be null", 400);
+    }
+    if (!tenantId || !applicationNumber) {
+      return renderError(
+        res,
+        "tenantId and applicationNumber are mandatory to generate the tlreceipt",
+        400
+      );
+    }
+    try {
+      try {
+        restradelicense = await search_tllicense(
+          applicationNumber,
+          tenantId,
+          requestinfo
+        );
+      } catch (ex) {
+        console.log("error",ex.stack);
+        if (ex.response && ex.response.data) console.log(ex.response.data);
+        return renderError(res, "Failed to query details of tradelicense", 500);
+      }
+
+     
+      var tradelicenses = restradelicense.data;
+
+      if (
+        tradelicenses &&
+        tradelicenses.Licenses &&
+        tradelicenses.Licenses.length > 0
+      ) {
+        var applicationNumber = tradelicenses.Licenses[0].applicationNumber;
+        var paymentresponse;
+        try {
+          paymentresponse = await search_payment(
+            applicationNumber,
+            tenantId,
+            requestinfo
+          );
+        } catch (ex) {
+          console.log(ex.stack);
+          if (ex.response && ex.response.data) console.log(ex.response.data);
+          return renderError(
+            res,
+            `Failed to query payment for tradelicense`,
+            500
+          );
+        }
+        var payments = paymentresponse.data;
+        if (payments && payments.Payments && payments.Payments.length > 0) {
+          if(payments.Payments.length > 1)
+          payments.Payments.splice(0,1);
+          var pdfResponse;
+          var pdfkey = config.pdf.tl_appl_receipt_pdf_template;
           try {
             pdfResponse = await create_pdf(
               tenantId,

@@ -16,6 +16,7 @@ module.exports = {
     tlrenewalcertificate_pdf_template:
       process.env.TL_RENEWALCERTIFICATE || "tlrenewalcertificate",
     tlreceipt_pdf_template: process.env.TL_RECEIPT || "tradelicense-receipt",
+    tl_appl_receipt_pdf_template: process.env.TL_APPL_RECEIPT || "tradelicense-appl-receipt",
     tlbill_pdf_template: process.env.TL_BILL || "tradelicense-bill",
     ptreceipt_pdf_template: process.env.PT_RECEIPT || "property-receipt",
     ptmutationcertificate_pdf_template:
@@ -25,6 +26,10 @@ module.exports = {
       process.env.CONSOLIDATED_RECEIPT || "consolidatedreceipt",
     consolidated_bill_template:
       process.env.CONSOLIDATED_BILL || "consolidatedbill",
+    mcollect_challan_template:
+      process.env.MCOLLECT_CHALLAN || "mcollect-challan",
+      mcollect_bill_template:
+      process.env.MCOLLECT_CHALLAN || "mcollect-bill",
   },
   app: {
     port: parseInt(process.env.APP_PORT) || 8080,
@@ -40,7 +45,9 @@ module.exports = {
     user: process.env.EGOV_USER_HOST || HOST,
     payments: process.env.EGOV_PAYMENTS_HOST || HOST,
     bill: process.env.EGOV_SEARCHER_HOST || HOST,
-    workflow: process.env.EGOV_WORKFLOW_HOST || HOST
+    workflow: process.env.EGOV_WORKFLOW_HOST || HOST,
+    challan: process.env.EGOV_ECHALLAN_HOST || HOST,
+    mcollectBilling: process.env.EGOV_BILLING_HOST || HOST
   },
   paths: {
     pdf_create: "/pdf-service/v1/_createnosave",
@@ -52,6 +59,9 @@ module.exports = {
     download_url: "/download/epass",
     payment_search: "/collection-services/payments/_search",
     bill_search: "/egov-searcher/bill-genie/billswithaddranduser/_get",
-    workflow_search: "/egov-workflow-v2/egov-wf/process/_search"
+    workflow_search: "/egov-workflow-v2/egov-wf/process/_search",
+    mcollect_challan_search:"/echallan-services/eChallan/v1/_search",
+    mcollect_bill:"/billing-service/bill/v2/_fetchbill",
+    bill_genie_getBill:"/egov-searcher/bill-genie/mcollectbills/_get"
   },
 };

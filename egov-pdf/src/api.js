@@ -102,6 +102,7 @@ async function search_bill(consumerCode, tenantId, requestinfo) {
 }
 
 async function search_tllicense(applicationNumber, tenantId, requestinfo) {
+  //console.log("applicationNumber--",applicationNumber,"tennant id--",tenantId,"req info--",requestinfo);
   var params = {
     tenantId: tenantId,
     applicationNumber: applicationNumber,
@@ -131,7 +132,44 @@ async function search_mdms(tenantId, module, master, requestinfo) {
   });
 }
 
+async function search_echallan(tenantId, challanNo,requestinfo) {
+  return await axios({
+    method: "post",
+    url: url.resolve(config.host.challan, config.paths.mcollect_challan_search),
+    data: requestinfo,
+    params: {
+      tenantId: tenantId,
+      challanNo: challanNo,
+    },
+  });
+}
+
+
+async function search_bill_genie(data,requestinfo) {
+ // console.log("data--",data);
+  return await axios({
+    method: "post",
+    url: url.resolve(config.host.bill, config.paths.bill_genie_getBill),
+    data: Object.assign(requestinfo, data),
+  });
+}
+
+async function search_echallanBill(tenantId, consumerCode,serviceId,requestinfo) {
+ // console.log("consumerCode--",consumerCode,"tenantId",tenantId,"serviceId",serviceId);
+  return await axios({
+    method: "post",
+    url: url.resolve(config.host.mcollectBilling, config.paths.mcollect_bill),
+    data: requestinfo,
+    params: {
+      tenantId: tenantId,
+      consumerCode: consumerCode,
+      businessService:serviceId
+    },
+  });
+}
+
 async function create_pdf(tenantId, key, data, requestinfo) {
+ // console.log("key--",key,"data--",data);
   return await axios({
     responseType: "stream",
     method: "post",
@@ -162,4 +200,7 @@ module.exports = {
   search_payment,
   search_tllicense,
   search_workflow,
+  search_echallan,
+  search_echallanBill,
+  search_bill_genie,
 };
