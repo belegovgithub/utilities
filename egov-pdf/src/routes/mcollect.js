@@ -99,6 +99,7 @@ var {
             challanObj.serviceType= challanObj.businessService;
             //console.log("final obj--",challanObj);
             var finalObj = {Challan :challanObj};
+            tenantId = tenantId.split('.')[0];
             var pdfResponse;
             var pdfkey = config.pdf.mcollect_challan_template;
             try {
@@ -185,6 +186,7 @@ var {
           challanObj = echallansBill.Bills;
             console.log("final obj--",challanObj);
             var finalObj = {Bill :challanObj};
+            tenantId = tenantId.split('.')[0];
             var pdfResponse;
             var pdfkey = config.pdf.mcollect_bill_template;
             try {

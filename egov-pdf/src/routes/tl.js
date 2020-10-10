@@ -73,6 +73,7 @@ router.post(
         }
         var payments = paymentresponse.data;
         if (payments && payments.Payments && payments.Payments.length > 0) {
+          tenantId = tenantId.split('.')[0];
           var pdfResponse;
           var pdfkey = config.pdf.tlreceipt_pdf_template;
           try {
@@ -169,6 +170,7 @@ router.post(
           );
         }
         var payments = paymentresponse.data;
+        tenantId = tenantId.split('.')[0];
         if (payments && payments.Payments && payments.Payments.length > 0) {
           if(payments.Payments.length > 1)
           payments.Payments.splice(0,1);
@@ -248,6 +250,7 @@ router.post(
         tradelicenses.Licenses &&
         tradelicenses.Licenses.length > 0
       ) {
+        tenantId = tenantId.split('.')[0];
         var pdfResponse;
         var pdfkey = config.pdf.tlcertificate_pdf_template;
         var status = tradelicenses.Licenses[0].status;
