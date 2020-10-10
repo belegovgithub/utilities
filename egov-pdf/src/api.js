@@ -169,7 +169,8 @@ async function search_echallanBill(tenantId, consumerCode,serviceId,requestinfo)
 }
 
 async function create_pdf(tenantId, key, data, requestinfo) {
- // console.log("key--",key,"data--",data);
+  console.log("key--",key,"data--",data,"tenantId--",tenantId);
+  console.log("requestinfo--",requestinfo);
   return await axios({
     responseType: "stream",
     method: "post",
