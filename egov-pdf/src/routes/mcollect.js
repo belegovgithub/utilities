@@ -54,7 +54,7 @@ var {
         } catch (ex) {
           console.log("error",ex.stack);
           if (ex.response && ex.response.data) console.log(ex.response.data);
-          return renderError(res, "Failed to query details of tradelicense", 500);
+          return renderError(res, "Failed to query details of Challan", 500);
         }
         
         console.log("data-",echallanDtls.data);
@@ -81,7 +81,7 @@ var {
             if (ex.response && ex.response.data) console.log(ex.response.data);
             return renderError(
               res,
-              `Failed to query payment for tradelicense`,
+              `Failed to query bill for mcollect-challan`,
               500
             );
           }
@@ -114,7 +114,7 @@ var {
               if (ex.response && ex.response.data) console.log(ex.response.data);
               return renderError(
                 res,
-                "Failed to generate PDF for tradelicense receipt",
+                "Failed to generate PDF for mcollect-challan receipt",
                 500
               );
             }
@@ -130,7 +130,7 @@ var {
         } else {
           return renderError(
             res,
-            "There is no tradelicense for you for this applicationNumber",
+            "There is no challan for you for this applicationNumber",
             404
           );
         }
@@ -154,7 +154,7 @@ var {
       if (!tenantId || !consumerCode) {
         return renderError(
           res,
-          "tenantId and consumerCode are mandatory to generate the mcollect-challan",
+          "tenantId and consumerCode are mandatory to generate the mcollect-bill",
           400
         );
       }
@@ -168,7 +168,7 @@ var {
         } catch (ex) {
           console.log("error",ex.stack);
           if (ex.response && ex.response.data) console.log(ex.response.data);
-          return renderError(res, "Failed to query details of tradelicense", 500);
+          return renderError(res, "Failed to query details of bill genie", 500);
         }
         
         
@@ -201,7 +201,7 @@ var {
               if (ex.response && ex.response.data) console.log(ex.response.data);
               return renderError(
                 res,
-                "Failed to generate PDF for tradelicense receipt",
+                "Failed to generate PDF for mcollect bill",
                 500
               );
             }

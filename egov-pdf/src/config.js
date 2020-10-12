@@ -28,8 +28,8 @@ module.exports = {
       process.env.CONSOLIDATED_BILL || "consolidatedbill",
     mcollect_challan_template:
       process.env.MCOLLECT_CHALLAN || "mcollect-challan",
-      mcollect_bill_template:
-      process.env.MCOLLECT_CHALLAN || "mcollect-bill",
+    mcollect_bill_template:
+      process.env.MCOLLECT_BILL || "mcollect-bill",
   },
   app: {
     port: parseInt(process.env.APP_PORT) || 8080,
