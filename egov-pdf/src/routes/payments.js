@@ -3,7 +3,7 @@ var router = express.Router();
 var url = require("url");
 var config = require("../config");
 
-var { search_payment, create_pdf } = require("../api");
+var { search_payment_withReceiptNo, create_pdf } = require("../api");
 
 const { asyncMiddleware } = require("../utils/asyncMiddleware");
 
@@ -31,14 +31,32 @@ router.post(
     }
     try {
       try {
-        resProperty = await search_payment(consumerCode, tenantId, requestinfo);
+        resProperty = await search_payment_withReceiptNo(consumerCode, tenantId, requestinfo);
       } catch (ex) {
         console.log(ex.stack);
         if (ex.response && ex.response.data) console.log(ex.response.data);
         return renderError(res, "Failed to query details of the payment", 500);
       }
       var payments = resProperty.data;
+      //console.log("paymetnts--",payments);
       if (payments && payments.Payments && payments.Payments.length > 0) {
+        if(payments.Payments[0].fileStoreId)
+        {
+          respObj = {
+            filestoreIds:[payments.Payments[0].fileStoreId],
+            ResponseInfo: requestinfo,
+            key: config.pdf.consolidated_receipt_template
+          }
+          //console.log("respObj--",respObj);
+          var filename = `${pdfkey}_${new Date().getTime()}`;
+          res.writeHead(200, {
+            "Content-Type": "application/pdf",
+            "Content-Disposition": `attachment; filename=${filename}.pdf`,
+          }); 
+         res.end(JSON.stringify(respObj));
+        }
+        else
+        {
         var pdfResponse;
         var pdfkey = config.pdf.consolidated_receipt_template;
         try {
@@ -62,6 +80,7 @@ router.post(
           "Content-Disposition": `attachment; filename=${filename}.pdf`,
         });
         pdfResponse.data.pipe(res);
+      }
       } else {
         return renderError(
           res,

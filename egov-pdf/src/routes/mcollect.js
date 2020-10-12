@@ -57,8 +57,8 @@ var {
           return renderError(res, "Failed to query details of Challan", 500);
         }
         
-        console.log("data-",echallanDtls.data);
-        console.log("data-",echallanDtls.data.challans[0].auditDetails);
+        //console.log("data-",echallanDtls.data);
+        //console.log("data-",echallanDtls.data.challans[0]);
         var echallans = echallanDtls.data;
         var challanObj;
         if (
@@ -67,6 +67,23 @@ var {
           echallans.challans.length > 0
         ) {
           challanObj = echallans.challans[0];
+          if(challanObj.filestoreid)
+          {
+            respObj = {
+              filestoreIds:[challanObj.filestoreid],
+              ResponseInfo: requestinfo,
+              key: config.pdf.mcollect_challan_template
+            }
+            //console.log("respObj--",respObj);
+            var filename = `${pdfkey}_${new Date().getTime()}`;
+            res.writeHead(200, {
+              "Content-Type": "application/pdf",
+              "Content-Disposition": `attachment; filename=${filename}.pdf`,
+            }); 
+           res.end(JSON.stringify(respObj));
+          }
+          else
+          {
           var businessService = echallans.challans[0].businessService;
           var challanBill;
           try {
@@ -86,7 +103,7 @@ var {
             );
           }
           var challanBillDtl = challanBill.data;
-          console.log("challanBillDtl--",challanBillDtl);
+         // console.log("challanBillDtl--",challanBillDtl);
           
           if (challanBillDtl && challanBillDtl.Bill && challanBillDtl.Bill.length > 0) {
             challanObj.totalAmount = challanBillDtl.Bill[0].totalAmount;
@@ -118,6 +135,8 @@ var {
                 500
               );
             }
+            //console.log("pdfResponse--",pdfResponse);
+            //console.log("pdfResponse--",pdfResponse.data);
             var filename = `${pdfkey}_${new Date().getTime()}`;
             res.writeHead(200, {
               "Content-Type": "application/pdf",
@@ -126,7 +145,9 @@ var {
             pdfResponse.data.pipe(res);
           } else {
             return renderError(res, "There is no bill for this id", 404);
-          }  
+          } 
+          
+        }
         } else {
           return renderError(
             res,
@@ -172,7 +193,7 @@ var {
         }
         
         
-        console.log("data-",echallanDtls.data.Bills[0]);
+        //console.log("data-",echallanDtls.data.Bills[0]);
         var echallansBill = echallanDtls.data;
         var challanObj;
          if (
@@ -184,7 +205,7 @@ var {
           sortedObj.sort(compareAmount);
           echallansBill.Bills[0].billDetails[0].billAccountDetails =  sortedObj;
           challanObj = echallansBill.Bills;
-            console.log("final obj--",challanObj);
+            //console.log("final obj--",challanObj);
             var finalObj = {Bill :challanObj};
             tenantId = tenantId.split('.')[0];
             var pdfResponse;

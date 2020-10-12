@@ -72,9 +72,29 @@ async function search_workflow(applicationNumber, tenantId, requestinfo) {
 }
 
 async function search_payment(consumerCodes, tenantId, requestinfo) {
+  //console.log("consumerCodes--",consumerCodes,"tennant id--",tenantId);
   var params = {
     tenantId: tenantId,
     consumerCodes: consumerCodes,
+  };
+  if (checkIfCitizen(requestinfo)) {
+    var mobileNumber = requestinfo.RequestInfo.userInfo.mobileNumber;
+    var userName = requestinfo.RequestInfo.userInfo.userName;
+    params["mobileNumber"] = mobileNumber || userName;
+  }
+  return await axios({
+    method: "post",
+    url: url.resolve(config.host.payments, config.paths.payment_search),
+    data: requestinfo,
+    params,
+  });
+}
+
+async function search_payment_withReceiptNo(consumerCodes, tenantId, requestinfo) {
+  //console.log("consumerCodes--",consumerCodes,"tennant id--",tenantId);
+  var params = {
+    tenantId: tenantId,
+    receiptNumbers: consumerCodes,
   };
   if (checkIfCitizen(requestinfo)) {
     var mobileNumber = requestinfo.RequestInfo.userInfo.mobileNumber;
@@ -102,7 +122,7 @@ async function search_bill(consumerCode, tenantId, requestinfo) {
 }
 
 async function search_tllicense(applicationNumber, tenantId, requestinfo) {
-  //console.log("applicationNumber--",applicationNumber,"tennant id--",tenantId,"req info--",requestinfo);
+  //console.log("applicationNumber--",applicationNumber,"tennant id--",tenantId);
   var params = {
     tenantId: tenantId,
     applicationNumber: applicationNumber,
@@ -112,6 +132,7 @@ async function search_tllicense(applicationNumber, tenantId, requestinfo) {
     var userName = requestinfo.RequestInfo.userInfo.userName;
     params["mobileNumber"] = mobileNumber || userName;
   }
+  //console.log("params--",params);
   return await axios({
     method: "post",
     url: url.resolve(config.host.tl, config.paths.tl_search),
@@ -163,14 +184,14 @@ async function search_echallanBill(tenantId, consumerCode,serviceId,requestinfo)
     params: {
       tenantId: tenantId,
       consumerCode: consumerCode,
-      businessService:serviceId
+      service:serviceId
     },
   });
 }
 
 async function create_pdf(tenantId, key, data, requestinfo) {
-  console.log("key--",key,"data--",data,"tenantId--",tenantId);
-  console.log("requestinfo--",requestinfo);
+ // console.log("key--",key,"data--",data,"tenantId--",tenantId);
+  //console.log("requestinfo--",requestinfo);
   return await axios({
     responseType: "stream",
     method: "post",
@@ -204,4 +225,5 @@ module.exports = {
   search_echallan,
   search_echallanBill,
   search_bill_genie,
+  search_payment_withReceiptNo,
 };
