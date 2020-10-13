@@ -72,7 +72,25 @@ router.post(
           );
         }
         var payments = paymentresponse.data;
+        //console.log("payments--",payments);
         if (payments && payments.Payments && payments.Payments.length > 0) {
+          if(payments.Payments[0].fileStoreId)
+          {
+            respObj = {
+              filestoreIds:[payments.Payments[0].fileStoreId],
+              ResponseInfo: requestinfo,
+              key: config.pdf.tlreceipt_pdf_template
+            }
+           // console.log("respObj--",respObj);
+            var filename = `${pdfkey}_${new Date().getTime()}`;
+            res.writeHead(200, {
+              "Content-Type": "application/pdf",
+              "Content-Disposition": `attachment; filename=${filename}.pdf`,
+            }); 
+           res.end(JSON.stringify(respObj));
+          }
+          else
+          {
           tenantId = tenantId.split('.')[0];
           var pdfResponse;
           var pdfkey = config.pdf.tlreceipt_pdf_template;
@@ -98,6 +116,7 @@ router.post(
             "Content-Disposition": `attachment; filename=${filename}.pdf`,
           });
           pdfResponse.data.pipe(res);
+          }
         } else {
           return renderError(res, "There is no bill for this id", 404);
         }
@@ -143,10 +162,7 @@ router.post(
         if (ex.response && ex.response.data) console.log(ex.response.data);
         return renderError(res, "Failed to query details of tradelicense", 500);
       }
-
-     
       var tradelicenses = restradelicense.data;
-
       if (
         tradelicenses &&
         tradelicenses.Licenses &&
@@ -170,10 +186,27 @@ router.post(
           );
         }
         var payments = paymentresponse.data;
+        //console.log("payments--",payments);
         tenantId = tenantId.split('.')[0];
         if (payments && payments.Payments && payments.Payments.length > 0) {
           if(payments.Payments.length > 1)
           payments.Payments.splice(0,1);
+          if(payments.Payments[0].fileStoreId)
+          {
+            respObj = {
+              filestoreIds:[payments.Payments[0].fileStoreId],
+              ResponseInfo: requestinfo,
+              key: config.pdf.tlreceipt_pdf_template
+            }
+           // console.log("respObj--",respObj);
+            var filename = `${pdfkey}_${new Date().getTime()}`;
+            res.writeHead(200, {
+              "Content-Type": "application/pdf",
+              "Content-Disposition": `attachment; filename=${filename}.pdf`,
+            }); 
+           res.end(JSON.stringify(respObj));
+          }
+          else{
           var pdfResponse;
           var pdfkey = config.pdf.tl_appl_receipt_pdf_template;
           try {
@@ -198,6 +231,7 @@ router.post(
             "Content-Disposition": `attachment; filename=${filename}.pdf`,
           });
           pdfResponse.data.pipe(res);
+        }
         } else {
           return renderError(res, "There is no bill for this id", 404);
         }
@@ -244,7 +278,7 @@ router.post(
         return renderError(res, "Failed to query details of tradelicense", 500);
       }
       var tradelicenses = restradelicense.data;
-
+     // console.log("tradelicenses--",tradelicenses);
       if (
         tradelicenses &&
         tradelicenses.Licenses &&
@@ -325,7 +359,6 @@ router.post(
         return renderError(res, "Failed to query details of tradelicense", 500);
       }
       var tradelicenses = restradelicense.data;
-
       if (
         tradelicenses &&
         tradelicenses.Licenses &&
