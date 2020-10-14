@@ -12,6 +12,17 @@ function renderError(res, errorMessage, errorCode) {
   res.status(errorCode).send({ errorMessage });
 }
 
+function compareAmount(a,b)
+{
+  if ( a.amount > b.amount ){
+    return -1;
+  }
+  if ( a.amount < b.amount ){
+    return 1;
+  }
+  return 0;
+}
+
 /* GET users listing. */
 router.post(
   "/consolidatedreceipt",
@@ -57,6 +68,9 @@ router.post(
         }
         else
         {
+          var sortedObj = payments.Payments[0].paymentDetails[0].bill.billDetails[0].billAccountDetails;
+        sortedObj.sort(compareAmount);
+        payments.Payments[0].paymentDetails[0].bill.billDetails[0].billAccountDetails = sortedObj;
         tenantId = tenantId.split('.')[0];
         var pdfResponse;
         var pdfkey = config.pdf.consolidated_receipt_template;
