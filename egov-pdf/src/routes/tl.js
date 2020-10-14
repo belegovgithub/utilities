@@ -4,10 +4,10 @@ var url = require("url");
 var config = require("../config");
 
 var {
-  search_bill,
   search_payment,
   search_tllicense,
   create_pdf,
+  compareAmount,
 } = require("../api");
 
 const { asyncMiddleware } = require("../utils/asyncMiddleware");
@@ -74,6 +74,8 @@ router.post(
         var payments = paymentresponse.data;
         //console.log("payments--",payments);
         if (payments && payments.Payments && payments.Payments.length > 0) {
+          if(payments.Payments.length > 1)
+          payments.Payments.splice(1,1);
           if(payments.Payments[0].fileStoreId)
           {
             respObj = {
@@ -91,6 +93,10 @@ router.post(
           }
           else
           {
+            var sortedObj = payments.Payments[0].paymentDetails[0].bill.billDetails[0].billAccountDetails;
+            sortedObj.sort(compareAmount);
+            payments.Payments[0].paymentDetails[0].bill.billDetails[0].billAccountDetails = sortedObj;
+        
           tenantId = tenantId.split('.')[0];
           var pdfResponse;
           var pdfkey = config.pdf.tlreceipt_pdf_template;
@@ -364,6 +370,7 @@ router.post(
         tradelicenses.Licenses &&
         tradelicenses.Licenses.length > 0
       ) {
+        tenantId = tenantId.split('.')[0];
         var pdfResponse;
         var pdfkey = config.pdf.tlrenewalcertificate_pdf_template;
         var status = tradelicenses.Licenses[0].status;

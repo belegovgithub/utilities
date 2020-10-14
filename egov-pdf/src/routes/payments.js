@@ -3,7 +3,7 @@ var router = express.Router();
 var url = require("url");
 var config = require("../config");
 
-var { search_payment_withReceiptNo, create_pdf } = require("../api");
+var { search_payment_withReceiptNo, create_pdf,compareAmount } = require("../api");
 
 const { asyncMiddleware } = require("../utils/asyncMiddleware");
 
@@ -11,18 +11,6 @@ function renderError(res, errorMessage, errorCode) {
   if (errorCode == undefined) errorCode = 500;
   res.status(errorCode).send({ errorMessage });
 }
-
-function compareAmount(a,b)
-{
-  if ( a.amount > b.amount ){
-    return -1;
-  }
-  if ( a.amount < b.amount ){
-    return 1;
-  }
-  return 0;
-}
-
 /* GET users listing. */
 router.post(
   "/consolidatedreceipt",

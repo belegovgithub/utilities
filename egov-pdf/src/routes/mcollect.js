@@ -7,6 +7,7 @@ var {
     search_echallanBill,
     search_bill_genie,
     create_pdf,
+    compareAmount,
   } = require("../api");
 
   const { asyncMiddleware } = require("../utils/asyncMiddleware");
@@ -14,18 +15,6 @@ var {
   function renderError(res, errorMessage, errorCode) {
     if (errorCode == undefined) errorCode = 500;
     res.status(errorCode).send({ errorMessage });
-  }
-
-
-  function compareAmount(a,b)
-  {
-    if ( a.amount > b.amount ){
-      return -1;
-    }
-    if ( a.amount < b.amount ){
-      return 1;
-    }
-    return 0;
   }
 
   router.post(

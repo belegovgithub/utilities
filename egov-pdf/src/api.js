@@ -4,6 +4,17 @@ var url = require("url");
 
 auth_token = config.auth_token;
 
+function compareAmount(a,b)
+  {
+    if ( a.amount > b.amount ){
+      return -1;
+    }
+    if ( a.amount < b.amount ){
+      return 1;
+    }
+    return 0;
+  }
+
 async function search_user(uuid, tenantId, requestinfo) {
   return await axios({
     method: "post",
@@ -191,7 +202,8 @@ async function search_echallanBill(tenantId, consumerCode,serviceId,requestinfo)
 
 async function create_pdf(tenantId, key, data, requestinfo) {
  // console.log("key--",key,"data--",data,"tenantId--",tenantId);
-  //console.log("requestinfo--",requestinfo);
+//  console.log("url",url.resolve(config.host.pdf, config.paths.pdf_create));
+//  console.log("requestinfo--",url.resolve(config.host.pdf, config.paths.pdf_create));
   return await axios({
     responseType: "stream",
     method: "post",
@@ -226,4 +238,5 @@ module.exports = {
   search_echallanBill,
   search_bill_genie,
   search_payment_withReceiptNo,
+  compareAmount,
 };
