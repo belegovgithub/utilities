@@ -38,7 +38,7 @@ router.post(
         return renderError(res, "Failed to query details of the payment", 500);
       }
       var payments = resProperty.data;
-      //console.log("paymetnts--",payments);
+      console.log("paymetnts--",payments);
       if (payments && payments.Payments && payments.Payments.length > 0) {
         if(payments.Payments[0].fileStoreId)
         {
@@ -57,6 +57,7 @@ router.post(
         }
         else
         {
+        tenantId = tenantId.split('.')[0];
         var pdfResponse;
         var pdfkey = config.pdf.consolidated_receipt_template;
         try {
