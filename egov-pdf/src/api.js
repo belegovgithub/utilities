@@ -101,12 +101,23 @@ async function search_payment(consumerCodes, tenantId, requestinfo) {
   });
 }
 
-async function search_payment_withReceiptNo(consumerCodes, tenantId, requestinfo) {
-  //console.log("consumerCodes--",consumerCodes,"tennant id--",tenantId);
-  var params = {
-    tenantId: tenantId,
-    receiptNumbers: consumerCodes,
-  };
+async function search_payment_withReceiptNo(receiptNumbers,billIds, tenantId, requestinfo) {
+ // console.log("receiptNumbers--",receiptNumbers,"tennant id--",tenantId,"billids--",billIds);
+  var params;
+  if(receiptNumbers)
+    {
+        params = {
+        tenantId: tenantId,
+        receiptNumbers: receiptNumbers,
+      };
+    }
+    if(billIds)
+  {
+      params = {
+        tenantId: tenantId,
+        billIds: billIds,
+      };
+  }
   if (checkIfCitizen(requestinfo)) {
     var mobileNumber = requestinfo.RequestInfo.userInfo.mobileNumber;
     var userName = requestinfo.RequestInfo.userInfo.userName;

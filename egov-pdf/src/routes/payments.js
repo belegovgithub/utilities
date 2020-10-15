@@ -16,21 +16,30 @@ router.post(
   "/consolidatedreceipt",
   asyncMiddleware(async function (req, res, next) {
     var tenantId = req.query.tenantId;
-    var consumerCode = req.query.consumerCode;
+    var receiptNumbers = req.query.receiptNumbers;
+    var billIds = req.query.billIds;
     var requestinfo = req.body;
     if (requestinfo == undefined) {
       return renderError(res, "requestinfo can not be null", 400);
     }
-    if (!tenantId || !consumerCode) {
+    if (!tenantId) {
+      if(!receiptNumbers && !billIds )
       return renderError(
         res,
-        "tenantId and consumerCode are mandatory to generate the receipt",
+        "Enter mandatory fields to generate the receipt",
+        400
+      );
+    }
+    else{
+      return renderError(
+        res,
+        "Enter tenant Id and all mandatory fields required to generate the receipt",
         400
       );
     }
     try {
       try {
-        resProperty = await search_payment_withReceiptNo(consumerCode, tenantId, requestinfo);
+        resProperty = await search_payment_withReceiptNo(receiptNumbers,billIds, tenantId, requestinfo);
       } catch (ex) {
         console.log(ex.stack);
         if (ex.response && ex.response.data) console.log(ex.response.data);
