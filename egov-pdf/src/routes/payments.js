@@ -16,9 +16,12 @@ router.post(
   "/consolidatedreceipt",
   asyncMiddleware(async function (req, res, next) {
     var tenantId = req.query.tenantId;
-    var receiptNumbers = req.query.receiptNumbers;
+    var receiptNumbers = req.query.consumerCode;
     var billIds = req.query.billIds;
     var requestinfo = req.body;
+    console.log("Tenantid ",tenantId)
+    console.log("receiptNumbers ",receiptNumbers)
+    console.log("billIds ",billIds)
     if (requestinfo == undefined) {
       return renderError(res, "requestinfo can not be null", 400);
     }
