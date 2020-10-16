@@ -25,20 +25,20 @@ router.post(
     if (requestinfo == undefined) {
       return renderError(res, "requestinfo can not be null", 400);
     }
+    //console.log("tenantId--",tenantId);
     if (!tenantId) {
-      if(!receiptNumbers && !billIds )
       return renderError(
         res,
-        "Enter mandatory fields to generate the receipt",
+        "Enter tenant id to generate the receipt",
         400
       );
-    }
-    else{
-      return renderError(
-        res,
-        "Enter tenant Id and all mandatory fields required to generate the receipt",
-        400
-      );
+    }else if (!receiptNumbers && !billIds )
+    {
+    return renderError(
+      res,
+      "Enter mandatory fields to generate the receipt",
+      400
+    );
     }
     try {
       try {
