@@ -16,11 +16,14 @@ router.post(
   "/consolidatedreceipt",
   asyncMiddleware(async function (req, res, next) {
     var tenantId = req.query.tenantId;
-    var receiptNumbers = req.query.consumerCode;
+    var param;
+    param = req.query.consumerCode;
+    if(!param)
+    param = req.query.receiptNumbers; // data can be either in consumer code or receiptNumbers
     var billIds = req.query.billIds;
     var requestinfo = req.body;
     console.log("Tenantid ",tenantId)
-    console.log("receiptNumbers ",receiptNumbers)
+    console.log("receiptNumbers ",param)
     console.log("billIds ",billIds)
     if (requestinfo == undefined) {
       return renderError(res, "requestinfo can not be null", 400);
@@ -32,7 +35,7 @@ router.post(
         "Enter tenant id to generate the receipt",
         400
       );
-    }else if (!receiptNumbers && !billIds )
+    }else if (!param && !billIds )
     {
     return renderError(
       res,
@@ -42,7 +45,7 @@ router.post(
     }
     try {
       try {
-        resProperty = await search_payment_withReceiptNo(receiptNumbers,billIds, tenantId, requestinfo);
+        resProperty = await search_payment_withReceiptNo(param,billIds, tenantId, requestinfo);
       } catch (ex) {
         console.log(ex.stack);
         if (ex.response && ex.response.data) console.log(ex.response.data);
