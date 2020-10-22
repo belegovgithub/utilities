@@ -57,7 +57,7 @@ var {
           echallans.challans.length > 0
         ) {
           challanObj = echallans.challans[0];
-          if(challanObj.filestoreid)
+         if(challanObj.filestoreid)
           {
             respObj = {
               filestoreIds:[challanObj.filestoreid],
@@ -103,7 +103,7 @@ var {
             sortedObj.sort(compareAmount);
             challanObj.amount = sortedObj;
             challanObj.mobileNumber = challanObj.citizen.mobileNumber;
-            challanObj.serviceType= challanObj.businessService;
+            challanObj.serviceType= challanObj.businessService.split(".")[0];
             //console.log("final obj--",challanObj);
             var finalObj = {Challan :challanObj};
             tenantId = tenantId.split('.')[0];
