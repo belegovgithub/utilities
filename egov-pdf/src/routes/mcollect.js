@@ -333,7 +333,7 @@ var {
                 pdfResponse = await create_pdf(
                   tenantId,
                   pdfkey,
-                  finalObj,
+                  payments,
                   requestinfo
                 );
             } catch (ex) {
