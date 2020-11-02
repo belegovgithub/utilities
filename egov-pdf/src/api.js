@@ -235,6 +235,72 @@ function checkIfCitizen(requestinfo) {
   }
 }
 
+async function search_waterconnections(tenantId, applicationNumber,requestinfo) {
+  return await axios({
+    method: "post",
+    url: url.resolve(config.host.ws, config.paths.ws_search),
+    data: requestinfo,
+    params: {
+      tenantId: tenantId,
+      applicationNumber: applicationNumber,
+    },
+  });
+}
+async function estimate(CalculationCriteria, isconnectionCalculation,requestinfo) {
+response = await axios({
+  method: "post",
+  url: url.resolve(config.host.ws_calc, config.paths.estimate),
+  data: {
+    CalculationCriteria:CalculationCriteria,
+    isconnectionCalculation:isconnectionCalculation,
+    RequestInfo:requestinfo.RequestInfo
+  },
+  params:{
+    
+  }
+  });
+  return response;
+}
+
+async function search_sewerageconnections(tenantId, applicationNumber,requestinfo) {
+  return await axios({
+    method: "post",
+    url: url.resolve(config.host.sw, config.paths.sw_search),
+    data: requestinfo,
+    params: {
+      tenantId: tenantId,
+      applicationNumber: applicationNumber,
+    },
+  });
+}
+async function estimate_sw(CalculationCriteria, isconnectionCalculation,requestinfo) {
+  response = await axios({
+    method: "post",
+    url: url.resolve(config.host.sw_calc, config.paths.estimate_sw),
+    data: {
+      CalculationCriteria:CalculationCriteria,
+      isconnectionCalculation:isconnectionCalculation,
+      RequestInfo:requestinfo.RequestInfo
+    },
+    params:{
+      
+    }
+    });
+    return response;
+  }
+
+  async function wf_bs_search(tenantId, businessService,requestinfo) {
+    return await axios({
+      method: "post",
+      url: url.resolve(config.host.workflow, config.paths.wf_bs_search),
+      data: requestinfo,
+      params: {
+        tenantId: tenantId,
+        businessService: businessService,
+      },
+    });
+  }
+  
 module.exports = {
   create_pdf,
   search_epass,
@@ -250,4 +316,9 @@ module.exports = {
   search_bill_genie,
   search_payment_withReceiptNo,
   compareAmount,
+  search_waterconnections,
+  estimate,
+  search_sewerageconnections,
+  estimate_sw,
+  wf_bs_search
 };

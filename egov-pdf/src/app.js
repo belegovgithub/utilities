@@ -9,6 +9,7 @@ var tlRouter = require("./routes/tl");
 var ptRouter = require("./routes/pt");
 var mcollectRouter = require("./routes/mcollect");
 var paymentRouter = require("./routes/payments");
+var wsRouter =require("./routes/ws");
 // var billRouter = require("./routes/bills");
 
 var app = express();
@@ -28,6 +29,8 @@ app.use(config.app.contextPath + "/download/TL", tlRouter);
 app.use(config.app.contextPath + "/download/UC", mcollectRouter);
 app.use(config.app.contextPath + "/download/PT", ptRouter);
 app.use(config.app.contextPath + "/download/PAYMENT", paymentRouter);
+app.use(config.app.contextPath + "/download/WS", wsRouter);
+
 // app.use(config.app.contextPath + "/download/BILL", billRouter);
 
 // catch 404 and forward to error handler

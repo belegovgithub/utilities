@@ -30,6 +30,10 @@ module.exports = {
       process.env.MCOLLECT_CHALLAN || "mcollect-challan",
     mcollect_bill_template:
       process.env.MCOLLECT_BILL || "mcollect-bill",
+    ws_estimate_template:
+      process.env.WS_ESTIMATENOTICE || "ws-estimationnotice",
+    ws_sanction_template:
+      process.env.WS_ESTIMATENOTICE || "ws-sanctionletter",
   },
   app: {
     port: parseInt(process.env.APP_PORT) || 8080,
@@ -47,7 +51,11 @@ module.exports = {
     bill: process.env.EGOV_SEARCHER_HOST || HOST,
     workflow: process.env.EGOV_WORKFLOW_HOST || HOST,
     challan: process.env.EGOV_ECHALLAN_HOST || HOST,
-    mcollectBilling: process.env.EGOV_BILLING_HOST || HOST
+    mcollectBilling: process.env.EGOV_BILLING_HOST || HOST,
+    ws: process.env.EGOV_WS_SERVICE_HOST || HOST,
+    sw: process.env.EGOV_WS_SERVICE_HOST || HOST,
+    ws_calc:process.env.EGOV_WS_SERVICE_HOST || HOST,
+    sw_calc:process.env.EGOV_WS_SERVICE_HOST || HOST,
   },
   paths: {
     pdf_create: "/pdf-service/v1/_create",
@@ -62,6 +70,11 @@ module.exports = {
     workflow_search: "/egov-workflow-v2/egov-wf/process/_search",
     mcollect_challan_search:"/echallan-services/eChallan/v1/_search",
     mcollect_bill:"/billing-service/bill/v2/_search",
-    bill_genie_getBill:"/egov-searcher/bill-genie/mcollectbills/_get"
+    bill_genie_getBill:"/egov-searcher/bill-genie/mcollectbills/_get",
+    ws_search:"/ws-services/wc/_search",
+    estimate:"/ws-calculator/waterCalculator/_estimate",
+    sw_search:"/sw-services/swc/_search",
+    estimate_sw:"/sw-calculator/sewerageCalculator/_estimate",
+    wf_bs_search:"/egov-workflow-v2/egov-wf/businessservice/_search"
   },
 };
