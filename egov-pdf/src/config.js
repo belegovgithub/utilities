@@ -1,7 +1,7 @@
 // config.js
 // const env = process.env.NODE_ENV; // 'dev' or 'test'
 
-HOST = process.env.EGOV_HOST;
+HOST = process.env.EGOV_HOST || "https://13.71.65.215.nip.io/";
 
 if (!HOST) {
   console.log("You need to set the HOST variable");
@@ -53,9 +53,9 @@ module.exports = {
     challan: process.env.EGOV_ECHALLAN_HOST || HOST,
     mcollectBilling: process.env.EGOV_BILLING_HOST || HOST,
     ws: process.env.EGOV_WS_SERVICE_HOST || HOST,
-    sw: process.env.EGOV_WS_SERVICE_HOST || HOST,
-    ws_calc:process.env.EGOV_WS_SERVICE_HOST || HOST,
-    sw_calc:process.env.EGOV_WS_SERVICE_HOST || HOST,
+    sw: process.env.EGOV_SW_SERVICE_HOST || HOST,
+    ws_calc:process.env.EGOV_WS_CALC_SERVICE_HOST || HOST,
+    sw_calc:process.env.EGOV_SW_CALC_SERVICE_HOST || HOST,
   },
   paths: {
     pdf_create: "/pdf-service/v1/_create",
