@@ -1,7 +1,7 @@
 // config.js
 // const env = process.env.NODE_ENV; // 'dev' or 'test'
 
-HOST = process.env.EGOV_HOST || "https://13.71.65.215.nip.io/";
+HOST = process.env.EGOV_HOST;
 
 if (!HOST) {
   console.log("You need to set the HOST variable");
