@@ -270,7 +270,7 @@ router.post(
         400
       );
     }
-
+    console.log("Details for certificate",requestinfo);
     try {
       try {
         restradelicense = await search_tllicense(
@@ -279,12 +279,14 @@ router.post(
           requestinfo
         );
       } catch (ex) {
+        console.log("error in getting data")
         console.log(ex.stack);
         if (ex.response && ex.response.data) console.log(ex.response.data);
         return renderError(res, "Failed to query details of tradelicense", 500);
       }
+      console.log("Details for certificate",requestinfo);
       var tradelicenses = restradelicense.data;
-     // console.log("tradelicenses--",tradelicenses);
+      console.log("tradelicenses--",tradelicenses);
       if (
         tradelicenses &&
         tradelicenses.Licenses &&
