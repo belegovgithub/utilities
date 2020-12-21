@@ -149,11 +149,12 @@ async function search_tllicense(applicationNumber, tenantId, requestinfo) {
     tenantId: tenantId,
     applicationNumber: applicationNumber,
   };
-  if (checkIfCitizen(requestinfo)) {
-    var mobileNumber = requestinfo.RequestInfo.userInfo.mobileNumber;
-    var userName = requestinfo.RequestInfo.userInfo.userName;
-    params["mobileNumber"] = mobileNumber || userName;
-  }
+  //Validation is added at service level.
+  // if (checkIfCitizen(requestinfo)) {
+  //   var mobileNumber = requestinfo.RequestInfo.userInfo.mobileNumber;
+  //   var userName = requestinfo.RequestInfo.userInfo.userName;
+  //   params["mobileNumber"] = mobileNumber || userName;
+  // }
   //console.log("params--",params);
   return await axios({
     method: "post",
