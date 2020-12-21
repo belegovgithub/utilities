@@ -70,9 +70,9 @@ public class EmailService {
 		fillData(pgr.getRedressal(), context);
 		fillData(pgr.getTotalComplaints(), context);
 		fillData(pgr.getUlbCovered(), context);
-		fillData(pgr.getChannelBreakup().getIvr(), context);
-		fillData(pgr.getChannelBreakup().getMobileApp(), context);
-		fillData(pgr.getChannelBreakup().getWebApp(), context);
+		//fillData(pgr.getChannelBreakup().getIvr(), context);
+		//fillData(pgr.getChannelBreakup().getMobileApp(), context);
+		//fillData(pgr.getChannelBreakup().getWebApp(), context);
 	}
 
 	private void enrichPTData(PT pt, VelocityContext context) {
@@ -100,6 +100,7 @@ public class EmailService {
 	}
 	
 	private void enrichMCData(MiscCollections mc, VelocityContext context) {
+		fillData(mc.getUlbCovered(), context);
 		fillData(mc.getReceiptsGenerated(), context);
 		fillData(mc.getRevenueCollected(), context);
 	}

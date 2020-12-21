@@ -1,6 +1,8 @@
 package org.egov.win.service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -80,17 +82,17 @@ public class CronService {
 
 	private Email getDataFromDb() {
 		Body body = new Body();
-		List<Map<String, Object>> wsData = externalAPIService.getWSData();
-		if(CollectionUtils.isEmpty(wsData))
-			throw new CustomException("EMAILER_DATA_RETREIVAL_FAILED", "Failed to retrieve data from WS module");
+		//List<Map<String, Object>> wsData = externalAPIService.getWSData();
+		//if(CollectionUtils.isEmpty(wsData))
+			//throw new CustomException("EMAILER_DATA_RETREIVAL_FAILED", "Failed to retrieve data from WS module");
 		enrichHeadersOfTheTable(body);
-		enrichBodyWithStateWideData(body, wsData);
+		//enrichBodyWithStateWideData(body, wsData);
 		enrichBodyWithPGRData(body);
-		enrichBodyWithPTData(body);
+		//enrichBodyWithPTData(body);
 		enrichBodyWithTLData(body);
 		enrichBodyWithMiscCollData(body);
-		enrichBodyWithWSData(body, wsData);
-		enrichBodyWithFirenocData(body);
+		//enrichBodyWithWSData(body, wsData);
+		//enrichBodyWithFirenocData(body);
 		return Email.builder().body(body).build();
 	}
 
@@ -145,7 +147,8 @@ public class CronService {
 	}
 
 	private void enrichBodyWithPGRData(Body body) {
-		List<Map<String, Object>> data = externalAPIService.getRainmakerData(CronConstants.SEARCHER_PGR);
+		//List<Map<String, Object>> data = externalAPIService.getRainmakerData(CronConstants.SEARCHER_PGR);
+		List<Map<String, Object>> data = externalAPIService.getPGRReportData();
 		List<Map<String, Object>> ulbCovered = new ArrayList<>();
 		List<Map<String, Object>> totalComplaints = new ArrayList<>();
 		List<Map<String, Object>> redressal = new ArrayList<>();
@@ -167,7 +170,7 @@ public class CronService {
 			redressal.add(redressalPerWeek);
 		}
 		PGR pgr = PGR.builder().redressal(redressal).totalComplaints(totalComplaints).ulbCovered(ulbCovered).build();
-		enrichBodyWithPGRChannelData(body, pgr);
+		//enrichBodyWithPGRChannelData(body, pgr);
 		body.setPgr(pgr);
 	}
 
@@ -227,27 +230,37 @@ public class CronService {
 	}
 
 	private void enrichBodyWithTLData(Body body) {
-		List<Map<String, Object>> data = externalAPIService.getRainmakerData(CronConstants.SEARCHER_TL);
+		//List<Map<String, Object>> data = externalAPIService.getRainmakerData(CronConstants.SEARCHER_TL);
+		List<Map<String, Object>> data = externalAPIService.getTLAmountReportData();
+		List<Map<String, Object>> dataLicence = externalAPIService.getTLLicenceReportData();
 		List<Map<String, Object>> ulbCovered = new ArrayList<>();
 		List<Map<String, Object>> licenseIssued = new ArrayList<>();
 		List<Map<String, Object>> revenueCollected= new ArrayList<>();
 		for (Map<String, Object> record : data) {
 			Map<String, Object> ulbCoveredPerWeek = new HashMap<>();
-			Map<String, Object> licenseIssuedPerWeek = new HashMap<>();
 			Map<String,Object> revenueCollectedPerWeek=new HashMap<> ();
 			String prefix = "Week";
 			Integer noOfWeeks = 6;
 			for (int week = 0; week < noOfWeeks; week++) {
 				if (record.get("day").equals(prefix + week)) {
 					ulbCoveredPerWeek.put("w" + week + "tlulbc", record.get("ulbcovered"));
-					licenseIssuedPerWeek.put("w" + week + "tllicissued", record.get("licenseissued"));
 					revenueCollectedPerWeek.put("w" + week + "tlrevcoll", record.get("revenuecollected"));
-					
 				}
 			}
 			ulbCovered.add(ulbCoveredPerWeek);
-			licenseIssued.add(licenseIssuedPerWeek);
 			revenueCollected.add(revenueCollectedPerWeek);
+		}
+		
+		for (Map<String, Object> record : dataLicence) {
+			Map<String, Object> licenseIssuedPerWeek = new HashMap<>();
+			String prefix = "Week";
+			Integer noOfWeeks = 6;
+			for (int week = 0; week < noOfWeeks; week++) {
+				if (record.get("day").equals(prefix + week)) {
+					licenseIssuedPerWeek.put("w" + week + "tllicissued", record.get("licenseissued"));
+				}
+			}
+			licenseIssued.add(licenseIssuedPerWeek);
 		}
 
 		TL tl = TL.builder().ulbCovered(ulbCovered).licenseIssued(licenseIssued).revenueCollected(revenueCollected).build();
@@ -309,25 +322,31 @@ public class CronService {
 	
 	
 	private void enrichBodyWithMiscCollData(Body body) {
-		List<Map<String, Object>> data = externalAPIService.getRainmakerData(CronConstants.SEARCHER_MC);
+		//List<Map<String, Object>> data = externalAPIService.getRainmakerData(CronConstants.SEARCHER_MC);
+		List<Map<String, Object>> data = externalAPIService.getMiscReportData();
 		List<Map<String, Object>> receiptsGenerated = new ArrayList<>();
 		List<Map<String, Object>> revenueCollected = new ArrayList<>();
+		List<Map<String, Object>> ulbCovered = new ArrayList<>();
+		//DecimalFormat df = new DecimalFormat("#.#####");
 		for (Map<String, Object> record : data) {
 			Map<String, Object> receiptsGeneratedPerWeek = new HashMap<>();
 			Map<String, Object> revenueCollectedPerWeek = new HashMap<>();
+			Map<String, Object> ulbCoveredPerWeek = new HashMap<>();
 			String prefix = "Week";
 			Integer noOfWeeks = 6;
 			for (int week = 0; week < noOfWeeks; week++) {
 				if (record.get("day").equals(prefix + week)) {
+					ulbCoveredPerWeek.put("w" + week + "mculbc", record.get("ulb"));
 					receiptsGeneratedPerWeek.put("w" + week + "mcrecgen", record.get("receiptscreated"));
 					revenueCollectedPerWeek.put("w" + week + "mcrevcoll", record.get("revenuecollected"));
 				}
 			}
 			receiptsGenerated.add(receiptsGeneratedPerWeek);
 			revenueCollected.add(revenueCollectedPerWeek);
+			ulbCovered.add(ulbCoveredPerWeek);
 		}
 
-		MiscCollections miscCollections = MiscCollections.builder().receiptsGenerated(receiptsGenerated).revenueCollected(revenueCollected).build();
+		MiscCollections miscCollections = MiscCollections.builder().receiptsGenerated(receiptsGenerated).revenueCollected(revenueCollected).ulbCovered(ulbCovered).build();
 		body.setMiscCollections(miscCollections);
 	}
 
@@ -340,7 +359,7 @@ public class CronService {
 			email.setSubject(subject);
 			EmailRequest request = EmailRequest.builder().email(email.getTo()).subject(email.getSubject()).isHTML(true)
 					.body(content).build();
-			log.info("Sending email.......");
+			log.info("Sending email......." + request.getBody());
 			producer.push(emailTopic, request);
 		}
 	}

@@ -188,4 +188,19 @@ public class CronUtils {
 	    return restTemplate;
 	}
 
+	public void preparePGRReportReq(StringBuilder uri) {
+		uri.append(propertyManager.getPGRReportURI());
+	}
+
+	public void prepareMiscReportReq(StringBuilder uri) {
+		uri.append(propertyManager.getMiscReportURI());
+	}
+	
+	public void prepareTLAmountReportReq(StringBuilder uri) {
+		uri.append(propertyManager.getTlamountReportURI());
+	}
+	
+	public void prepareTLLicenceReportReq(StringBuilder uri) {
+		uri.append(propertyManager.getTllicenceReportURI());
+	}
 }

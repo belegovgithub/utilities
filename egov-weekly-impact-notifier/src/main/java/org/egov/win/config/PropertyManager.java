@@ -39,5 +39,17 @@ public class PropertyManager {
 	@Value("${egov.resttemplate.timeout.in.ms}")
 	public Integer restTemplateInMS;
 	
+	@Value("${egov.report.uri.pgr}")
+	public String pGRReportURI;
+	
+	@Value("${egov.report.uri.misc}")
+	public String miscReportURI;
+	
+	@Value("${egov.report.uri.tlamount}")
+	public String tlamountReportURI;
+	
+	@Value("${egov.report.uri.tllicence}")
+	public String tllicenceReportURI;
+	
 
 }

@@ -17,6 +17,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @EqualsAndHashCode
 public class MiscCollections {
+	private List<Map<String, Object>> ulbCovered;
 	
 	private List<Map<String, Object>> receiptsGenerated;
 	
