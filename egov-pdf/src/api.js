@@ -144,7 +144,7 @@ async function search_bill(consumerCode, tenantId, requestinfo) {
 }
 
 async function search_tllicense(applicationNumber, tenantId, requestinfo) {
-  console.log("applicationNumber--",applicationNumber,"tennant id--",tenantId);
+  //console.log("applicationNumber--",applicationNumber,"tennant id--",tenantId);
   var params = {
     tenantId: tenantId,
     applicationNumber: applicationNumber,
@@ -154,7 +154,7 @@ async function search_tllicense(applicationNumber, tenantId, requestinfo) {
     var userName = requestinfo.RequestInfo.userInfo.userName;
     params["mobileNumber"] = mobileNumber || userName;
   }
-  console.log("params--",params);
+  //console.log("params--",params);
   return await axios({
     method: "post",
     url: url.resolve(config.host.tl, config.paths.tl_search),
