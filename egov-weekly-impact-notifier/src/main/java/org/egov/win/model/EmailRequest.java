@@ -1,6 +1,6 @@
 package org.egov.win.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.egov.common.contract.request.RequestInfo;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,9 +16,12 @@ import lombok.ToString;
 @Builder
 @ToString
 public class EmailRequest {
-    private String email;
+    /*private String email;
     private String subject;
     private String body;
     @JsonProperty("isHTML")
-    private boolean isHTML;
+    private boolean isHTML;*/
+	private RequestInfo requestInfo;
+    
+    private Email email;
 }

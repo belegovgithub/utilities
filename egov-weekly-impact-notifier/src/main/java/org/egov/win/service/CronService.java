@@ -6,9 +6,11 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.velocity.Template;
@@ -27,6 +29,7 @@ import org.egov.win.model.PT;
 import org.egov.win.model.SearcherRequest;
 import org.egov.win.model.StateWide;
 import org.egov.win.model.TL;
+import org.egov.win.model.TotalCollections;
 import org.egov.win.model.WaterAndSewerage;
 import org.egov.win.producer.Producer;
 import org.egov.win.repository.ServiceCallRepository;
@@ -68,6 +71,8 @@ public class CronService {
 
 	@Value("${egov.impact.emailer.email.subject}")
 	private String subject;
+	
+	private Map<String, Object> totalrevcollectedPerWeek = new HashMap<String, Object>();
 
 	public void fetchData() {
 		try {
@@ -93,7 +98,7 @@ public class CronService {
 		enrichBodyWithMiscCollData(body);
 		//enrichBodyWithWSData(body, wsData);
 		//enrichBodyWithFirenocData(body);
-		return Email.builder().body(body).build();
+		return Email.builder().bodyContent(body).isHTML(true).build();
 	}
 
 	private void enrichHeadersOfTheTable(Body body) {
@@ -235,6 +240,7 @@ public class CronService {
 		List<Map<String, Object>> dataLicence = externalAPIService.getTLLicenceReportData();
 		List<Map<String, Object>> ulbCovered = new ArrayList<>();
 		List<Map<String, Object>> licenseIssued = new ArrayList<>();
+		List<Map<String, Object>> licenseTotal = new ArrayList<>();
 		List<Map<String, Object>> revenueCollected= new ArrayList<>();
 		for (Map<String, Object> record : data) {
 			Map<String, Object> ulbCoveredPerWeek = new HashMap<>();
@@ -245,6 +251,7 @@ public class CronService {
 				if (record.get("day").equals(prefix + week)) {
 					ulbCoveredPerWeek.put("w" + week + "tlulbc", record.get("ulbcovered"));
 					revenueCollectedPerWeek.put("w" + week + "tlrevcoll", record.get("revenuecollected"));
+					totalrevcollectedPerWeek.put("w" + week + "totalrevcoll", record.get("revenuecollected"));
 				}
 			}
 			ulbCovered.add(ulbCoveredPerWeek);
@@ -253,17 +260,20 @@ public class CronService {
 		
 		for (Map<String, Object> record : dataLicence) {
 			Map<String, Object> licenseIssuedPerWeek = new HashMap<>();
+			Map<String, Object> licenseTotalPerWeek = new HashMap<>();
 			String prefix = "Week";
 			Integer noOfWeeks = 6;
 			for (int week = 0; week < noOfWeeks; week++) {
 				if (record.get("day").equals(prefix + week)) {
 					licenseIssuedPerWeek.put("w" + week + "tllicissued", record.get("licenseissued"));
+					licenseTotalPerWeek.put("w" + week + "tllictotal", record.get("licensetotal"));
 				}
 			}
 			licenseIssued.add(licenseIssuedPerWeek);
+			licenseTotal.add(licenseTotalPerWeek);
 		}
 
-		TL tl = TL.builder().ulbCovered(ulbCovered).licenseIssued(licenseIssued).revenueCollected(revenueCollected).build();
+		TL tl = TL.builder().ulbCovered(ulbCovered).licenseIssued(licenseIssued).licenseTotal(licenseTotal).revenueCollected(revenueCollected).build();
 		body.setTl(tl);
 	}
 	
@@ -327,7 +337,8 @@ public class CronService {
 		List<Map<String, Object>> receiptsGenerated = new ArrayList<>();
 		List<Map<String, Object>> revenueCollected = new ArrayList<>();
 		List<Map<String, Object>> ulbCovered = new ArrayList<>();
-		//DecimalFormat df = new DecimalFormat("#.#####");
+		List<Map<String, Object>> tetalRevenueCollected = new ArrayList<>();
+		DecimalFormat df = new DecimalFormat("#.##");
 		for (Map<String, Object> record : data) {
 			Map<String, Object> receiptsGeneratedPerWeek = new HashMap<>();
 			Map<String, Object> revenueCollectedPerWeek = new HashMap<>();
@@ -339,29 +350,37 @@ public class CronService {
 					ulbCoveredPerWeek.put("w" + week + "mculbc", record.get("ulb"));
 					receiptsGeneratedPerWeek.put("w" + week + "mcrecgen", record.get("receiptscreated"));
 					revenueCollectedPerWeek.put("w" + week + "mcrevcoll", record.get("revenuecollected"));
+					totalrevcollectedPerWeek.put("w" + week + "totalrevcoll",df.format(
+							Float.parseFloat((String) totalrevcollectedPerWeek.get("w" + week + "totalrevcoll")) +
+							Float.parseFloat((String)  record.get("revenuecollected"))));
 				}
 			}
 			receiptsGenerated.add(receiptsGeneratedPerWeek);
 			revenueCollected.add(revenueCollectedPerWeek);
 			ulbCovered.add(ulbCoveredPerWeek);
+			tetalRevenueCollected.add(totalrevcollectedPerWeek);
 		}
 
 		MiscCollections miscCollections = MiscCollections.builder().receiptsGenerated(receiptsGenerated).revenueCollected(revenueCollected).ulbCovered(ulbCovered).build();
 		body.setMiscCollections(miscCollections);
+		
+		TotalCollections totalCollections = TotalCollections.builder().revenueCollected(tetalRevenueCollected).build();
+		body.setTotalRevenuecollected(totalCollections);
 	}
 
 		
 
 	private void send(Email email, String content) {
 		String[] addresses = toAddress.split(",");
+		Set<String> emailTo = new HashSet<String>();
 		for (String address : Arrays.asList(addresses)) {
-			email.setTo(address);
-			email.setSubject(subject);
-			EmailRequest request = EmailRequest.builder().email(email.getTo()).subject(email.getSubject()).isHTML(true)
-					.body(content).build();
-			log.info("Sending email......." + request.getBody());
-			producer.push(emailTopic, request);
+			emailTo.add(address);
 		}
+		email.setEmailTo(emailTo);
+		email.setSubject(subject);
+		email.setBody(content);
+		EmailRequest request = EmailRequest.builder().email(email).build();
+		producer.push(emailTopic, request);
 	}
 
 	public Template getVelocityTemplate() {

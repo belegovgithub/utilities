@@ -1,6 +1,10 @@
 package org.egov.win.model;
 
 
+import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,7 +20,7 @@ import lombok.ToString;
 @EqualsAndHashCode
 public class Email {
 	
-	private String from;
+	/*private String from;
 	
 	private String to;
 	
@@ -24,6 +28,13 @@ public class Email {
 	
 	private String subject;
 	
-	private Body body;
+	private Body body;*/
+	
+	private Set<String> emailTo;
+	private String subject;
+	private String body;
+	@JsonProperty("isHTML")
+	private boolean isHTML;
+	private Body bodyContent;
 
 }

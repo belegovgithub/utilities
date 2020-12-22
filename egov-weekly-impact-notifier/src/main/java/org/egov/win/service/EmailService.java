@@ -14,6 +14,7 @@ import org.egov.win.model.PGR;
 import org.egov.win.model.PT;
 import org.egov.win.model.StateWide;
 import org.egov.win.model.TL;
+import org.egov.win.model.TotalCollections;
 import org.egov.win.model.WaterAndSewerage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,7 +31,7 @@ public class EmailService {
 	public String formatEmail(Email email) {
 		Template t = service.getVelocityTemplate();
 		VelocityContext context = new VelocityContext();
-		buildEmailBody(email.getBody(), context);
+		buildEmailBody(email.getBodyContent(), context);
 		StringWriter writer = new StringWriter(10000);
 		t.merge(context, writer);
 
@@ -53,6 +54,8 @@ public class EmailService {
 			enrichMCData(body.getMiscCollections(), context);
 		if(null !=body.getFirenoc())
 			enrichFirenocData(body.getFirenoc(), context);
+		if(null !=body.getTotalRevenuecollected())
+			enrichTotalRevenueData(body.getTotalRevenuecollected(), context);
 	}
 
 	private void enrichHeaderData(List<Map<String, Object>> header, VelocityContext context) {
@@ -91,6 +94,7 @@ public class EmailService {
 		fillData(tl.getLicenseIssued(), context);
 		fillData(tl.getUlbCovered(), context);
 		fillData(tl.getRevenueCollected(), context);
+		fillData(tl.getLicenseTotal(), context);
 	}
 
 	private void enrichWSData(WaterAndSewerage ws, VelocityContext context) {
@@ -105,6 +109,10 @@ public class EmailService {
 		fillData(mc.getRevenueCollected(), context);
 	}
 
+	private void enrichTotalRevenueData(TotalCollections totalCollections, VelocityContext context) {
+		fillData(totalCollections.getRevenueCollected(), context);
+	}
+	
 	private void fillData(List<Map<String, Object>> dataFromQuery, VelocityContext context) {
 		dataFromQuery.forEach(record -> {
 			for (String key : record.keySet()) {

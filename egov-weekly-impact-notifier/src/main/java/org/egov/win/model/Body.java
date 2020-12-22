@@ -33,5 +33,7 @@ public class Body {
 	private WaterAndSewerage waterAndSewerage;
 	
 	private MiscCollections miscCollections;
+	
+	private TotalCollections totalRevenuecollected ;
 
 }

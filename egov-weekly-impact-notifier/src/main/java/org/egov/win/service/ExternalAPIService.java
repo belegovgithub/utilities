@@ -150,7 +150,7 @@ public class ExternalAPIService {
 						ulbs.add(obj.get(0).toString());
 						sum2 += Float.parseFloat(obj.get(5).toString());
 					}
-					DecimalFormat df = new DecimalFormat("#.#####");
+					DecimalFormat df = new DecimalFormat("#.##");
 					Map<String, Object> e = new HashMap<String, Object>();
 					e.put("ulbcovered", ulbs.size());
 					e.put("revenuecollected", df.format(sum2/100000));
@@ -202,8 +202,13 @@ public class ExternalAPIService {
 					List<List<List<Object>>> dataParsedToList = mapper.convertValue(JsonPath.read(parsedResponse, "$.reportData"), List.class);
 					List<List<Object>> dataParsedreportDataToList = mapper.convertValue(dataParsedToList, List.class);
 					Map<String, Object> e = new HashMap<String, Object>();
+					int sum2 = 0;
+					for (List<Object> obj : dataParsedreportDataToList) {
+						sum2 += Integer.parseInt(obj.get(1).toString());
+					}
 					e.put("licenseissued", dataParsedreportDataToList.get(0).get(1));
 					e.put("day", "Week"+weeks);
+					e.put("licensetotal", sum2);
 					data.add(e);
 				}
 
@@ -258,7 +263,7 @@ public class ExternalAPIService {
 						sum1 += Integer.parseInt(obj.get(1).toString());
 						sum2 += Float.parseFloat(obj.get(7).toString());
 					}
-					DecimalFormat df = new DecimalFormat("#.#####");
+					DecimalFormat df = new DecimalFormat("#.##");
 					Map<String, Object> e = new HashMap<String, Object>();
 					e.put("ulb", ulbs.size());
 					e.put("receiptscreated", sum1);
