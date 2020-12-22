@@ -1,10 +1,10 @@
 var express = require("express");
+var get = require('lodash.get');
 var router = express.Router();
 var url = require("url");
 var config = require("../config");
 
-var { search_payment_withReceiptNo, create_pdf,compareAmount } = require("../api");
-
+var { search_payment_withReceiptNo, create_pdf,compareAmount,checkIfCitizen, search_billV2} = require("../api");
 const { asyncMiddleware } = require("../utils/asyncMiddleware");
 
 function renderError(res, errorMessage, errorCode) {
@@ -52,8 +52,30 @@ router.post(
         return renderError(res, "Failed to query details of the payment", 500);
       }
       var payments = resProperty.data;
-      console.log("paymetnts--",payments);
+      //console.log(JSON.stringify(payments));
       if (payments && payments.Payments && payments.Payments.length > 0) {
+        if (checkIfCitizen(requestinfo)) {
+          
+          var mobileNumber = requestinfo.RequestInfo.userInfo.mobileNumber;
+          var payerMobileNumber = get(payments,"Payments[0].mobileNumber",null) ;
+          //console.log("PayerNumber",payerMobileNumber);
+          var validCitizen =false
+          if(payerMobileNumber == mobileNumber){
+            validCitizen=true;
+          }else{
+            var consumerCode =get(payments,"Payments[0].paymentDetails[0].bill.consumerCode",null) ;
+            var bService =get(payments,"Payments[0].paymentDetails[0].businessService",null) ;
+            var searchBillResp = await search_billV2(tenantId, consumerCode,bService, requestinfo);
+            var billMobileNumber =get(searchBillResp.data,"Bill[0].mobileNumber",null) ;
+            //console.log("Biller Mobiler Number",billMobileNumber);
+            if(billMobileNumber==mobileNumber){
+              validCitizen=true;
+            }
+          }
+          if(!validCitizen){
+            return renderError(res, "Not Authorized to access resource", 403);
+          }
+        }
         if(payments.Payments[0].fileStoreId)
         {
           respObj = {

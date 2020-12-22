@@ -118,11 +118,6 @@ async function search_payment_withReceiptNo(receiptNumbers,billIds, tenantId, re
         billIds: billIds,
       };
   }
-  if (checkIfCitizen(requestinfo)) {
-    var mobileNumber = requestinfo.RequestInfo.userInfo.mobileNumber;
-    var userName = requestinfo.RequestInfo.userInfo.userName;
-    params["mobileNumber"] = mobileNumber || userName;
-  }
   return await axios({
     method: "post",
     url: url.resolve(config.host.payments, config.paths.payment_search),
@@ -198,8 +193,8 @@ async function search_bill_genie(data,requestinfo) {
   });
 }
 
-async function search_echallanBill(tenantId, consumerCode,serviceId,requestinfo) {
- // console.log("consumerCode--",consumerCode,"tenantId",tenantId,"serviceId",serviceId);
+async function search_billV2(tenantId, consumerCode,serviceId,requestinfo) {
+  //console.log("search_billV2 consumerCode--",consumerCode,"tenantId",tenantId,"serviceId",serviceId);
   return await axios({
     method: "post",
     url: url.resolve(config.host.mcollectBilling, config.paths.mcollect_bill),
@@ -313,7 +308,7 @@ module.exports = {
   search_tllicense,
   search_workflow,
   search_echallan,
-  search_echallanBill,
+  search_billV2,
   search_bill_genie,
   search_payment_withReceiptNo,
   compareAmount,
@@ -321,5 +316,6 @@ module.exports = {
   estimate,
   search_sewerageconnections,
   estimate_sw,
-  wf_bs_search
+  wf_bs_search,
+  checkIfCitizen
 };

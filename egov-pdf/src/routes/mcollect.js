@@ -4,7 +4,7 @@ var config = require("../config");
 
 var {
     search_echallan,
-    search_echallanBill,
+    search_billV2,
     search_bill_genie,
     create_pdf,
     compareAmount,
@@ -77,7 +77,7 @@ var {
           var businessService = echallans.challans[0].businessService;
           var challanBill;
           try {
-            challanBill = await search_echallanBill(
+            challanBill = await search_billV2(
               tenantId,
               challanNo,
               businessService,
@@ -294,7 +294,7 @@ var {
           var businessService = echallans.challans[0].businessService;
           var challanBill;
           try {
-            challanBill = await search_echallanBill(
+            challanBill = await search_billV2(
               tenantId,
               consumerCode,
               businessService,
