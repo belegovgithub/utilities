@@ -1,6 +1,7 @@
 package org.egov.win.utils;
 
 import java.text.DateFormatSymbols;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -178,7 +179,9 @@ public class CronUtils {
 
 		date.append(calendar.get(Calendar.DAY_OF_MONTH)).append(suffix)
 				.append(new DateFormatSymbols().getMonths()[calendar.get(Calendar.MONTH)]);
+		//SimpleDateFormat sd = new SimpleDateFormat("dd-MM-yyyy");
 		return date.toString();
+		//return sd.format(new Date(epochTime));
 	}
 	
 	public RestTemplate restTemplate() {

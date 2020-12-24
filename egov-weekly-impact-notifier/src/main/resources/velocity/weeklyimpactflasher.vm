@@ -1,7 +1,8 @@
 <html>
-	<br>Hi All,</br>
-<br>Here is the weekly emailer showcasing our impact of  PGR, TL, mCollect .
-</br></br><table cellspacing="0" cellpadding="0" dir="ltr" border="1" style="table-layout:fixed;font-size:10pt;font-family:arial,sans,sans-serif;width:0px;border-collapse:collapse;border:none"><colgroup>
+	<br><font style="font-family:Calibri; font-size:12pt;">Greetings from eChhawani,</font></br>
+<br><font style="font-family:Calibri; font-size:12pt;">Here is the weekly Impact-emailer showcasing the summary of PGR, TL and mCollect .</font>
+<br>
+<br><table cellspacing="0" cellpadding="0" dir="ltr" border="1" style="table-layout:fixed;font-size:10pt;font-family:arial,sans,sans-serif;width:0px;border-collapse:collapse;border:none"><colgroup>
 <col width="172">
 	<col width="100">
 		<col width="100">
@@ -137,6 +138,25 @@
 								<td style="font-size:14px;border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:2px 3px;vertical-align:bottom;background-color:rgb(208,224,227);text-align:right">$w0totalrevcoll</td>
 							</tr>
 							
+							<tr style="height:21px">
+								<td style="font-size:14px;border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0);overflow:hidden;padding:2px 3px;vertical-align:bottom">No. of Service Requests</td>
+								<td style="font-size:14px;border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:2px 3px;vertical-align:bottom;text-align:right">$w5totalservicesavailed</td>
+								<td style="font-size:14px;border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:2px 3px;vertical-align:bottom;text-align:right">$w4totalservicesavailed</td>
+								<td style="font-size:14px;border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:2px 3px;vertical-align:bottom;text-align:right">$w3totalservicesavailed</td>
+								<td style="font-size:14px;border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:2px 3px;vertical-align:bottom;text-align:right">$w2totalservicesavailed</td>
+								<td style="font-size:14px;border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:2px 3px;vertical-align:bottom;text-align:right">$w1totalservicesavailed</td>
+								<td style="font-size:14px;border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:2px 3px;vertical-align:bottom;background-color:rgb(208,224,227);text-align:right">$w0totalservicesavailed</td>
+							</tr>
+							
+							<tr style="height:21px">
+								<td style="font-size:14px;border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0);overflow:hidden;padding:2px 3px;vertical-align:bottom">No. of Citizens Registered</td>
+								<td style="font-size:14px;border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:2px 3px;vertical-align:bottom;text-align:right">$w5totalcitizensregistered</td>
+								<td style="font-size:14px;border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:2px 3px;vertical-align:bottom;text-align:right">$w4totalcitizensregistered</td>
+								<td style="font-size:14px;border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:2px 3px;vertical-align:bottom;text-align:right">$w3totalcitizensregistered</td>
+								<td style="font-size:14px;border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:2px 3px;vertical-align:bottom;text-align:right">$w2totalcitizensregistered</td>
+								<td style="font-size:14px;border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:2px 3px;vertical-align:bottom;text-align:right">$w1totalcitizensregistered</td>
+								<td style="font-size:14px;border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:2px 3px;vertical-align:bottom;background-color:rgb(208,224,227);text-align:right">$w0totalcitizensregistered</td>
+							</tr>
 						</tbody>
 					</table>
 				</html>

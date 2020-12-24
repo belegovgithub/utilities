@@ -19,6 +19,7 @@ public class CronConstants {
 
 
 	public static final String SEARCHER_FIRENOC = "firenocData";
+	public static final String SEARCHER_CITIZEN_REGD = "citizensRegistered";
 
 
 	

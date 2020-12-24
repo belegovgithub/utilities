@@ -1,8 +1,10 @@
 package org.egov.win.service;
 
 import java.text.DecimalFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -13,6 +15,7 @@ import java.util.Set;
 import org.egov.common.contract.request.RequestInfo;
 import org.egov.mdms.model.MdmsCriteriaReq;
 import org.egov.tracer.model.CustomException;
+import org.egov.win.config.PropertyManager;
 import org.egov.win.model.SearcherRequest;
 import org.egov.win.model.TL;
 import org.egov.win.repository.ServiceCallRepository;
@@ -38,6 +41,9 @@ public class ExternalAPIService {
 
 	@Autowired
 	private CronUtils utils;
+	
+	@Autowired
+	private PropertyManager propertyManager;
 	
 	public List<Map<String, Object>> getRainmakerData(String defName) {
 		StringBuilder uri = new StringBuilder();
@@ -126,8 +132,17 @@ public class ExternalAPIService {
 
 			JsonObject to = new JsonObject();
 			to.addProperty("name", "toDate");
-			long weeksInMS = (long) 604800000;
-			to.addProperty("input", System.currentTimeMillis()-(weeksInMS*weeks));
+			long miiliSecsperDay = 86400000l; // 24*60*60*1000 ;
+			long miiliSecInWeek = (long) 7*miiliSecsperDay;
+			long currentTime = System.currentTimeMillis();
+			long sundayNightOffset = ((long)propertyManager.getWeekendOffset()*miiliSecsperDay - (18000000l) - (1800000l) -(1000l)); //5*60*60*1000 - 30*60*1000 - 1000 millisecs// GMT Hours 05:30 - 1 sec
+			long aheadOfThursday = currentTime % miiliSecInWeek;
+			long toAddweekend = 0l;
+			if(aheadOfThursday < sundayNightOffset)
+				toAddweekend = sundayNightOffset - aheadOfThursday;
+			else
+				toAddweekend = miiliSecInWeek - (aheadOfThursday - sundayNightOffset) ;
+			to.addProperty("input",(currentTime+toAddweekend-(miiliSecInWeek*weeks)));
 			jArr.add(from);
 			jArr.add(to);
 
@@ -183,8 +198,17 @@ public class ExternalAPIService {
 
 			JsonObject to = new JsonObject();
 			to.addProperty("name", "toDate");
-			long weeksInMS = (long) 604800000;
-			to.addProperty("input", System.currentTimeMillis()-(weeksInMS*weeks));
+			long miiliSecsperDay = 86400000l; // 24*60*60*1000 ;
+			long miiliSecInWeek = (long) 7*miiliSecsperDay;
+			long currentTime = System.currentTimeMillis();
+			long sundayNightOffset = ((long)propertyManager.getWeekendOffset()*miiliSecsperDay - (18000000l) - (1800000l) -(1000l)); //5*60*60*1000 - 30*60*1000 - 1000 millisecs// GMT Hours 05:30 - 1 sec
+			long aheadOfThursday = currentTime % miiliSecInWeek;
+			long toAddweekend = 0l;
+			if(aheadOfThursday < sundayNightOffset)
+				toAddweekend = sundayNightOffset - aheadOfThursday;
+			else
+				toAddweekend = miiliSecInWeek - (aheadOfThursday - sundayNightOffset) ;
+			to.addProperty("input",(currentTime+toAddweekend-(miiliSecInWeek*weeks)));
 			jArr.add(from);
 			jArr.add(to);
 
@@ -237,8 +261,17 @@ public class ExternalAPIService {
 
 			JsonObject to = new JsonObject();
 			to.addProperty("name", "toDate");
-			long weeksInMS = (long) 604800000;
-			to.addProperty("input", System.currentTimeMillis()-(weeksInMS*weeks));
+			long miiliSecsperDay = 86400000l; // 24*60*60*1000 ;
+			long miiliSecInWeek = (long) 7*miiliSecsperDay;
+			long currentTime = System.currentTimeMillis();
+			long sundayNightOffset = ((long)propertyManager.getWeekendOffset()*miiliSecsperDay - (18000000l) - (1800000l) -(1000l)); //5*60*60*1000 - 30*60*1000 - 1000 millisecs// GMT Hours 05:30 - 1 sec
+			long aheadOfThursday = currentTime % miiliSecInWeek;
+			long toAddweekend = 0l;
+			if(aheadOfThursday < sundayNightOffset)
+				toAddweekend = sundayNightOffset - aheadOfThursday;
+			else
+				toAddweekend = miiliSecInWeek - (aheadOfThursday - sundayNightOffset) ;
+			to.addProperty("input",(currentTime+toAddweekend-(miiliSecInWeek*weeks)));
 			jArr.add(from);
 			jArr.add(to);
 
@@ -296,8 +329,18 @@ public class ExternalAPIService {
 
 			JsonObject to = new JsonObject();
 			to.addProperty("name", "toDate");
-			long weeksInMS = (long) 604800000;
-			to.addProperty("input", System.currentTimeMillis()-(weeksInMS*weeks));
+			
+			long miiliSecsperDay = 86400000l; // 24*60*60*1000 ;
+			long miiliSecInWeek = (long) 7*miiliSecsperDay;
+			long currentTime = System.currentTimeMillis();
+			long sundayNightOffset = ((long)propertyManager.getWeekendOffset()*miiliSecsperDay - (18000000l) - (1800000l) -(1000l)); //5*60*60*1000 - 30*60*1000 - 1000 millisecs// GMT Hours 05:30 - 1 sec
+			long aheadOfThursday = currentTime % miiliSecInWeek;
+			long toAddweekend = 0l;
+			if(aheadOfThursday < sundayNightOffset)
+				toAddweekend = sundayNightOffset - aheadOfThursday;
+			else
+				toAddweekend = miiliSecInWeek - (aheadOfThursday - sundayNightOffset) ;
+			to.addProperty("input",(currentTime+toAddweekend-(miiliSecInWeek*weeks)));
 			jArr.add(from);
 			jArr.add(to);
 

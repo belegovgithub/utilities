@@ -51,5 +51,8 @@ public class PropertyManager {
 	@Value("${egov.report.uri.tllicence}")
 	public String tllicenceReportURI;
 	
+	@Value("${egov.weekend.offset}")
+	public long weekendOffset;
+	
 
 }

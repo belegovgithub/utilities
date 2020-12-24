@@ -111,6 +111,8 @@ public class EmailService {
 
 	private void enrichTotalRevenueData(TotalCollections totalCollections, VelocityContext context) {
 		fillData(totalCollections.getRevenueCollected(), context);
+		fillData(totalCollections.getServicesAvailed(), context);
+		fillData(totalCollections.getCitizensRegistered(), context);
 	}
 	
 	private void fillData(List<Map<String, Object>> dataFromQuery, VelocityContext context) {

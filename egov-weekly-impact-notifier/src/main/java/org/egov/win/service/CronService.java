@@ -1,7 +1,6 @@
 package org.egov.win.service;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,15 +8,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
-import org.egov.tracer.model.CustomException;
+import org.egov.win.config.PropertyManager;
 import org.egov.win.model.Body;
 import org.egov.win.model.Email;
 import org.egov.win.model.EmailRequest;
@@ -26,21 +23,16 @@ import org.egov.win.model.MiscCollections;
 import org.egov.win.model.PGR;
 import org.egov.win.model.PGRChannelBreakup;
 import org.egov.win.model.PT;
-import org.egov.win.model.SearcherRequest;
 import org.egov.win.model.StateWide;
 import org.egov.win.model.TL;
 import org.egov.win.model.TotalCollections;
 import org.egov.win.model.WaterAndSewerage;
 import org.egov.win.producer.Producer;
-import org.egov.win.repository.ServiceCallRepository;
 import org.egov.win.utils.CronConstants;
 import org.egov.win.utils.CronUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jayway.jsonpath.JsonPath;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -59,6 +51,9 @@ public class CronService {
 
 	@Autowired
 	private Producer producer;
+	
+	@Autowired
+	private PropertyManager propertyManager;
 
 	@Value("${egov.core.notification.email.topic}")
 	private String emailTopic;
@@ -73,11 +68,14 @@ public class CronService {
 	private String subject;
 	
 	private Map<String, Object> totalrevcollectedPerWeek = new HashMap<String, Object>();
+	private Map<String, Object> totalServicesAvailedPerWeek = new HashMap<String, Object>();
+	private Map<String, Object> totalCitizensRegisteredPerWeek = new HashMap<String, Object>();
 
 	public void fetchData() {
 		try {
 			Email email = getDataFromDb();
 			String content = emailService.formatEmail(email);
+			log.info("content: "+content);
 			send(email, content);
 		} catch (Exception e) {
 			log.info("Email will not be sent, ERROR: ", e);
@@ -107,8 +105,19 @@ public class CronService {
 		List<Map<String, Object>> header = new ArrayList<>();
 		for (int week = 0; week < noOfWeeks; week++) {
 			Map<String, Object> date = new HashMap<>();
+			long miiliSecsperDay = 86400000l; // 24*60*60*1000 ;
+			long miiliSecInWeek = (long) 7*miiliSecsperDay;
+			long currentTime = System.currentTimeMillis();
+			long sundayNightOffset = ((long)propertyManager.getWeekendOffset()*miiliSecsperDay - (18000000l) - (1800000l) -(1000l)); //5*60*60*1000 - 30*60*1000 - 1000 millisecs// GMT Hours 05:30 - 1 sec
+			long aheadOfThursday = currentTime % miiliSecInWeek;
+			long toAddweekend = 0l;
+			if(aheadOfThursday < sundayNightOffset)
+				toAddweekend = sundayNightOffset - aheadOfThursday;
+			else
+				toAddweekend = miiliSecInWeek - (aheadOfThursday - sundayNightOffset) ;
+			
 			date.put(prefix + week,
-					utils.getDayAndMonth((System.currentTimeMillis() - ((timeInterval * 1000) * week))));
+					utils.getDayAndMonth(currentTime+toAddweekend-(miiliSecInWeek*week)));
 			header.add(date);
 		}
 		body.setHeader(header);
@@ -168,6 +177,7 @@ public class CronService {
 					ulbCoveredPerWeek.put("w" + week + "pgrulbc", record.get("ulbcovered"));
 					totalComplaintsPerWeek.put("w" + week + "pgrtcmp", record.get("totalcomplaints"));
 					redressalPerWeek.put("w" + week + "pgrredd", record.get("redressal"));
+					totalServicesAvailedPerWeek.put("w" + week + "totalservicesavailed", record.get("totalcomplaints"));
 				}
 			}
 			ulbCovered.add(ulbCoveredPerWeek);
@@ -267,6 +277,9 @@ public class CronService {
 				if (record.get("day").equals(prefix + week)) {
 					licenseIssuedPerWeek.put("w" + week + "tllicissued", record.get("licenseissued"));
 					licenseTotalPerWeek.put("w" + week + "tllictotal", record.get("licensetotal"));
+					totalServicesAvailedPerWeek.put("w" + week + "totalservicesavailed",
+							(Integer) totalServicesAvailedPerWeek.get("w" + week + "totalservicesavailed") +
+							(Integer) record.get("licensetotal"));
 				}
 			}
 			licenseIssued.add(licenseIssuedPerWeek);
@@ -337,7 +350,8 @@ public class CronService {
 		List<Map<String, Object>> receiptsGenerated = new ArrayList<>();
 		List<Map<String, Object>> revenueCollected = new ArrayList<>();
 		List<Map<String, Object>> ulbCovered = new ArrayList<>();
-		List<Map<String, Object>> tetalRevenueCollected = new ArrayList<>();
+		List<Map<String, Object>> totalRevenueCollected = new ArrayList<>();
+		List<Map<String, Object>> totalServicesAvailed = new ArrayList<>();
 		DecimalFormat df = new DecimalFormat("#.##");
 		for (Map<String, Object> record : data) {
 			Map<String, Object> receiptsGeneratedPerWeek = new HashMap<>();
@@ -353,18 +367,36 @@ public class CronService {
 					totalrevcollectedPerWeek.put("w" + week + "totalrevcoll",df.format(
 							Float.parseFloat((String) totalrevcollectedPerWeek.get("w" + week + "totalrevcoll")) +
 							Float.parseFloat((String)  record.get("revenuecollected"))));
+					totalServicesAvailedPerWeek.put("w" + week + "totalservicesavailed",
+							(Integer) totalServicesAvailedPerWeek.get("w" + week + "totalservicesavailed") +
+							(Integer) record.get("receiptscreated"));
 				}
 			}
+			
 			receiptsGenerated.add(receiptsGeneratedPerWeek);
 			revenueCollected.add(revenueCollectedPerWeek);
 			ulbCovered.add(ulbCoveredPerWeek);
-			tetalRevenueCollected.add(totalrevcollectedPerWeek);
+			totalRevenueCollected.add(totalrevcollectedPerWeek);
+			totalServicesAvailed.add(totalServicesAvailedPerWeek);
 		}
-
+		List<Map<String, Object>> dataCitizens = externalAPIService.getRainmakerData(CronConstants.SEARCHER_CITIZEN_REGD);
+		List<Map<String, Object>> totalCitizensRegistered = new ArrayList<>();
+		for (Map<String, Object> record : dataCitizens) {
+			String prefix = "Week";
+			Integer noOfWeeks = 6;
+			for (int week = 0; week < noOfWeeks; week++) {
+				if (record.get("day").equals(prefix + week)) {
+					totalCitizensRegisteredPerWeek.put("w" + week + "totalcitizensregistered",(int)Math.round( (Double)record.get("count")));
+				}
+			}
+			totalCitizensRegistered.add(totalCitizensRegisteredPerWeek);
+		}
+		
 		MiscCollections miscCollections = MiscCollections.builder().receiptsGenerated(receiptsGenerated).revenueCollected(revenueCollected).ulbCovered(ulbCovered).build();
 		body.setMiscCollections(miscCollections);
 		
-		TotalCollections totalCollections = TotalCollections.builder().revenueCollected(tetalRevenueCollected).build();
+		TotalCollections totalCollections = TotalCollections.builder().revenueCollected(totalRevenueCollected).
+				servicesAvailed(totalServicesAvailed).citizensRegistered(totalCitizensRegistered).build();
 		body.setTotalRevenuecollected(totalCollections);
 	}
 
@@ -380,6 +412,7 @@ public class CronService {
 		email.setSubject(subject);
 		email.setBody(content);
 		EmailRequest request = EmailRequest.builder().email(email).build();
+		log.info("sending "+email.getBody());
 		producer.push(emailTopic, request);
 	}
 
