@@ -228,15 +228,24 @@ public class ExternalAPIService {
 					Map<String, Object> e = new HashMap<String, Object>();
 					int sum2 = 0;
 					for (List<Object> obj : dataParsedreportDataToList) {
-						sum2 += Integer.parseInt(obj.get(1).toString());
+						if(obj!=null && !obj.isEmpty())
+						{
+							sum2 += Integer.parseInt(obj.get(1).toString());
+						}
 					}
-					e.put("licenseissued", dataParsedreportDataToList.get(0).get(1));
+					String licenseissued = "";
+					if(dataParsedreportDataToList!=null && !dataParsedreportDataToList.isEmpty() && !dataParsedreportDataToList.get(0).isEmpty())
+					{
+						licenseissued = String.valueOf(dataParsedreportDataToList.get(0).get(1));
+					}
+					e.put("licenseissued", licenseissued);
 					e.put("day", "Week"+weeks);
 					e.put("licensetotal", sum2);
 					data.add(e);
 				}
 
 			} catch (Exception e) {
+				e.printStackTrace();
 				throw new CustomException("EMAILER_DATA_RETREIVAL_FAILED", "Failed to retrieve data from the db");
 			}
 		}
