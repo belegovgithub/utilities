@@ -57,5 +57,7 @@ public class PropertyManager {
 	@Value("${egov.weekend.offset}")
 	public long weekendOffset;
 	
+	@Value("${egov.schedule.weekly}")
+	public boolean weekly;
 
 }
