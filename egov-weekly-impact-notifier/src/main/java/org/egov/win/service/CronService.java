@@ -122,12 +122,15 @@ public class CronService {
 
 				date.put(prefix + week,
 						utils.getDayAndMonth(currentTime+toAddweekend-(miiliSecInWeek*week)));
+				date.put("Weekhdr","Since 6 weeks");
 			}
 			else
 			{
 				date.put(prefix + week,
-						utils.getDayAndMonth((currentTime / miiliSecsperDay) - (18000000l) - (1800000l)-(miiliSecsperDay*week)));
+						utils.getDayAndMonth(miiliSecsperDay + miiliSecsperDay * (currentTime / miiliSecsperDay) - (18000000l) - (1800000l) - (miiliSecsperDay*week)));
+				date.put("Weekhdr","Since 6 days");
 			}
+			
 			header.add(date);
 		}
 		body.setHeader(header);

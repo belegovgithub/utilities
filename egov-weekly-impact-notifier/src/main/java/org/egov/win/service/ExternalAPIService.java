@@ -370,7 +370,7 @@ public class ExternalAPIService {
 		}
 		else
 		{
-			to.addProperty("input",((currentTime / miiliSecsperDay) - (18000000l) - (1800000l)-(miiliSecsperDay*weekNo))); //5*60*60*1000 - 30*60*1000 - 1000 millisecs// GMT Hours 05:30 - 1 sec
+			to.addProperty("input",(miiliSecsperDay + miiliSecsperDay * (currentTime / miiliSecsperDay) - (18000000l) - (1800000l) - (miiliSecsperDay*weekNo))); //5*60*60*1000 - 30*60*1000 - 1000 millisecs// GMT Hours 05:30 - 1 sec
 		}
 
 		return to;
