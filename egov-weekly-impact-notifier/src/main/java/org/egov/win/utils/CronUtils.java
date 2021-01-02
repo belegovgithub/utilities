@@ -192,18 +192,18 @@ public class CronUtils {
 	}
 
 	public void preparePGRReportReq(StringBuilder uri) {
-		uri.append(propertyManager.getPGRReportURI());
+		uri.append(propertyManager.getEgovReportHost() +  propertyManager.getEgovReportEndpointPgr());
 	}
 
 	public void prepareMiscReportReq(StringBuilder uri) {
-		uri.append(propertyManager.getMiscReportURI());
+		uri.append(propertyManager.getEgovReportHost() + propertyManager.getEgovReportEndpointMisc());
 	}
 	
 	public void prepareTLAmountReportReq(StringBuilder uri) {
-		uri.append(propertyManager.getTlamountReportURI());
+		uri.append(propertyManager.getEgovReportHost() + propertyManager.getEgovReportEndpointTlamount() );
 	}
 	
 	public void prepareTLLicenceReportReq(StringBuilder uri) {
-		uri.append(propertyManager.getTllicenceReportURI());
+		uri.append(propertyManager.getEgovReportHost() + propertyManager.getEgovReportEndpointTllicence());
 	}
 }

@@ -39,17 +39,20 @@ public class PropertyManager {
 	@Value("${egov.resttemplate.timeout.in.ms}")
 	public Integer restTemplateInMS;
 	
-	@Value("${egov.report.uri.pgr}")
-	public String pGRReportURI;
+	@Value("${egov.report.host}")
+	public String egovReportHost;
 	
-	@Value("${egov.report.uri.misc}")
-	public String miscReportURI;
+	@Value("${egov.report.endpoint.pgr}")
+	public String egovReportEndpointPgr;
 	
-	@Value("${egov.report.uri.tlamount}")
-	public String tlamountReportURI;
+	@Value("${egov.report.endpoint.misc}")
+	public String egovReportEndpointMisc;
 	
-	@Value("${egov.report.uri.tllicence}")
-	public String tllicenceReportURI;
+	@Value("${egov.report.endpoint.tlamount}")
+	public String egovReportEndpointTlamount;
+	
+	@Value("${egov.report.endpoint.tllicence}")
+	public String egovReportEndpointTllicence;
 	
 	@Value("${egov.weekend.offset}")
 	public long weekendOffset;
