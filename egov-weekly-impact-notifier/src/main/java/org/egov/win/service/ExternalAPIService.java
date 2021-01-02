@@ -210,16 +210,16 @@ public class ExternalAPIService {
 					List<List<Object>> dataParsedreportDataToList = mapper.convertValue(dataParsedToList, List.class);
 					Map<String, Object> e = new HashMap<String, Object>();
 					int sum2 = 0;
+					String licenseissued = "0";
 					for (List<Object> obj : dataParsedreportDataToList) {
 						if(obj!=null && !obj.isEmpty())
 						{
 							sum2 += Integer.parseInt(obj.get(1).toString());
+							if("approved".equalsIgnoreCase(String.valueOf(obj.get(0))))
+							{
+								licenseissued = String.valueOf(obj.get(1));
+							}	
 						}
-					}
-					String licenseissued = "";
-					if(dataParsedreportDataToList!=null && !dataParsedreportDataToList.isEmpty() && !dataParsedreportDataToList.get(0).isEmpty())
-					{
-						licenseissued = String.valueOf(dataParsedreportDataToList.get(0).get(1));
 					}
 					e.put("licenseissued", licenseissued);
 					e.put("day", "Week"+weeks);
