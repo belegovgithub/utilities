@@ -130,21 +130,8 @@ public class ExternalAPIService {
 			from.addProperty("name", "fromDate");
 			from.addProperty("input", new Long("0"));
 
-			JsonObject to = new JsonObject();
-			to.addProperty("name", "toDate");
-			long miiliSecsperDay = 86400000l; // 24*60*60*1000 ;
-			long miiliSecInWeek = (long) 7*miiliSecsperDay;
-			long currentTime = System.currentTimeMillis();
-			long sundayNightOffset = ((long)propertyManager.getWeekendOffset()*miiliSecsperDay - (18000000l) - (1800000l) -(1000l)); //5*60*60*1000 - 30*60*1000 - 1000 millisecs// GMT Hours 05:30 - 1 sec
-			long aheadOfThursday = currentTime % miiliSecInWeek;
-			long toAddweekend = 0l;
-			if(aheadOfThursday < sundayNightOffset)
-				toAddweekend = sundayNightOffset - aheadOfThursday;
-			else
-				toAddweekend = miiliSecInWeek - (aheadOfThursday - sundayNightOffset) ;
-			to.addProperty("input",(currentTime+toAddweekend-(miiliSecInWeek*weeks)));
-			jArr.add(from);
-			jArr.add(to);
+			jArr.add(fromWeek());
+			jArr.add(toWeek(weeks));
 
 			JsonObject rInfo = new JsonObject();
 			rInfo.addProperty("ts", System.currentTimeMillis());
