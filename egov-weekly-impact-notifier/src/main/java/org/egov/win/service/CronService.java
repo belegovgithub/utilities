@@ -392,7 +392,7 @@ public class CronService {
 			totalRevenueCollected.add(totalrevcollectedPerWeek);
 			totalServicesAvailed.add(totalServicesAvailedPerWeek);
 		}
-		List<Map<String, Object>> dataCitizens = externalAPIService.getRainmakerData(CronConstants.SEARCHER_CITIZEN_REGD);
+		List<Map<String, Object>> dataCitizens = externalAPIService.getRainmakerData(propertyManager.isWeekly()?CronConstants.SEARCHER_CITIZEN_REGD:CronConstants.SEARCHER_CITIZEN_REGD_DAILY);
 		List<Map<String, Object>> totalCitizensRegistered = new ArrayList<>();
 		for (Map<String, Object> record : dataCitizens) {
 			String prefix = "Week";

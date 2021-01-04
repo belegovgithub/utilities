@@ -1,10 +1,7 @@
 package org.egov.win.service;
 
 import java.text.DecimalFormat;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -17,7 +14,6 @@ import org.egov.mdms.model.MdmsCriteriaReq;
 import org.egov.tracer.model.CustomException;
 import org.egov.win.config.PropertyManager;
 import org.egov.win.model.SearcherRequest;
-import org.egov.win.model.TL;
 import org.egov.win.repository.ServiceCallRepository;
 import org.egov.win.utils.CronConstants;
 import org.egov.win.utils.CronUtils;
@@ -27,7 +23,6 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.jayway.jsonpath.JsonPath;
 
 import lombok.extern.slf4j.Slf4j;

@@ -20,6 +20,7 @@ public class CronConstants {
 
 	public static final String SEARCHER_FIRENOC = "firenocData";
 	public static final String SEARCHER_CITIZEN_REGD = "citizensRegistered";
+	public static final String SEARCHER_CITIZEN_REGD_DAILY = "citizensRegisteredDaily";
 
 
 	
