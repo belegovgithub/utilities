@@ -193,18 +193,19 @@ public class ExternalAPIService {
 					Map<String, Object> e = new HashMap<String, Object>();
 					int sum2 = 0;
 					String licenseissued = "0";
+					int licenseissuedsum = 0;
 					for (List<Object> obj : dataParsedreportDataToList) {
 						if(obj!=null && !obj.isEmpty())
 						{
 							sum2 += Integer.parseInt(obj.get(1).toString());
 							if(null!= obj.get(8))
 							{
-								licenseissued = String.valueOf(obj.get(8));
+								licenseissuedsum += Integer.parseInt(obj.get(8).toString());
 							}	
 						}
 					}
 					e.put("ulbaplcovered", dataParsedToList.size());
-					e.put("licenseissued", licenseissued);
+					e.put("licenseissued", licenseissuedsum);
 					e.put("day", "Week"+weeks);
 					e.put("licensetotal", sum2);
 					data.add(e);
