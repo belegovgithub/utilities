@@ -197,12 +197,13 @@ public class ExternalAPIService {
 						if(obj!=null && !obj.isEmpty())
 						{
 							sum2 += Integer.parseInt(obj.get(1).toString());
-							if("approved".equalsIgnoreCase(String.valueOf(obj.get(0))))
+							if(null!= obj.get(8))
 							{
-								licenseissued = String.valueOf(obj.get(1));
+								licenseissued = String.valueOf(obj.get(8));
 							}	
 						}
 					}
+					e.put("ulbaplcovered", dataParsedToList.size());
 					e.put("licenseissued", licenseissued);
 					e.put("day", "Week"+weeks);
 					e.put("licensetotal", sum2);

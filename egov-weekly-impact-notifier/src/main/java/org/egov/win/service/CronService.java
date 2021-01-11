@@ -262,6 +262,7 @@ public class CronService {
 		List<Map<String, Object>> data = externalAPIService.getTLAmountReportData();
 		List<Map<String, Object>> dataLicence = externalAPIService.getTLLicenceReportData();
 		List<Map<String, Object>> ulbCovered = new ArrayList<>();
+		List<Map<String, Object>> ulbAplCovered = new ArrayList<>();
 		List<Map<String, Object>> licenseIssued = new ArrayList<>();
 		List<Map<String, Object>> licenseTotal = new ArrayList<>();
 		List<Map<String, Object>> revenueCollected= new ArrayList<>();
@@ -277,29 +278,34 @@ public class CronService {
 					totalrevcollectedPerWeek.put("w" + week + "totalrevcoll", record.get("revenuecollected"));
 				}
 			}
+			
 			ulbCovered.add(ulbCoveredPerWeek);
 			revenueCollected.add(revenueCollectedPerWeek);
 		}
 		
 		for (Map<String, Object> record : dataLicence) {
 			Map<String, Object> licenseIssuedPerWeek = new HashMap<>();
+			Map<String, Object> ulbAplCoveredMap = new HashMap<>();
 			Map<String, Object> licenseTotalPerWeek = new HashMap<>();
 			String prefix = "Week";
 			Integer noOfWeeks = 6;
 			for (int week = 0; week < noOfWeeks; week++) {
 				if (record.get("day").equals(prefix + week)) {
 					licenseIssuedPerWeek.put("w" + week + "tllicissued", record.get("licenseissued"));
+					ulbAplCoveredMap.put("w" + week + "tlaplulbc", record.get("ulbaplcovered"));
 					licenseTotalPerWeek.put("w" + week + "tllictotal", record.get("licensetotal"));
+					licenseIssuedPerWeek.put("w" + week + "tlaplissues", record.get("licenseaplissued"));
 					totalServicesAvailedPerWeek.put("w" + week + "totalservicesavailed",
 							(Integer) totalServicesAvailedPerWeek.get("w" + week + "totalservicesavailed") +
 							(Integer) record.get("licensetotal"));
 				}
 			}
+			ulbAplCovered.add(ulbAplCoveredMap);
 			licenseIssued.add(licenseIssuedPerWeek);
 			licenseTotal.add(licenseTotalPerWeek);
 		}
 
-		TL tl = TL.builder().ulbCovered(ulbCovered).licenseIssued(licenseIssued).licenseTotal(licenseTotal).revenueCollected(revenueCollected).build();
+		TL tl = TL.builder().ulbCovered(ulbCovered).licenseIssued(licenseIssued).licenseTotal(licenseTotal).revenueCollected(revenueCollected).ulbAplCovered(ulbAplCovered).build();
 		body.setTl(tl);
 	}
 	
