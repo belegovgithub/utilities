@@ -23,8 +23,6 @@ public class TL {
 	
 	private List<Map<String, Object>> licenseIssued;
 	
-	private List<Map<String, Object>> ulbAplCovered;
-	
 	private List<Map<String, Object>> licenseTotal;
 	
 	private List<Map<String, Object>> revenueCollected;
