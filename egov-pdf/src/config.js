@@ -1,7 +1,7 @@
 // config.js
 // const env = process.env.NODE_ENV; // 'dev' or 'test'
 
-HOST = process.env.EGOV_HOST;
+HOST = process.env.EGOV_HOST ;
 
 if (!HOST) {
   console.log("You need to set the HOST variable");
@@ -34,6 +34,8 @@ module.exports = {
       process.env.WS_ESTIMATENOTICE || "ws-estimationnotice",
     ws_sanction_template:
       process.env.WS_ESTIMATENOTICE || "ws-sanctionletter",
+    lrms_renewal_notice:
+      process.env.LRMS_RENEWALNOTICE || "lrms-renewalextension"
   },
   app: {
     port: parseInt(process.env.APP_PORT) || 8080,
