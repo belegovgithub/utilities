@@ -16,7 +16,7 @@ router.post(
     asyncMiddleware(async function (req, res, next) {
         var tenantId = req.query.tenantId;
         var requestinfo = req.body;
-        var leaseApplication = requestinfo.leaseApplication;
+        var leaseApplication = requestinfo.LeaseApplication;
         delete requestinfo.leaseApplication;
         if (requestinfo == undefined) {
           return renderError(res, "requestinfo can not be null", 400);
@@ -28,7 +28,7 @@ router.post(
             400
           );
         }
-        console.log("req---",requestinfo);
+        //console.log("req---",requestinfo);
         tenantId = tenantId.split('.')[0];
         var pdfResponse;
         var pdfkey = config.pdf.lrms_renewal_notice;
@@ -36,11 +36,11 @@ router.post(
           pdfResponse = await create_pdf(
             tenantId,
             pdfkey,
-            leaseApplication,
+            requestinfo,
             requestinfo
           );
         } catch (ex) {
-          //console.log(ex.stack);
+          console.log(ex.stack);
           //if (ex.response && ex.response.data) console.log(ex.response.data);
           return renderError(res, "Failed to generate PDF for payment", 500);
         }
