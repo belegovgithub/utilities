@@ -35,5 +35,7 @@ public class Body {
 	private MiscCollections miscCollections;
 	
 	private TotalCollections totalRevenuecollected ;
+	
+	private LAMS lams;
 
 }

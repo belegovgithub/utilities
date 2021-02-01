@@ -9,6 +9,7 @@ import org.apache.velocity.VelocityContext;
 import org.egov.win.model.Body;
 import org.egov.win.model.Email;
 import org.egov.win.model.Firenoc;
+import org.egov.win.model.LAMS;
 import org.egov.win.model.MiscCollections;
 import org.egov.win.model.PGR;
 import org.egov.win.model.PT;
@@ -56,6 +57,8 @@ public class EmailService {
 			enrichFirenocData(body.getFirenoc(), context);
 		if(null !=body.getTotalRevenuecollected())
 			enrichTotalRevenueData(body.getTotalRevenuecollected(), context);
+		if(null!=body.getLams())
+			enrichLAMSData(body.getLams(), context);
 	}
 
 	private void enrichHeaderData(List<Map<String, Object>> header, VelocityContext context) {
@@ -115,6 +118,11 @@ public class EmailService {
 		fillData(totalCollections.getCitizensRegistered(), context);
 	}
 	
+	private void enrichLAMSData(LAMS lams, VelocityContext context) {
+		fillData(lams.getUlbCovered(), context);
+		fillData(lams.getLeaseTotal(), context);
+		fillData(lams.getLeaseApproved(), context);
+	}
 	private void fillData(List<Map<String, Object>> dataFromQuery, VelocityContext context) {
 		dataFromQuery.forEach(record -> {
 			for (String key : record.keySet()) {

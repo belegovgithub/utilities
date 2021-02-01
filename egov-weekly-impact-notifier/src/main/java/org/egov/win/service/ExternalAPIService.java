@@ -168,7 +168,7 @@ public class ExternalAPIService {
 		for (long weeks = 0; weeks <= 5; weeks++) {
 			StringBuilder uri = new StringBuilder();
 			ObjectMapper mapper = utils.getObjectMapper();
-			utils.prepareTLAmountReportReq(uri);
+			utils.prepareTLLicenceReportReq(uri);
 
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.addProperty("reportName", "StateLevelStatus");
@@ -358,5 +358,103 @@ public class ExternalAPIService {
 		}
 
 		return to;
+	}
+	
+	public List<Map<String, Object>> getLeaseULBData(){
+		List<Map<String, Object>> data = new ArrayList<>();
+		for (long weeks = 0; weeks <= 5; weeks++) {
+			StringBuilder uri = new StringBuilder();
+			ObjectMapper mapper = utils.getObjectMapper();
+			utils.prepareLeaseULBReq(uri);
+
+			JsonObject jsonObject = new JsonObject();
+			jsonObject.addProperty("reportName", "DGDELevelLeaseRenewalExtensionStatusRegistry");
+			JsonArray jArr = new JsonArray();
+
+			jArr.add(fromWeek());
+			jArr.add(toWeek(weeks));
+
+			JsonObject rInfo = new JsonObject();
+			rInfo.addProperty("ts", System.currentTimeMillis());
+
+			jsonObject.add("searchParams", jArr);
+			jsonObject.add("RequestInfo", rInfo);
+
+			Optional<Object> response = repository.fetchResultj(uri, jsonObject);
+
+			try {
+				if (response.isPresent()) {
+					Object parsedResponse = mapper.convertValue(response.get(), Map.class);
+					List<List<List<Object>>> dataParsedToList = mapper.convertValue(JsonPath.read(parsedResponse, "$.reportData"), List.class);
+					List<List<Object>> dataParsedreportDataToList = mapper.convertValue(dataParsedToList, List.class);
+					Set<String> ulbs = new HashSet<String>();
+					for (List<Object> obj : dataParsedreportDataToList) {
+						ulbs.add(obj.get(0).toString());
+					}
+					Map<String, Object> e = new HashMap<String, Object>();
+					e.put("ulbcovered", ulbs.size());
+					e.put("day", "Week"+weeks);
+					data.add(e);
+				}
+
+			} catch (Exception e) {
+				throw new CustomException("EMAILER_DATA_RETREIVAL_FAILED", "Failed to retrieve data from the db");
+			}
+		}
+		log.info("data "+data);
+		return data;
+	}
+	
+	public List<Map<String, Object>> getLeaseApplData() {
+		List<Map<String, Object>> data = new ArrayList<>();
+		for (long weeks = 0; weeks <= 5; weeks++) {
+			StringBuilder uri = new StringBuilder();
+			ObjectMapper mapper = utils.getObjectMapper();
+			utils.prepareLeaseApplReq(uri);
+
+			JsonObject jsonObject = new JsonObject();
+			jsonObject.addProperty("reportName", "DGDELevelApplicationStatus");
+			JsonArray jArr = new JsonArray();
+
+			jArr.add(fromWeek());
+			jArr.add(toWeek(weeks));
+
+			JsonObject rInfo = new JsonObject();
+			rInfo.addProperty("ts", System.currentTimeMillis());
+
+			jsonObject.add("searchParams", jArr);
+			jsonObject.add("RequestInfo", rInfo);
+
+			Optional<Object> response = repository.fetchResultj(uri, jsonObject);
+
+			try {
+				if (response.isPresent()) {
+					Object parsedResponse = mapper.convertValue(response.get(), Map.class);
+					List<List<List<Object>>> dataParsedToList = mapper.convertValue(JsonPath.read(parsedResponse, "$.reportData"), List.class);
+					List<List<Object>> dataParsedreportDataToList = mapper.convertValue(dataParsedToList, List.class);
+					Map<String, Object> e = new HashMap<String, Object>();
+					int leaseTotal = 0;
+					int leaseApproved = 0;
+					for (List<Object> obj : dataParsedreportDataToList) {
+						if(obj!=null && !obj.isEmpty())
+						{
+							leaseTotal += Integer.parseInt(obj.get(1).toString());
+						}
+					}
+					if(dataParsedreportDataToList.size()>0)
+						leaseApproved = Integer.parseInt(dataParsedreportDataToList.get(0).get(1).toString());
+					e.put("leaseapplapproved", leaseApproved);
+					e.put("day", "Week"+weeks);
+					e.put("leaseappltotal", leaseTotal);
+					data.add(e);
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				throw new CustomException("EMAILER_DATA_RETREIVAL_FAILED", "Failed to retrieve data from the db");
+			}
+		}
+		log.info("data "+data);
+		return data;
 	}
 }

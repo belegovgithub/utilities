@@ -60,4 +60,9 @@ public class PropertyManager {
 	@Value("${egov.schedule.weekly}")
 	public boolean weekly;
 
+	@Value("${egov.report.endpoint.leaseulb}")
+	public String egovReportEndpointLeaseUlb;
+	
+	@Value("${egov.report.endpoint.leaseappl}")
+	public String egovReportEndpointLeaseAppl;
 }

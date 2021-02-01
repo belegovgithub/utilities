@@ -206,4 +206,12 @@ public class CronUtils {
 	public void prepareTLLicenceReportReq(StringBuilder uri) {
 		uri.append(propertyManager.getEgovReportHost() + propertyManager.getEgovReportEndpointTllicence());
 	}
+	
+	public void prepareLeaseULBReq(StringBuilder uri) {
+		uri.append(propertyManager.getEgovReportHost() + propertyManager.getEgovReportEndpointLeaseUlb());
+	}
+	
+	public void prepareLeaseApplReq(StringBuilder uri) {
+		uri.append(propertyManager.getEgovReportHost() + propertyManager.getEgovReportEndpointLeaseAppl());
+	}
 }

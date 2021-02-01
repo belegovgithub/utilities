@@ -1,6 +1,6 @@
 <html>
 	<br><font style="font-family:Calibri; font-size:12pt;">Greetings from eChhawani,</font></br>
-<br><font style="font-family:Calibri; font-size:12pt;">Here is the weekly Impact-emailer showcasing the summary of PGR, TL and mCollect .</font>
+<br><font style="font-family:Calibri; font-size:12pt;">Here is the weekly Impact-emailer showcasing the summary of PGR, TL, mCollect and Lease Renewal/Extension.</font>
 <br>
 <br><table cellspacing="0" cellpadding="0" dir="ltr" border="1" style="table-layout:fixed;font-size:10pt;font-family:arial,sans,sans-serif;width:0px;border-collapse:collapse;border:none"><colgroup>
 <col width="172">
@@ -130,6 +130,38 @@
 								<td style="border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:2px 3px;vertical-align:bottom;text-align:right">$w1mcrevcoll</td>
 								<td style="border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:2px 3px;vertical-align:bottom;background-color:rgb(208,224,227);text-align:right">$w0mcrevcoll</td>
 							</tr>
+							
+							<tr style="height:21px">
+								<td rowspan="1" colspan="7" style="border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:2px 3px;vertical-align:bottom;font-weight:bold;text-align:left">Lease Renewal/Extension</td>
+							</tr>
+							<tr style="height:21px">
+								<td style="border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0);overflow:hidden;padding:2px 3px;vertical-align:bottom">CBs Covered</td>
+								<td style="border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:2px 3px;vertical-align:bottom;text-align:right">$w5leaseulbc</td>
+								<td style="border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:2px 3px;vertical-align:bottom;text-align:right">$w4leaseulbc</td>
+								<td style="border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:2px 3px;vertical-align:bottom;text-align:right">$w3leaseulbc</td>
+								<td style="border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:2px 3px;vertical-align:bottom;text-align:right">$w2leaseulbc</td>
+								<td style="border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:2px 3px;vertical-align:bottom;text-align:right">$w1leaseulbc</td>
+								<td style="border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:2px 3px;vertical-align:bottom;background-color:rgb(208,224,227);text-align:right">$w0leaseulbc</td>
+							</tr>
+							<tr style="height:21px">
+								<td style="border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0);overflow:hidden;padding:2px 3px;vertical-align:bottom">Applications Received</td>
+								<td style="border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:2px 3px;vertical-align:bottom;text-align:right">$w5leaseappltotal</td>
+								<td style="border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:2px 3px;vertical-align:bottom;text-align:right">$w4leaseappltotal</td>
+								<td style="border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:2px 3px;vertical-align:bottom;text-align:right">$w3leaseappltotal</td>
+								<td style="border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:2px 3px;vertical-align:bottom;text-align:right">$w2leaseappltotal</td>
+								<td style="border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:2px 3px;vertical-align:bottom;text-align:right">$w1leaseappltotal</td>
+								<td style="border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:2px 3px;vertical-align:bottom;background-color:rgb(208,224,227);text-align:right">$w0leaseappltotal</td>
+							</tr>
+							<tr style="height:21px">
+								<td style="border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0);overflow:hidden;padding:2px 3px;vertical-align:bottom">Applications Approved</td>
+								<td style="border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:2px 3px;vertical-align:bottom;text-align:right">$w5leaseaplappr</td>
+								<td style="border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:2px 3px;vertical-align:bottom;text-align:right">$w4leaseaplappr</td>
+								<td style="border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:2px 3px;vertical-align:bottom;text-align:right">$w3leaseaplappr</td>
+								<td style="border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:2px 3px;vertical-align:bottom;text-align:right">$w2leaseaplappr</td>
+								<td style="border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:2px 3px;vertical-align:bottom;text-align:right">$w1leaseaplappr</td>
+								<td style="border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:2px 3px;vertical-align:bottom;background-color:rgb(208,224,227);text-align:right">$w0leaseaplappr</td>
+							</tr>
+							
 							<tr style="height:30px">
 								<td rowspan="1" colspan="7" style="border-width:1px;border-style:solid;border-color:rgb(204,204,204) rgb(0,0,0) rgb(0,0,0) rgb(204,204,204);overflow:hidden;padding:2px 3px;vertical-align:bottom;font-weight:bold;font-size:18px;text-align:left">Total</td>
 							</tr>

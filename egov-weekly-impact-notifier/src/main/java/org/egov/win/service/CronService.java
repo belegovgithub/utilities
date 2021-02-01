@@ -19,6 +19,7 @@ import org.egov.win.model.Body;
 import org.egov.win.model.Email;
 import org.egov.win.model.EmailRequest;
 import org.egov.win.model.Firenoc;
+import org.egov.win.model.LAMS;
 import org.egov.win.model.MiscCollections;
 import org.egov.win.model.PGR;
 import org.egov.win.model.PGRChannelBreakup;
@@ -96,6 +97,7 @@ public class CronService {
 		enrichBodyWithMiscCollData(body);
 		//enrichBodyWithWSData(body, wsData);
 		//enrichBodyWithFirenocData(body);
+		enrichBodyWithLeaseData(body);
 		return Email.builder().bodyContent(body).isHTML(true).build();
 	}
 
@@ -442,4 +444,40 @@ public class CronService {
 		return t;
 	}
 
+	private void enrichBodyWithLeaseData(Body body) {
+		List<Map<String, Object>> dataUlb = externalAPIService.getLeaseULBData();
+		List<Map<String, Object>> dataLease = externalAPIService.getLeaseApplData();
+		List<Map<String, Object>> ulbCovered = new ArrayList<>();
+		List<Map<String, Object>> leaseApproved = new ArrayList<>();
+		List<Map<String, Object>> leaseTotal = new ArrayList<>();
+		for (Map<String, Object> record : dataUlb) {
+			Map<String, Object> ulbCoveredPerWeek = new HashMap<>();
+			String prefix = "Week";
+			Integer noOfWeeks = 6;
+			for (int week = 0; week < noOfWeeks; week++) {
+				if (record.get("day").equals(prefix + week)) {
+					ulbCoveredPerWeek.put("w" + week + "leaseulbc", record.get("ulbcovered"));
+				}
+			}
+			ulbCovered.add(ulbCoveredPerWeek);
+		}
+		
+		for (Map<String, Object> record : dataLease) {
+			Map<String, Object> leaseApprovedPerWeek = new HashMap<>();
+			Map<String, Object> leaseTotalPerWeek = new HashMap<>();
+			String prefix = "Week";
+			Integer noOfWeeks = 6;
+			for (int week = 0; week < noOfWeeks; week++) {
+				if (record.get("day").equals(prefix + week)) {
+					leaseTotalPerWeek.put("w" + week + "leaseappltotal", record.get("leaseappltotal"));
+					leaseApprovedPerWeek.put("w" + week + "leaseaplappr", record.get("leaseapplapproved"));
+				}
+			}
+			leaseApproved.add(leaseApprovedPerWeek);
+			leaseTotal.add(leaseTotalPerWeek);
+		}
+
+		LAMS lams = LAMS.builder().ulbCovered(ulbCovered).leaseApproved(leaseApproved).leaseTotal(leaseTotal).build();
+		body.setLams(lams);
+	}
 }
