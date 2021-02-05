@@ -59,7 +59,7 @@ async function search_property(
   ) {
     var mobileNumber = requestinfo.RequestInfo.userInfo.mobileNumber;
     var userName = requestinfo.RequestInfo.userInfo.userName;
-    params["mobileNumber"] = mobileNumber || userName;
+    //params["mobileNumber"] = mobileNumber || userName;
   }
   return await axios({
     method: "post",
@@ -208,9 +208,9 @@ async function search_billV2(tenantId, consumerCode,serviceId,requestinfo) {
 }
 
 async function create_pdf(tenantId, key, data, requestinfo) {
- // console.log("key--",key,"data--",data,"tenantId--",tenantId);
-//  console.log("url",url.resolve(config.host.pdf, config.paths.pdf_create));
-//  console.log("requestinfo--",url.resolve(config.host.pdf, config.paths.pdf_create));
+  //console.log("key--",key,"data--",JSON.stringify(data),"tenantId--",tenantId , "reqq info--",JSON.stringify(requestinfo));
+  //console.log("url",url.resolve(config.host.pdf, config.paths.pdf_create));
+  //console.log("requestinfo--",url.resolve(config.host.pdf, config.paths.pdf_create));
   return await axios({
     responseType: "stream",
     method: "post",
