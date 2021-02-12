@@ -23,6 +23,7 @@ router.post(
     var applicationNumber = req.query.applicationNumber;
     var requestinfo = req.body;
     var service = req.query.service;
+    console.log(service)
     if (requestinfo == undefined) {
       return renderError(res, "requestinfo can not be null", 400);
     }
@@ -55,7 +56,7 @@ router.post(
         if (ex.response && ex.response.data) console.log(ex.response.data);
         return renderError(res, "Failed to query connection details", 500);
       }
-
+      //console.log("WaterConnection--",WaterConnection);
       // var wc = waterConnections.data;
       var wcObj;
       if (WaterConnection && WaterConnection && WaterConnection.length > 0) {
@@ -75,6 +76,7 @@ router.post(
         } else {
           var propertId = WaterConnection[0].propertyId;
           var propertyDtls;
+          console.log("propertyID--",propertId);
           try {
             propertyDtls = await search_property(
               propertId,
@@ -86,19 +88,18 @@ router.post(
             if (ex.response && ex.response.data) console.log(ex.response.data);
             return renderError(
               res,
-              `Failed to query bill for mcollect-challan`,
+              `Failed to query property details`,
               500
             );
           }
           var propertyDtl = propertyDtls.data;
-
+          console.log("propertyDtl--",propertyDtl);
           if (
             propertyDtl &&
             propertyDtl.Properties &&
             propertyDtl.Properties.length > 0
           ) {
             wcObj.property = propertyDtl.Properties[0];
-
             wcObj.service = service;
             var tenantName = WaterConnection[0].property.tenantId;
             tenantName = tenantName.split(".")[1];
@@ -118,7 +119,7 @@ router.post(
                     wcObj.property.rainWaterHarvesting = false;
                   }
                 }
-
+                console.log("applicationNumber--",applicationNumber);
                 var queryObjectForEst = [
                   {
                     applicationNo: applicationNumber,
@@ -155,7 +156,7 @@ router.post(
                 500
               );
             }
-
+            console.log("estResponse--",estResponse);
             wcObj.totalAmount = estResponse.data.Calculation[0].totalAmount;
             wcObj.applicationFee = estResponse.data.Calculation[0].fee;
             wcObj.serviceFee = estResponse.data.Calculation[0].charge;
@@ -165,9 +166,22 @@ router.post(
             });
             wcObj.pdfTaxhead = estResponse.data.Calculation[0].taxHeadEstimates;
             var finalObj = { WnsConnection: WaterConnection };
+            console.log("final object--",finalObj)
             tenantId = tenantId.split(".")[0];
             var pdfResponse;
-            var pdfkey = config.pdf.ws_estimate_template;
+            const defaultLocale = "en_IN"
+            let locale = requestinfo.RequestInfo.msgId;
+            console.log("locale--",requestinfo.RequestInfo.msgId);
+            console.log("locale1--",locale);
+            if (null != locale) {
+              locale = locale.split("|");
+              locale = locale.length > 1 ? locale[1] : defaultLocale;
+            } else {
+              locale = defaultLocale;
+            }
+            var pdfkey = locale == "hi_IN" ? config.pdf.ws_estimate_template_hi : config.pdf.ws_estimate_template
+            //var pdfkey = config.pdf.ws_estimate_template;
+            //console.log("pdfkey--",pdfkey);
             try {
               pdfResponse = await create_pdf(
                 tenantId,
@@ -393,7 +407,16 @@ router.post(
             var finalObj = { WnsConnection: WaterConnection };
             tenantId = tenantId.split(".")[0];
             var pdfResponse;
-            var pdfkey = config.pdf.ws_sanction_template;
+            const defaultLocale = "en_IN"
+            let locale = requestinfo.RequestInfo.msgId;
+            if (null != locale) {
+              locale = locale.split("|");
+              locale = locale.length > 1 ? locale[1] : defaultLocale;
+            } else {
+              locale = defaultLocale;
+            }
+           // console.log("defaultLocale--",locale);
+            var pdfkey = locale == "hi_IN" ? config.pdf.ws_sanction_template_hi : config.pdf.ws_sanction_template
             try {
               pdfResponse = await create_pdf(
                 tenantId,
