@@ -34,6 +34,10 @@ module.exports = {
       process.env.WS_ESTIMATENOTICE || "ws-estimationnotice",
     ws_sanction_template:
       process.env.WS_ESTIMATENOTICE || "ws-sanctionletter",
+    ws_estimate_template_hi:
+      process.env.WS_ESTIMATENOTICE_HI || "ws-estimationnotice-hi",
+    ws_sanction_template_hi:
+      process.env.WS_ESTIMATENOTICE_HI || "ws-sanctionletter-hi",
     lrms_renewal_notice:
       process.env.LRMS_RENEWALNOTICE || "lrms-renewalextension"
   },
