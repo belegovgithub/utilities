@@ -32,12 +32,20 @@ module.exports = {
       process.env.MCOLLECT_BILL || "mcollect-bill",
     ws_estimate_template:
       process.env.WS_ESTIMATENOTICE || "ws-estimationnotice",
+    sw_estimate_template:
+      process.env.SW_ESTIMATENOTICE || "sw-estimationnotice",
     ws_sanction_template:
       process.env.WS_ESTIMATENOTICE || "ws-sanctionletter",
+    sw_sanction_template:
+      process.env.SW_ESTIMATENOTICE || "sw-sanctionletter",
     ws_estimate_template_hi:
       process.env.WS_ESTIMATENOTICE_HI || "ws-estimationnotice-hi",
     ws_sanction_template_hi:
       process.env.WS_ESTIMATENOTICE_HI || "ws-sanctionletter-hi",
+    sw_estimate_template_hi:
+      process.env.SW_ESTIMATENOTICE_HI || "sw-estimationnotice-hi",
+    sw_sanction_template_hi:
+      process.env.SW_ESTIMATENOTICE_HI || "sw-sanctionletter-hi",
     lrms_renewal_notice:
       process.env.LRMS_RENEWALNOTICE || "lrms-renewalextension"
   },

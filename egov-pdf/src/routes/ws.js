@@ -179,7 +179,10 @@ router.post(
             } else {
               locale = defaultLocale;
             }
+            if (service == "WATER")
             var pdfkey = locale == "hi_IN" ? config.pdf.ws_estimate_template_hi : config.pdf.ws_estimate_template
+            else
+            var pdfkey = locale == "hi_IN" ? config.pdf.sw_estimate_template_hi : config.pdf.sw_estimate_template
             //var pdfkey = config.pdf.ws_estimate_template;
             //console.log("pdfkey--",pdfkey);
             try {
@@ -416,7 +419,10 @@ router.post(
               locale = defaultLocale;
             }
            // console.log("defaultLocale--",locale);
-            var pdfkey = locale == "hi_IN" ? config.pdf.ws_sanction_template_hi : config.pdf.ws_sanction_template
+           if (service == "WATER")
+           var pdfkey = locale == "hi_IN" ? config.pdf.ws_sanction_template_hi : config.pdf.ws_sanction_template
+           else
+           var pdfkey = locale == "hi_IN" ? config.pdf.sw_sanction_template_hi : config.pdf.sw_sanction_template
             try {
               pdfResponse = await create_pdf(
                 tenantId,
