@@ -11,6 +11,7 @@ var mcollectRouter = require("./routes/mcollect");
 var paymentRouter = require("./routes/payments");
 var wsRouter =require("./routes/ws");
 var lrmsRouter =require("./routes/lrms");
+var birthDeath =require("./routes/birth-death");
 // var billRouter = require("./routes/bills");
 
 var app = express();
@@ -32,6 +33,7 @@ app.use(config.app.contextPath + "/download/PT", ptRouter);
 app.use(config.app.contextPath + "/download/PAYMENT", paymentRouter);
 app.use(config.app.contextPath + "/download/WS", wsRouter);
 app.use(config.app.contextPath + "/download/LRMS", lrmsRouter);
+app.use(config.app.contextPath + "/download/BIRTHDEATH", birthDeath);
 
 // app.use(config.app.contextPath + "/download/BILL", billRouter);
 

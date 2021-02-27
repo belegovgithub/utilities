@@ -47,7 +47,9 @@ module.exports = {
     sw_sanction_template_hi:
       process.env.SW_ESTIMATENOTICE_HI || "sw-sanctionletter-hi",
     lrms_renewal_notice:
-      process.env.LRMS_RENEWALNOTICE || "lrms-renewalextension"
+      process.env.LRMS_RENEWALNOTICE || "lrms-renewalextension",
+    birth_certificate:
+      process.env.BIRTH_CERTIFICATE || "birth-certificate"
   },
   app: {
     port: parseInt(process.env.APP_PORT) || 8080,
