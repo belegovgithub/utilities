@@ -16,7 +16,7 @@ router.post(
     asyncMiddleware(async function (req, res, next) {
         var tenantId = req.query.tenantId;
         var requestinfo = req.body;
-        var leaseApplication = requestinfo.LeaseApplication;
+        var birthCertificate = requestinfo.BirthCertificate;
         delete requestinfo.leaseApplication;
         if (requestinfo == undefined) {
           return renderError(res, "requestinfo can not be null", 400);
