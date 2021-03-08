@@ -1,6 +1,5 @@
 package org.egov.win.service;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -147,10 +146,9 @@ public class ExternalAPIService {
 						ulbs.add(obj.get(0).toString());
 						sum2 += Float.parseFloat(obj.get(5).toString());
 					}
-					DecimalFormat df = new DecimalFormat("#.##");
 					Map<String, Object> e = new HashMap<String, Object>();
 					e.put("ulbcovered", ulbs.size());
-					e.put("revenuecollected", df.format(sum2/100000));
+					e.put("revenuecollected", CronConstants.decimalFormatter.format(sum2/100000));
 					e.put("day", "Week"+weeks);
 					data.add(e);
 				}
@@ -255,11 +253,10 @@ public class ExternalAPIService {
 						sum1 += Integer.parseInt(obj.get(1).toString());
 						sum2 += Float.parseFloat(obj.get(7).toString());
 					}
-					DecimalFormat df = new DecimalFormat("#.##");
 					Map<String, Object> e = new HashMap<String, Object>();
 					e.put("ulb", ulbs.size());
 					e.put("receiptscreated", sum1);
-					e.put("revenuecollected", df.format(sum2/100000));
+					e.put("revenuecollected", CronConstants.decimalFormatter.format(sum2/100000));
 					e.put("day", "Week"+weeks);
 					data.add(e);
 				}
@@ -306,10 +303,9 @@ public class ExternalAPIService {
 						sum1 += (Float.parseFloat(obj.get(4).toString()) + Float.parseFloat(obj.get(6).toString()));
 						sum2 += Integer.parseInt(obj.get(7).toString());
 					}
-					DecimalFormat df = new DecimalFormat("#.##");
 					Map<String, Object> e = new HashMap<String, Object>();
 					e.put("ulbcovered", ulbs.size());
-					e.put("redressal", df.format(sum1*100/sum2));
+					e.put("redressal", CronConstants.decimalFormatter.format(sum1*100/sum2));
 					e.put("totalcomplaints", sum2);
 					e.put("day", "Week"+weeks);
 					data.add(e);

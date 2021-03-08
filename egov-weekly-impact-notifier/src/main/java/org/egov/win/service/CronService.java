@@ -1,7 +1,6 @@
 package org.egov.win.service;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -94,10 +93,11 @@ public class CronService {
 		enrichBodyWithPGRData(body);
 		//enrichBodyWithPTData(body);
 		enrichBodyWithTLData(body);
-		enrichBodyWithMiscCollData(body);
 		//enrichBodyWithWSData(body, wsData);
 		//enrichBodyWithFirenocData(body);
 		enrichBodyWithLeaseData(body);
+		enrichBodyWithMiscCollData(body);
+		enrichBodyWithTotalData(body);
 		return Email.builder().bodyContent(body).isHTML(true).build();
 	}
 
@@ -369,9 +369,6 @@ public class CronService {
 		List<Map<String, Object>> receiptsGenerated = new ArrayList<>();
 		List<Map<String, Object>> revenueCollected = new ArrayList<>();
 		List<Map<String, Object>> ulbCovered = new ArrayList<>();
-		List<Map<String, Object>> totalRevenueCollected = new ArrayList<>();
-		List<Map<String, Object>> totalServicesAvailed = new ArrayList<>();
-		DecimalFormat df = new DecimalFormat("#.##");
 		for (Map<String, Object> record : data) {
 			Map<String, Object> receiptsGeneratedPerWeek = new HashMap<>();
 			Map<String, Object> revenueCollectedPerWeek = new HashMap<>();
@@ -382,8 +379,8 @@ public class CronService {
 				if (record.get("day").equals(prefix + week)) {
 					ulbCoveredPerWeek.put("w" + week + "mculbc", record.get("ulb"));
 					receiptsGeneratedPerWeek.put("w" + week + "mcrecgen", record.get("receiptscreated"));
-					revenueCollectedPerWeek.put("w" + week + "mcrevcoll", record.get("revenuecollected"));
-					totalrevcollectedPerWeek.put("w" + week + "totalrevcoll",df.format(
+					revenueCollectedPerWeek.put("w" + week + "mcrevcoll",CronConstants.decimalFormatter.format(Float.parseFloat((String) record.get("revenuecollected"))/100));
+					totalrevcollectedPerWeek.put("w" + week + "totalrevcoll",CronConstants.decimalFormatter.format(
 							Float.parseFloat((String) totalrevcollectedPerWeek.get("w" + week + "totalrevcoll")) +
 							Float.parseFloat((String)  record.get("revenuecollected"))));
 					totalServicesAvailedPerWeek.put("w" + week + "totalservicesavailed",
@@ -395,28 +392,11 @@ public class CronService {
 			receiptsGenerated.add(receiptsGeneratedPerWeek);
 			revenueCollected.add(revenueCollectedPerWeek);
 			ulbCovered.add(ulbCoveredPerWeek);
-			totalRevenueCollected.add(totalrevcollectedPerWeek);
-			totalServicesAvailed.add(totalServicesAvailedPerWeek);
-		}
-		List<Map<String, Object>> dataCitizens = externalAPIService.getRainmakerData(propertyManager.isWeekly()?CronConstants.SEARCHER_CITIZEN_REGD:CronConstants.SEARCHER_CITIZEN_REGD_DAILY);
-		List<Map<String, Object>> totalCitizensRegistered = new ArrayList<>();
-		for (Map<String, Object> record : dataCitizens) {
-			String prefix = "Week";
-			Integer noOfWeeks = 6;
-			for (int week = 0; week < noOfWeeks; week++) {
-				if (record.get("day").equals(prefix + week)) {
-					totalCitizensRegisteredPerWeek.put("w" + week + "totalcitizensregistered",(int)Math.round( (Double)record.get("count")));
-				}
-			}
-			totalCitizensRegistered.add(totalCitizensRegisteredPerWeek);
 		}
 		
 		MiscCollections miscCollections = MiscCollections.builder().receiptsGenerated(receiptsGenerated).revenueCollected(revenueCollected).ulbCovered(ulbCovered).build();
 		body.setMiscCollections(miscCollections);
 		
-		TotalCollections totalCollections = TotalCollections.builder().revenueCollected(totalRevenueCollected).
-				servicesAvailed(totalServicesAvailed).citizensRegistered(totalCitizensRegistered).build();
-		body.setTotalRevenuecollected(totalCollections);
 	}
 
 		
@@ -471,6 +451,9 @@ public class CronService {
 				if (record.get("day").equals(prefix + week)) {
 					leaseTotalPerWeek.put("w" + week + "leaseappltotal", record.get("leaseappltotal"));
 					leaseApprovedPerWeek.put("w" + week + "leaseaplappr", record.get("leaseapplapproved"));
+					totalServicesAvailedPerWeek.put("w" + week + "totalservicesavailed",
+							(Integer) totalServicesAvailedPerWeek.get("w" + week + "totalservicesavailed") +
+							(Integer) record.get("leaseappltotal"));
 				}
 			}
 			leaseApproved.add(leaseApprovedPerWeek);
@@ -479,5 +462,29 @@ public class CronService {
 
 		LAMS lams = LAMS.builder().ulbCovered(ulbCovered).leaseApproved(leaseApproved).leaseTotal(leaseTotal).build();
 		body.setLams(lams);
+	}
+	
+	private void enrichBodyWithTotalData(Body body) {
+	List<Map<String, Object>> totalRevenueCollected = new ArrayList<>();
+	List<Map<String, Object>> totalServicesAvailed = new ArrayList<>();
+	List<Map<String, Object>> dataCitizens = externalAPIService.getRainmakerData(propertyManager.isWeekly()?CronConstants.SEARCHER_CITIZEN_REGD:CronConstants.SEARCHER_CITIZEN_REGD_DAILY);
+	List<Map<String, Object>> totalCitizensRegistered = new ArrayList<>();
+	for (Map<String, Object> record : dataCitizens) {
+		String prefix = "Week";
+		Integer noOfWeeks = 6;
+		for (int week = 0; week < noOfWeeks; week++) {
+			if (record.get("day").equals(prefix + week)) {
+				totalCitizensRegisteredPerWeek.put("w" + week + "totalcitizensregistered",(int)Math.round( (Double)record.get("count")));
+				totalrevcollectedPerWeek.put("w" + week + "totalrevcoll",CronConstants.decimalFormatter.format(
+						Float.parseFloat((String) totalrevcollectedPerWeek.get("w" + week + "totalrevcoll"))/100));
+			}
+		}
+		totalCitizensRegistered.add(totalCitizensRegisteredPerWeek);
+	}
+	totalRevenueCollected.add(totalrevcollectedPerWeek);
+	totalServicesAvailed.add(totalServicesAvailedPerWeek);
+	TotalCollections totalCollections = TotalCollections.builder().revenueCollected(totalRevenueCollected).
+			servicesAvailed(totalServicesAvailed).citizensRegistered(totalCitizensRegistered).build();
+	body.setTotalRevenuecollected(totalCollections);
 	}
 }
