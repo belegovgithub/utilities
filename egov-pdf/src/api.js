@@ -102,7 +102,7 @@ async function search_payment(consumerCodes, tenantId, requestinfo) {
 }
 
 async function search_payment_withReceiptNo(receiptNumbers,billIds, tenantId, requestinfo) {
- // console.log("receiptNumbers--",receiptNumbers,"tennant id--",tenantId,"billids--",billIds);
+  console.log("receiptNumbers--",receiptNumbers,"tennant id--",tenantId,"billids--",billIds);
   var params;
   if(receiptNumbers)
     {
@@ -208,7 +208,7 @@ async function search_billV2(tenantId, consumerCode,serviceId,requestinfo) {
 }
 
 async function create_pdf(tenantId, key, data, requestinfo) {
-  //console.log("key--",key,"data--",JSON.stringify(data),"tenantId--",tenantId , "reqq info--",JSON.stringify(requestinfo));
+  console.log("key--",key,"data--",JSON.stringify(data),"tenantId--",tenantId , "reqq info--",JSON.stringify(requestinfo));
   //console.log("url",url.resolve(config.host.pdf, config.paths.pdf_create));
   //console.log("requestinfo--",url.resolve(config.host.pdf, config.paths.pdf_create));
   return await axios({

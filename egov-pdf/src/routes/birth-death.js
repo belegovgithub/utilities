@@ -32,6 +32,7 @@ router.post(
         tenantId = tenantId.split('.')[0];
         var pdfResponse;
         var pdfkey = config.pdf.birth_certificate;
+        console.log("pdfkey---",pdfkey);
         try {
           pdfResponse = await create_pdf(
             tenantId,
