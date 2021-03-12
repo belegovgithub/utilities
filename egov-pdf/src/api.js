@@ -159,15 +159,11 @@ async function search_tllicense(applicationNumber, tenantId, requestinfo) {
   });
 }
 
-async function search_mdms(tenantId, module, master, requestinfo) {
+async function search_mdms(tenantId, mdmsBody, requestinfo) {
   return await axios({
     method: "post",
     url: url.resolve(config.host.mdms, config.paths.mdms_search),
-    data: requestinfo,
-    params: {
-      tenantId: tenantId,
-      ids: uuid,
-    },
+    data: Object.assign(requestinfo, mdmsBody),  
   });
 }
 
@@ -208,7 +204,8 @@ async function search_billV2(tenantId, consumerCode,serviceId,requestinfo) {
 }
 
 async function create_pdf(tenantId, key, data, requestinfo) {
-  console.log("key--",key,"data--",JSON.stringify(data),"tenantId--",tenantId , "reqq info--",JSON.stringify(requestinfo));
+ // console.log("key--",key,"data--",JSON.stringify(data),"tenantId--",tenantId , "reqq info--",JSON.stringify(requestinfo));
+ // console.log("assign----", JSON.stringify(Object.assign(requestinfo, data)))
   //console.log("url",url.resolve(config.host.pdf, config.paths.pdf_create));
   //console.log("requestinfo--",url.resolve(config.host.pdf, config.paths.pdf_create));
   return await axios({
