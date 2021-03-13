@@ -18,7 +18,13 @@ router.post(
     asyncMiddleware(async function (req, res, next) {
         var tenant = req.query.tenantId;
         var requestinfo = req.body;
-        var birthCertificate = null;
+        var birthCertificateObj = req.body.BirthCertificate[0];
+        const tenantData = {
+                            tenantId :tenant,
+                            certificateType : "BIRTH"
+                          };
+        Object.assign(birthCertificateObj ,tenantData );
+        
         delete requestinfo.leaseApplication;
         if (requestinfo == undefined) {
           return renderError(res, "requestinfo can not be null", 400);
@@ -31,10 +37,10 @@ router.post(
           );
         }
         console.log("req---",requestinfo);
-        let tenantId = tenant.split('.')[0];
+        let tenantPrefix = tenant.split('.')[0];
         let mdmsBody = {
           MdmsCriteria: {
-            tenantId: tenantId,
+            tenantId: tenantPrefix,
             moduleDetails: [
               { moduleName: "common-masters",
                    masterDetails: [
@@ -65,10 +71,11 @@ router.post(
           console.log("error===",ex.stack);  
         }
         var pdfResponse;
+        pdfkey = pdfkey+"-birth";
         console.log("pdfkey---",pdfkey);
         try {
           pdfResponse = await create_pdf(
-            tenantId,
+            tenantPrefix,
             pdfkey,
             requestinfo,
             requestinfo
@@ -96,8 +103,12 @@ router.post(
   asyncMiddleware(async function (req, res, next) {
       var tenant = req.query.tenantId;
       var requestinfo = req.body;
-      var birthCertificate = null;
-      delete requestinfo.leaseApplication;
+      var deathCertificateObj = req.body.DeathCertificate[0];
+        const tenantData = {tenantId :tenant,
+                            certificateType : "DEATH"
+                          };
+        Object.assign(deathCertificateObj ,tenantData );
+      
       if (requestinfo == undefined) {
         return renderError(res, "requestinfo can not be null", 400);
       }
@@ -109,10 +120,10 @@ router.post(
         );
       }
       console.log("req---",requestinfo);
-      let tenantId = tenant.split('.')[0];
+      let tenantPrefix = tenant.split('.')[0];
       let mdmsBody = {
         MdmsCriteria: {
-          tenantId: tenantId,
+          tenantId: tenantPrefix,
           moduleDetails: [
             { moduleName: "common-masters",
                  masterDetails: [
@@ -143,10 +154,11 @@ router.post(
         console.log("error===",ex.stack);  
       }
       var pdfResponse;
+      pdfkey = pdfkey+"-death";
       console.log("pdfkey---",pdfkey);
       try {
         pdfResponse = await create_pdf(
-          tenantId,
+          tenantPrefix,
           pdfkey,
           requestinfo,
           requestinfo
