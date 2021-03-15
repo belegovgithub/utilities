@@ -17,6 +17,7 @@ router.post(
     "/birth-certificate",
     asyncMiddleware(async function (req, res, next) {
         var tenant = req.query.tenantId;
+        console.log("req query---",req.query);
         var requestinfo = req.body;
         var birthCertificateObj = req.body.BirthCertificate[0];
         const tenantData = {
@@ -25,7 +26,7 @@ router.post(
                           };
         Object.assign(birthCertificateObj ,tenantData );
         
-        delete requestinfo.leaseApplication;
+         
         if (requestinfo == undefined) {
           return renderError(res, "requestinfo can not be null", 400);
         }
