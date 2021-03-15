@@ -16,10 +16,11 @@ function renderError(res, errorMessage, errorCode) {
 router.post(
     "/birth-certificate",
     asyncMiddleware(async function (req, res, next) {
-        var tenant = req.query.tenantId;
+       
         console.log("req query---",req.query);
         var requestinfo = req.body;
         var birthCertificateObj = req.body.BirthCertificate[0];
+        var tenant = birthCertificateObj.tenantid;
         const tenantData = {
                             tenantId :tenant,
                             certificateType : "BIRTH"
@@ -103,9 +104,10 @@ router.post(
 router.post(
   "/death-certificate",
   asyncMiddleware(async function (req, res, next) {
-      var tenant = req.query.tenantId;
+     // var tenant = req.query.tenantId;
       var requestinfo = req.body;
       var deathCertificateObj = req.body.DeathCertificate[0];
+      var tenant = deathCertificateObj.tenantid;
         const tenantData = {tenantId :tenant,
                             certificateType : "DEATH"
                           };
