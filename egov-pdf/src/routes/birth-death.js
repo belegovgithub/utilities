@@ -36,8 +36,9 @@ router.post(
             400
           );
         }
-        console.log("req---",requestinfo);
+        //console.log("req---",requestinfo);
         let tenantPrefix = tenant.split('.')[0];
+        console.log("req---",tenant , "tenantPrefix--",tenantPrefix);
         let mdmsBody = {
           MdmsCriteria: {
             tenantId: tenantPrefix,
