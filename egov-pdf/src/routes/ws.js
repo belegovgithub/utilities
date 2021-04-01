@@ -293,7 +293,7 @@ router.post(
           var propertId = WaterConnection[0].propertyId;
           var propertyDtls;
           try {
-            propertyDtls = await search_property(
+            propertyDtls = await search_property_with_propnumber(
               propertId,
               tenantId,
               requestinfo
@@ -315,7 +315,9 @@ router.post(
             propertyDtl.Properties.length > 0
           ) {
             wcObj.property = propertyDtl.Properties[0];
-
+            if(wcObj.connectionHolders==null ||wcObj.connectionHolders.length ==0  ){
+              wcObj.connectionHolders = wcObj.property["owners"]
+            } 
             wcObj.service = service;
             var tenantName = WaterConnection[0].property.tenantId;
             tenantName = tenantName.split(".")[1];
