@@ -4,6 +4,7 @@ var config = require("../config");
 var {
   search_waterconnections,
   search_property,
+  search_property_with_propnumber,
   create_pdf,
   estimate,
   search_sewerageconnections,
@@ -23,7 +24,6 @@ router.post(
     var applicationNumber = req.query.applicationNumber;
     var requestinfo = req.body;
     var service = req.query.service;
-    console.log(service)
     if (requestinfo == undefined) {
       return renderError(res, "requestinfo can not be null", 400);
     }
@@ -57,10 +57,12 @@ router.post(
         return renderError(res, "Failed to query connection details", 500);
       }
       //console.log("WaterConnection--",WaterConnection);
+      
       // var wc = waterConnections.data;
       var wcObj;
       if (WaterConnection && WaterConnection && WaterConnection.length > 0) {
         wcObj = WaterConnection[0];
+        //console.log(JSON.stringify(wcObj))
         if (wcObj.additionalDetails.estimationFileStoreId) {
           respObj = {
             filestoreIds: [wcObj.additionalDetails.estimationFileStoreId],
@@ -78,11 +80,12 @@ router.post(
           var propertyDtls;
           console.log("propertyID--",propertId);
           try {
-            propertyDtls = await search_property(
+            propertyDtls = await search_property_with_propnumber(
               propertId,
               tenantId,
               requestinfo
             );
+            //console.log( JSON.stringify(propertyDtls.data));
           } catch (ex) {
             console.log(ex.stack);
             if (ex.response && ex.response.data) console.log(ex.response.data);
@@ -93,13 +96,17 @@ router.post(
             );
           }
           var propertyDtl = propertyDtls.data;
-          console.log("propertyDtl--",propertyDtl);
+          //console.log("propertyDtl--", JSON.stringify(propertyDtl));
           if (
             propertyDtl &&
             propertyDtl.Properties &&
             propertyDtl.Properties.length > 0
           ) {
             wcObj.property = propertyDtl.Properties[0];
+            if(wcObj.connectionHolders==null ||wcObj.connectionHolders.length ==0  ){
+              wcObj.connectionHolders = wcObj.property["owners"]
+            } 
+
             wcObj.service = service;
             var tenantName = WaterConnection[0].property.tenantId;
             tenantName = tenantName.split(".")[1];
@@ -166,7 +173,7 @@ router.post(
             });
             wcObj.pdfTaxhead = estResponse.data.Calculation[0].taxHeadEstimates;
             var finalObj = { WnsConnection: WaterConnection };
-            console.log("final object--",finalObj)
+            //console.log("final object--", JSON.stringify(finalObj));
             tenantId = tenantId.split(".")[0];
             var pdfResponse;
             const defaultLocale = "en_IN"
