@@ -49,7 +49,9 @@ module.exports = {
     lrms_renewal_notice:
       process.env.LRMS_RENEWALNOTICE || "lrms-renewalextension",
     birth_certificate:
-      process.env.BIRTH_CERTIFICATE || "birth-certificate"
+      process.env.BIRTH_CERTIFICATE || "birth-certificate-delhi",
+    death_certificate:
+      process.env.BIRTH_CERTIFICATE || "death-certificate-delhi"
   },
   app: {
     port: parseInt(process.env.APP_PORT) || 8080,
