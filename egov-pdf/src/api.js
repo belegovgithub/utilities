@@ -159,15 +159,13 @@ async function search_tllicense(applicationNumber, tenantId, requestinfo) {
   });
 }
 
-async function search_mdms(tenantId, module, master, requestinfo) {
+async function search_mdms(tenantId, mdmsBody, requestinfo) {
+  console.log("mdmsBody--",JSON.stringify(mdmsBody))
+  console.log("requestinfo--",JSON.stringify(requestinfo))
   return await axios({
     method: "post",
     url: url.resolve(config.host.mdms, config.paths.mdms_search),
-    data: requestinfo,
-    params: {
-      tenantId: tenantId,
-      ids: uuid,
-    },
+    data: Object.assign(requestinfo, mdmsBody),  
   });
 }
 
