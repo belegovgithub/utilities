@@ -139,7 +139,7 @@ router.post(
           ]
         }
       };
-      var pdfkey = config.pdf.birth_certificate;
+      var pdfkey = config.pdf.death_certificate;
       try{
         let mdmsResp = await search_mdms(
           tenant,
