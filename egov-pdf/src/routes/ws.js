@@ -57,12 +57,10 @@ router.post(
         return renderError(res, "Failed to query connection details", 500);
       }
       //console.log("WaterConnection--",WaterConnection);
-      
       // var wc = waterConnections.data;
       var wcObj;
       if (WaterConnection && WaterConnection && WaterConnection.length > 0) {
         wcObj = WaterConnection[0];
-        //console.log(JSON.stringify(wcObj))
         if (wcObj.additionalDetails.estimationFileStoreId) {
           respObj = {
             filestoreIds: [wcObj.additionalDetails.estimationFileStoreId],
@@ -85,7 +83,6 @@ router.post(
               tenantId,
               requestinfo
             );
-            //console.log( JSON.stringify(propertyDtls.data));
           } catch (ex) {
             console.log(ex.stack);
             if (ex.response && ex.response.data) console.log(ex.response.data);
@@ -106,7 +103,6 @@ router.post(
             if(wcObj.connectionHolders==null ||wcObj.connectionHolders.length ==0  ){
               wcObj.connectionHolders = wcObj.property["owners"]
             } 
-
             wcObj.service = service;
             var tenantName = WaterConnection[0].property.tenantId;
             tenantName = tenantName.split(".")[1];
