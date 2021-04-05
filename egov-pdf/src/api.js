@@ -69,6 +69,37 @@ async function search_property(
   });
 }
 
+async function search_property_with_propnumber(
+  propertyIds,
+  tenantId,
+  requestinfo,
+  allowCitizenTOSearchOthersRecords
+) {
+  // currently single property pdfs supported
+  if (propertyIds.split(",").length > 1) {
+    propertyIds = propertyIds.split(",")[0].trim();
+  }
+  var params = {
+    tenantId: tenantId,
+    propertyIds: propertyIds,
+  };
+  if (
+    checkIfCitizen(requestinfo) &&
+    allowCitizenTOSearchOthersRecords != true
+  ) {
+    var mobileNumber = requestinfo.RequestInfo.userInfo.mobileNumber;
+    var userName = requestinfo.RequestInfo.userInfo.userName;
+    //params["mobileNumber"] = mobileNumber || userName;
+  }
+  console.log(JSON.stringify(params));
+  return await axios({
+    method: "post",
+    url: url.resolve(config.host.pt, config.paths.pt_search),
+    data: requestinfo,
+    params,
+  });
+}
+
 async function search_workflow(applicationNumber, tenantId, requestinfo) {
   var params = {
     tenantId: tenantId,
@@ -301,6 +332,7 @@ module.exports = {
   search_mdms,
   search_user,
   search_property,
+  search_property_with_propnumber,
   search_bill,
   search_payment,
   search_tllicense,

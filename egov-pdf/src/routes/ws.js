@@ -4,6 +4,7 @@ var config = require("../config");
 var {
   search_waterconnections,
   search_property,
+  search_property_with_propnumber,
   create_pdf,
   estimate,
   search_sewerageconnections,
@@ -23,7 +24,6 @@ router.post(
     var applicationNumber = req.query.applicationNumber;
     var requestinfo = req.body;
     var service = req.query.service;
-    console.log(service)
     if (requestinfo == undefined) {
       return renderError(res, "requestinfo can not be null", 400);
     }
@@ -93,7 +93,7 @@ router.post(
             );
           }
           var propertyDtl = propertyDtls.data;
-          console.log("propertyDtl--",propertyDtl);
+          //console.log("propertyDtl--", JSON.stringify(propertyDtl));
           if (
             propertyDtl &&
             propertyDtl.Properties &&
@@ -169,7 +169,7 @@ router.post(
             });
             wcObj.pdfTaxhead = estResponse.data.Calculation[0].taxHeadEstimates;
             var finalObj = { WnsConnection: WaterConnection };
-            console.log("final object--",finalObj)
+            //console.log("final object--", JSON.stringify(finalObj));
             tenantId = tenantId.split(".")[0];
             var pdfResponse;
             const defaultLocale = "en_IN"
@@ -182,7 +182,10 @@ router.post(
             } else {
               locale = defaultLocale;
             }
+            if (service == "WATER")
             var pdfkey = locale == "hi_IN" ? config.pdf.ws_estimate_template_hi : config.pdf.ws_estimate_template
+            else
+            var pdfkey = locale == "hi_IN" ? config.pdf.sw_estimate_template_hi : config.pdf.sw_estimate_template
             //var pdfkey = config.pdf.ws_estimate_template;
             //console.log("pdfkey--",pdfkey);
             try {
@@ -421,7 +424,10 @@ router.post(
               locale = defaultLocale;
             }
            // console.log("defaultLocale--",locale);
-            var pdfkey = locale == "hi_IN" ? config.pdf.ws_sanction_template_hi : config.pdf.ws_sanction_template
+           if (service == "WATER")
+           var pdfkey = locale == "hi_IN" ? config.pdf.ws_sanction_template_hi : config.pdf.ws_sanction_template
+           else
+           var pdfkey = locale == "hi_IN" ? config.pdf.sw_sanction_template_hi : config.pdf.sw_sanction_template
             try {
               pdfResponse = await create_pdf(
                 tenantId,
