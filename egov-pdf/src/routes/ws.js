@@ -78,7 +78,7 @@ router.post(
           var propertyDtls;
           console.log("propertyID--",propertId);
           try {
-            propertyDtls = await search_property(
+            propertyDtls = await search_property_with_propnumber(
               propertId,
               tenantId,
               requestinfo
@@ -289,7 +289,7 @@ router.post(
           var propertId = WaterConnection[0].propertyId;
           var propertyDtls;
           try {
-            propertyDtls = await search_property(
+            propertyDtls = await search_property_with_propnumber(
               propertId,
               tenantId,
               requestinfo
