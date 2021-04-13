@@ -93,6 +93,7 @@ module.exports = {
     estimate:"/ws-calculator/waterCalculator/_estimate",
     sw_search:"/sw-services/swc/_search",
     estimate_sw:"/sw-calculator/sewerageCalculator/_estimate",
-    wf_bs_search:"/egov-workflow-v2/egov-wf/businessservice/_search"
+    wf_bs_search:"/egov-workflow-v2/egov-wf/businessservice/_search",
+    wf_process_search:"egov-workflow-v2/egov-wf/process/_search"
   },
 };
