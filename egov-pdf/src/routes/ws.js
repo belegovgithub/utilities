@@ -79,7 +79,7 @@ router.post(
           var propertyDtls;
           console.log("propertyID--",propertId);
           try {
-            propertyDtls = await search_property_with_propnumber(
+            propertyDtls = await search_property(
               propertId,
               tenantId,
               requestinfo
