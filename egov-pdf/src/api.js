@@ -326,6 +326,19 @@ async function estimate_sw(CalculationCriteria, isconnectionCalculation,requesti
     });
   }
   
+  async function wf_process_search(tenantId, businessIds,history,requestinfo) {
+    return await axios({
+      method: "post",
+      url: url.resolve(config.host.workflow, config.paths.wf_process_search),
+      data: requestinfo,
+      params: {
+        tenantId: tenantId,
+        businessIds: businessIds,
+        history : history
+      },
+    });
+  }
+  
 module.exports = {
   create_pdf,
   search_epass,
@@ -347,5 +360,6 @@ module.exports = {
   search_sewerageconnections,
   estimate_sw,
   wf_bs_search,
+  wf_process_search,
   checkIfCitizen
 };

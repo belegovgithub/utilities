@@ -10,6 +10,7 @@ var {
   search_sewerageconnections,
   estimate_sw,
   wf_bs_search,
+  wf_process_search
 } = require("../api");
 const { asyncMiddleware } = require("../utils/asyncMiddleware");
 function renderError(res, errorMessage, errorCode) {
@@ -273,7 +274,8 @@ router.post(
       var wcObj;
       if (WaterConnection && WaterConnection && WaterConnection.length > 0) {
         wcObj = WaterConnection[0];
-        if (wcObj.additionalDetails.sanctionFileStoreId) {
+        var always_generate_pdf =true;
+        if (!always_generate_pdf) {
           respObj = {
             filestoreIds: [wcObj.additionalDetails.sanctionFileStoreId],
             ResponseInfo: requestinfo,
@@ -403,7 +405,29 @@ router.post(
                   }
                 }
               }
-              //console.log(i);
+
+              try
+              {
+                workflowRespObj  = await wf_process_search(tenantId, applicationNumber, true , requestinfo);
+                var processDetail = workflowRespObj.data;
+                
+                for (var i = 0; i < processDetail.ProcessInstances.length; i++) {
+                  procState = processDetail.ProcessInstances[i];
+                  if (procState["action"] && 
+                      procState["action"] !== undefined &&
+                      procState["action"] !== null &&
+                      procState["action"] === "PAY"
+                  ){
+                    console.log("PAY state ",JSON.stringify(procState["auditDetails"]) )
+                    if(wcObj.auditDetails.lastModifiedTime ){
+                      wcObj.auditDetails.lastModifiedTime =procState["auditDetails"]["lastModifiedTime"];
+                    } 
+                  }
+                }
+              }catch(ex_wk){
+                console.log(ex_wk.stack);
+              }    
+  
             }
             let connectionExecutionDate = new Date(
               wcObj.connectionExecutionDate
@@ -438,7 +462,7 @@ router.post(
             } catch (ex) {
               return renderError(
                 res,
-                "Failed to generate PDF for ws Estimate notice",
+                "Failed to generate PDF for ws sanction letter",
                 500
               );
             }
