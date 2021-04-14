@@ -9,6 +9,7 @@ var {
   search_payment,
   create_pdf,
   search_workflow,
+  search_property_with_propnumber
 } = require("../api");
 
 const { asyncMiddleware } = require("../utils/asyncMiddleware");
@@ -123,6 +124,7 @@ router.post(
     var tenantId = req.query.tenantId;
     var uuid = req.query.uuid;
     var requestinfo = req.body;
+    console.log("request--",req);
     if (requestinfo == undefined) {
       return renderError(res, "requestinfo can not be null", 400);
     }
@@ -205,6 +207,7 @@ router.post(
     var tenantId = req.query.tenantId;
     var propertyId = req.query.propertyId;
     var requestinfo = req.body;
+    //console.log("request--",req);
     if (requestinfo == undefined) {
       return renderError(res, "requestinfo can not be null", 400);
     }
@@ -228,7 +231,7 @@ router.post(
         return renderError(res, "Failed to query details of the property", 500);
       }
       var properties = resProperty.data;
-     // console.log("properties--",properties);
+      //console.log("properties--",properties);
       if (
         properties &&
         properties.Properties &&
@@ -253,6 +256,7 @@ router.post(
            })
         })
         let temp =[];
+        //console.log(JSON.stringify(bills));
         bills.Bills[0].billDetails[0].billAccountDetails.map(function(x){
           let obj = {}
           obj.taxHeadCode = x.taxHeadCode;
@@ -260,9 +264,28 @@ router.post(
           temp.push(obj);
         })
         bills.Bills[0].billDetails.splice(0,1); //removed the zero obj
+        temp.map(function(par){
+          bills.Bills[0].billDetails.map(function(x){
+             if(x.billAccountDetails.length>0)
+             {
+               x.billAccountDetails.map(function(billDtl){
+                 if(par.taxHeadCode == billDtl.taxHeadCode)
+                 {
+                   if(par.arrears)
+                   par.arrears = par.arrears + billDtl.amount; 
+                   else
+                   par.arrears=billDtl.amount; 
+                   par.total = par.arrears + par.currentDemand
+                   //console.log((par.taxHeadCode + "--" + par.arrears));
+                 }
+               })
+             }
+         })
+        })
         // write from here
-        console.log(JSON.stringify(temp));
-        //console.log("bills--",JSON.stringify(bills));
+        //console.log(JSON.stringify(temp));
+        bills.Bills[0].arrearDtl = temp;
+        console.log("bills--",JSON.stringify(bills));
         if (bills && bills.Bills && bills.Bills.length > 0) {
           var pdfResponse;
           var pdfkey = config.pdf.ptbill_pdf_template;
@@ -275,8 +298,8 @@ router.post(
               requestinfo
             );
           } catch (ex) {
-            console.log(ex.stack);
-            if (ex.response && ex.response.data) console.log(ex.response.data);
+            //console.log(ex.stack);
+          //  if (ex.response && ex.response.data) console.log(ex.response.data);
             return renderError(res, "Failed to generate PDF for property", 500);
           }
 
