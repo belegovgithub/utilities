@@ -202,7 +202,7 @@ router.post(
 
 
 router.post(
-  "/ptbillTest",
+  "/propertybill",
   asyncMiddleware(async function (req, res, next) {
     var tenantId = req.query.tenantId;
     var propertyId = req.query.propertyId;
