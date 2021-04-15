@@ -21,7 +21,7 @@ module.exports = {
     ptreceipt_pdf_template: process.env.PT_RECEIPT || "property-receipt",
     ptmutationcertificate_pdf_template:
       process.env.PT_MUTATION_CERTIFICATE || "ptmutationcertificate",
-    ptbill_pdf_template: process.env.PT_BILL || "property-bill",
+    ptbill_pdf_template: process.env.PT_BILL || "pt-bill",
     consolidated_receipt_template:
       process.env.CONSOLIDATED_RECEIPT || "consolidatedreceipt",
     consolidated_bill_template:
