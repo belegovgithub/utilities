@@ -231,7 +231,7 @@ router.post(
         return renderError(res, "Failed to query details of the property", 500);
       }
       var properties = resProperty.data;
-      //console.log("properties--",properties);
+      //console.log("properties--",JSON.stringify(properties));
       if (
         properties &&
         properties.Properties &&
@@ -247,6 +247,9 @@ router.post(
           return renderError(res, `Failed to query bills for property`, 500);
         }
         var bills = billresponse.data;
+        bills.Bills[0].usageCategory = properties.Properties[0].usageCategory;
+        bills.Bills[0].oldPropertyId = properties.Properties[0].oldPropertyId;
+        bills.Bills[0].arv = properties.Properties[0].units[0].arv;
         bills.Bills[0].billDetails.sort(function(x,y){
           return x.fromPeriod - y.fromPeriod
         })
@@ -285,7 +288,7 @@ router.post(
         // write from here
         //console.log(JSON.stringify(temp));
         bills.Bills[0].arrearDtl = temp;
-        console.log("bills--",JSON.stringify(bills));
+        //console.log("bills--",JSON.stringify(bills));
         if (bills && bills.Bills && bills.Bills.length > 0) {
           var pdfResponse;
           var pdfkey = config.pdf.ptbill_pdf_template;
