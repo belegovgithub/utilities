@@ -247,21 +247,23 @@ router.post(
           return renderError(res, `Failed to query bills for property`, 500);
         }
         var bills = billresponse.data;
-        //console.log("bills--",JSON.stringify(bills));
+        //console.log("bills orig--",JSON.stringify(bills));
         var format = /[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
         if(format.test(properties.Properties[0].usageCategory))
         properties.Properties[0].usageCategory.replace(/./g,"_");
         bills.Bills[0].usageCategory = properties.Properties[0].usageCategory;
         bills.Bills[0].oldPropertyId = properties.Properties[0].oldPropertyId;
         bills.Bills[0].arv = properties.Properties[0].units[0].arv;
+        
         bills.Bills[0].billDetails.sort(function(x,y){
-          return x.fromPeriod - y.fromPeriod
+          return y.fromPeriod - x.fromPeriod
         })
         bills.Bills[0].billDetails.map(function(x){
            x.billAccountDetails.sort(function(x,y){
               return x.order - y.order
            })
         })
+        //console.log("bills sorted--",JSON.stringify(bills));
         let temp =[];
         //console.log(JSON.stringify(bills));
         bills.Bills[0].billDetails[0].billAccountDetails.map(function(x){
