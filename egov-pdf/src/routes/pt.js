@@ -207,7 +207,7 @@ router.post(
     var tenantId = req.query.tenantId;
     var propertyId = req.query.propertyId;
     var requestinfo = req.body;
-    //console.log("request--",req);
+    //console.log("request--",propertyId);
     if (requestinfo == undefined) {
       return renderError(res, "requestinfo can not be null", 400);
     }
@@ -247,6 +247,10 @@ router.post(
           return renderError(res, `Failed to query bills for property`, 500);
         }
         var bills = billresponse.data;
+        //console.log("bills--",JSON.stringify(bills));
+        var format = /[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
+        if(format.test(properties.Properties[0].usageCategory))
+        properties.Properties[0].usageCategory.replace(/./g,"_");
         bills.Bills[0].usageCategory = properties.Properties[0].usageCategory;
         bills.Bills[0].oldPropertyId = properties.Properties[0].oldPropertyId;
         bills.Bills[0].arv = properties.Properties[0].units[0].arv;
@@ -292,6 +296,7 @@ router.post(
         if (bills && bills.Bills && bills.Bills.length > 0) {
           var pdfResponse;
           var pdfkey = config.pdf.ptbill_pdf_template;
+          tenantId = tenantId.split('.')[0];
           try {
             var billArray = { Bill: bills.Bills };
             pdfResponse = await create_pdf(
@@ -305,6 +310,9 @@ router.post(
           //  if (ex.response && ex.response.data) console.log(ex.response.data);
             return renderError(res, "Failed to generate PDF for property", 500);
           }
+
+
+           
 
           var filename = `${pdfkey}_${new Date().getTime()}`;
 
