@@ -274,8 +274,7 @@ router.post(
       var wcObj;
       if (WaterConnection && WaterConnection && WaterConnection.length > 0) {
         wcObj = WaterConnection[0];
-        var always_generate_pdf =true;
-        if (!always_generate_pdf) {
+        if (wcObj.additionalDetails.sanctionFileStoreId) {
           respObj = {
             filestoreIds: [wcObj.additionalDetails.sanctionFileStoreId],
             ResponseInfo: requestinfo,
