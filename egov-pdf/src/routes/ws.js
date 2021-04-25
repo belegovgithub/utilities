@@ -79,7 +79,7 @@ router.post(
           var propertyDtls;
           console.log("propertyID--",propertId);
           try {
-            propertyDtls = await search_property(
+            propertyDtls = await search_property_with_propnumber(
               propertId,
               tenantId,
               requestinfo
@@ -274,8 +274,7 @@ router.post(
       var wcObj;
       if (WaterConnection && WaterConnection && WaterConnection.length > 0) {
         wcObj = WaterConnection[0];
-        var always_generate_pdf =true;
-        if (!always_generate_pdf) {
+        if (wcObj.additionalDetails.sanctionFileStoreId) {
           respObj = {
             filestoreIds: [wcObj.additionalDetails.sanctionFileStoreId],
             ResponseInfo: requestinfo,
@@ -291,7 +290,7 @@ router.post(
           var propertId = WaterConnection[0].propertyId;
           var propertyDtls;
           try {
-            propertyDtls = await search_property(
+            propertyDtls = await search_property_with_propnumber(
               propertId,
               tenantId,
               requestinfo
