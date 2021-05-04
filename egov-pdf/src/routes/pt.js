@@ -518,6 +518,7 @@ router.post(
       payments.Payments[0].paymentDetails[0].bill.receiptObj = compiledObjs;
           var pdfResponse;
           var pdfkey = config.pdf.newptreceipt_pdf_template;
+          tenantId = tenantId.split('.')[0];
           try {
             pdfResponse = await create_pdf(
               tenantId,
