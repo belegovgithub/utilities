@@ -9,7 +9,8 @@ var {
   search_payment,
   create_pdf,
   search_workflow,
-  search_property_with_propnumber
+  search_property_with_propnumber,
+  sortTaxhead
 } = require("../api");
 
 const { asyncMiddleware } = require("../utils/asyncMiddleware");
@@ -124,7 +125,7 @@ router.post(
     var tenantId = req.query.tenantId;
     var uuid = req.query.uuid;
     var requestinfo = req.body;
-    console.log("request--",req);
+    //console.log("request--",req);
     if (requestinfo == undefined) {
       return renderError(res, "requestinfo can not be null", 400);
     }
@@ -207,14 +208,15 @@ router.post(
     var tenantId = req.query.tenantId;
     var propertyId = req.query.propertyId;
     var requestinfo = req.body;
-    //console.log("request--",propertyId);
+    //propertyIds = propertyId.split(",");
+    //console.log("propertyIds---",propertyIds);
     if (requestinfo == undefined) {
       return renderError(res, "requestinfo can not be null", 400);
     }
     if (!tenantId || !propertyId) {
       return renderError(
         res,
-        "tenantId and uuid are mandatory to generate the ptbill",
+        "tenantId and propertyId are mandatory to generate the ptbill",
         400
       );
     }
@@ -253,6 +255,7 @@ router.post(
         properties.Properties[0].usageCategory.replace(/./g,"_");
         bills.Bills[0].usageCategory = properties.Properties[0].usageCategory;
         bills.Bills[0].oldPropertyId = properties.Properties[0].oldPropertyId;
+        if(properties.Properties[0].units)
         bills.Bills[0].arv = properties.Properties[0].units[0].arv;
         
         bills.Bills[0].billDetails.sort(function(x,y){
@@ -388,6 +391,133 @@ router.post(
         if (payments && payments.Payments && payments.Payments.length > 0) {
           var pdfResponse;
           var pdfkey = config.pdf.ptreceipt_pdf_template;
+          try {
+            pdfResponse = await create_pdf(
+              tenantId,
+              pdfkey,
+              payments,
+              requestinfo
+            );
+          } catch (ex) {
+            console.log(ex.stack);
+            if (ex.response && ex.response.data) console.log(ex.response.data);
+            return renderError(res, "Failed to generate PDF for property", 500);
+          }
+
+          var filename = `${pdfkey}_${new Date().getTime()}`;
+
+          //pdfData = pdfResponse.data.read();
+          res.writeHead(200, {
+            "Content-Type": "application/pdf",
+            "Content-Disposition": `attachment; filename=${filename}.pdf`,
+          });
+          pdfResponse.data.pipe(res);
+        } else {
+          return renderError(res, "There is no payment for this id", 404);
+        }
+      } else {
+        return renderError(
+          res,
+          "There is no property for you for this id",
+          404
+        );
+      }
+    } catch (ex) {
+      console.log(ex.stack);
+    }
+  })
+);
+
+router.post(
+  "/newpt-receipt",
+  asyncMiddleware(async function (req, res, next) {
+    var tenantId = req.query.tenantId;
+    var propertyId = req.query.propertyId;
+    var requestinfo = req.body;
+    if (requestinfo == undefined) {
+      return renderError(res, "requestinfo can not be null", 400);
+    }
+    if (!tenantId || !propertyId) {
+      return renderError(
+        res,
+        "tenantId and propertyId are mandatory to generate the ptreceipt",
+        400
+      );
+    }
+    try {
+      try {
+        resProperty = await search_property_with_propnumber(propertyId, tenantId, requestinfo);
+      } catch (ex) {
+        console.log(ex.stack);
+        if (ex.response && ex.response.data) console.log(ex.response.data);
+        return renderError(res, "Failed to query details of the property", 500);
+      }
+      var properties = resProperty.data;
+     // console.log("properties--",properties);
+      if (
+        properties &&
+        properties.Properties &&
+        properties.Properties.length > 0
+      ) {
+        var propertyid = properties.Properties[0].propertyId;
+        var paymentresponse;
+        try {
+          paymentresponse = await search_payment(
+            propertyid,
+            tenantId,
+            requestinfo
+          );
+        } catch (ex) {
+          console.log(ex.stack);
+          if (ex.response && ex.response.data) console.log(ex.response.data);
+          return renderError(res, `Failed to query payment for property`, 500);
+        }
+        var payments = paymentresponse.data;
+        if (payments && payments.Payments && payments.Payments.length > 0) {
+        var sortedObj = payments.Payments[0].paymentDetails[0].bill.billDetails;
+        var compiledObjs = []
+        var compArr = [];
+        sortedObj.map(billDtl =>{
+          billDtl.billAccountDetails.sort(sortTaxhead);
+          billDtl.billAccountDetails.forEach(billobj =>{
+             if(!compArr.includes(billobj.taxHeadCode))
+             compArr.push(billobj.taxHeadCode);
+          })
+        })
+        //console.log("compArr---"+compArr);
+        compArr.forEach(taxhead=>{
+        sortedObj.map(billDtl =>{
+          billDtl.billAccountDetails.forEach(billobj =>{
+             if(taxhead == billobj.taxHeadCode)
+             {
+               
+              if(compiledObjs.filter(someobject => someobject.taxHead == billobj.taxHeadCode).length>0)
+               {
+                //console.log("in if-"+billobj.taxHeadCode);
+                compiledObjs.filter(someobject => someobject.taxHead == billobj.taxHeadCode)
+                .forEach(someobject => {
+                  someobject.amount = someobject.amount + billobj.amount;
+                  someobject.amountPaid = someobject.amountPaid + billobj.adjustedAmount;
+                })
+              }
+              else{
+                //console.log("in else-"+billobj.taxHeadCode);
+                let obj  = {
+                  taxHead : billobj.taxHeadCode,
+                  amount : billobj.amount,
+                  amountPaid : billobj.adjustedAmount
+                }
+                compiledObjs.push(obj);
+              }
+             }
+          })
+        })
+      })
+        //console.log("sorted obj---",JSON.stringify(compiledObjs));
+        //sortedObj.sort(sortTaxhead);
+      payments.Payments[0].paymentDetails[0].bill.receiptObj = compiledObjs;
+          var pdfResponse;
+          var pdfkey = config.pdf.newptreceipt_pdf_template;
           try {
             pdfResponse = await create_pdf(
               tenantId,

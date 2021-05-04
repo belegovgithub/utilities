@@ -19,6 +19,7 @@ module.exports = {
     tl_appl_receipt_pdf_template: process.env.TL_APPL_RECEIPT || "tradelicense-appl-receipt",
     tlbill_pdf_template: process.env.TL_BILL || "tradelicense-bill",
     ptreceipt_pdf_template: process.env.PT_RECEIPT || "property-receipt",
+    newptreceipt_pdf_template: process.env.NEW_PT_RECEIPT || "newpt-receipt",
     ptmutationcertificate_pdf_template:
       process.env.PT_MUTATION_CERTIFICATE || "ptmutationcertificate",
     ptbill_pdf_template: process.env.PT_BILL || "pt-bill",
