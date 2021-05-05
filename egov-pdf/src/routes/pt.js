@@ -10,7 +10,8 @@ var {
   create_pdf,
   search_workflow,
   search_property_with_propnumber,
-  sortTaxhead
+  sortTaxhead,
+  search_payment_withReceiptNo
 } = require("../api");
 
 const { asyncMiddleware } = require("../utils/asyncMiddleware");
@@ -434,10 +435,11 @@ router.post(
     var tenantId = req.query.tenantId;
     var propertyId = req.query.propertyId;
     var requestinfo = req.body;
+    var receiptNo = req.query.receiptNo;
     if (requestinfo == undefined) {
       return renderError(res, "requestinfo can not be null", 400);
     }
-    if (!tenantId || !propertyId) {
+    if (!tenantId || !propertyId || !receiptNo) {
       return renderError(
         res,
         "tenantId and propertyId are mandatory to generate the ptreceipt",
@@ -453,17 +455,18 @@ router.post(
         return renderError(res, "Failed to query details of the property", 500);
       }
       var properties = resProperty.data;
-     // console.log("properties--",properties);
+      //console.log("properties--",properties);
       if (
         properties &&
         properties.Properties &&
         properties.Properties.length > 0
       ) {
-        var propertyid = properties.Properties[0].propertyId;
+        //var propertyid = properties.Properties[0].propertyId;
         var paymentresponse;
         try {
-          paymentresponse = await search_payment(
-            propertyid,
+          paymentresponse = await search_payment_withReceiptNo(
+            receiptNo,
+            null,
             tenantId,
             requestinfo
           );
@@ -473,6 +476,7 @@ router.post(
           return renderError(res, `Failed to query payment for property`, 500);
         }
         var payments = paymentresponse.data;
+        //console.log("payments--",payments);
         if (payments && payments.Payments && payments.Payments.length > 0) {
         var sortedObj = payments.Payments[0].paymentDetails[0].bill.billDetails;
         var compiledObjs = []
