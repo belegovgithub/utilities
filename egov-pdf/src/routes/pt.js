@@ -250,7 +250,7 @@ router.post(
           return renderError(res, `Failed to query bills for property`, 500);
         }
         var bills = billresponse.data;
-        //console.log("bills orig--",JSON.stringify(bills));
+        console.log("bills orig--",JSON.stringify(bills));
         var format = /[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
         if(format.test(properties.Properties[0].usageCategory))
         properties.Properties[0].usageCategory.replace(/./g,"_");
@@ -476,7 +476,7 @@ router.post(
           return renderError(res, `Failed to query payment for property`, 500);
         }
         var payments = paymentresponse.data;
-        //console.log("payments--",payments);
+        //console.log("payments--",JSON.stringify(payments));
         if (payments && payments.Payments && payments.Payments.length > 0) {
         var sortedObj = payments.Payments[0].paymentDetails[0].bill.billDetails;
         var compiledObjs = []
@@ -517,8 +517,13 @@ router.post(
           })
         })
       })
-        //console.log("sorted obj---",JSON.stringify(compiledObjs));
+       
         //sortedObj.sort(sortTaxhead);
+        compiledObjs.map(receiptObj =>{
+          receiptObj.billNo = payments.Payments[0].paymentDetails[0].bill.billNumber;
+          receiptObj.billDate = payments.Payments[0].paymentDetails[0].bill.billDate;
+        });
+        // console.log("sorted obj---",JSON.stringify(compiledObjs));
       payments.Payments[0].paymentDetails[0].bill.receiptObj = compiledObjs;
           var pdfResponse;
           var pdfkey = config.pdf.newptreceipt_pdf_template;
