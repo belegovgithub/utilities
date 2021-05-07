@@ -4,7 +4,7 @@ var router = express.Router();
 var url = require("url");
 var config = require("../config");
 
-var { search_payment_withReceiptNo, create_pdf,compareAmount,checkIfCitizen, search_billV2} = require("../api");
+var { search_payment_withReceiptNo, create_pdf,compareAmount,checkIfCitizen, search_billV2,createForm46} = require("../api");
 const { asyncMiddleware } = require("../utils/asyncMiddleware");
 
 function renderError(res, errorMessage, errorCode) {
@@ -22,6 +22,7 @@ router.post(
     param = req.query.receiptNumbers; // data can be either in consumer code or receiptNumbers
     var billIds = req.query.billIds;
     var requestinfo = req.body;
+    var service = null;
     console.log("Tenantid ",tenantId)
     console.log("receiptNumbers ",param)
     console.log("billIds ",billIds)
@@ -52,10 +53,10 @@ router.post(
         return renderError(res, "Failed to query details of the payment", 500);
       }
       var payments = resProperty.data;
-      //console.log(JSON.stringify(payments));
+     // console.log("payment data--",JSON.stringify(payments));
       if (payments && payments.Payments && payments.Payments.length > 0) {
+        service =get(payments,"Payments[0].paymentDetails[0].businessService",null) ;
         if (checkIfCitizen(requestinfo)) {
-          
           var mobileNumber = requestinfo.RequestInfo.userInfo.mobileNumber;
           var payerMobileNumber = get(payments,"Payments[0].mobileNumber",null) ;
           //console.log("PayerNumber",payerMobileNumber);
@@ -64,10 +65,8 @@ router.post(
             validCitizen=true;
           }else{
             var consumerCode =get(payments,"Payments[0].paymentDetails[0].bill.consumerCode",null) ;
-            var bService =get(payments,"Payments[0].paymentDetails[0].businessService",null) ;
-            var searchBillResp = await search_billV2(tenantId, consumerCode,bService, requestinfo);
+            var searchBillResp = await search_billV2(tenantId, consumerCode,service, requestinfo);
             var billMobileNumber =get(searchBillResp.data,"Bill[0].mobileNumber",null) ;
-            //console.log("Biller Mobiler Number",billMobileNumber);
             if(billMobileNumber==mobileNumber){
               validCitizen=true;
             }
@@ -93,12 +92,23 @@ router.post(
         }
         else
         {
-          var sortedObj = payments.Payments[0].paymentDetails[0].bill.billDetails[0].billAccountDetails;
-        sortedObj.sort(compareAmount);
-        payments.Payments[0].paymentDetails[0].bill.billDetails[0].billAccountDetails = sortedObj;
+          console.log("service---",service);
+          var pdfkey =null;
+          if(service == "WS" || service == "SW" || service == "PT")
+          {
+            let sortedObj  = createForm46(payments.Payments[0]);
+            payments.Payments[0].paymentDetails[0].bill.receiptObj = sortedObj;
+            pdfkey =  config.pdf.newptreceipt_pdf_template;
+          }
+          else
+          {
+            var sortedObj = payments.Payments[0].paymentDetails[0].bill.billDetails[0].billAccountDetails;
+            sortedObj.sort(compareAmount);
+            payments.Payments[0].paymentDetails[0].bill.billDetails[0].billAccountDetails = sortedObj;
+            pdfkey = config.pdf.consolidated_receipt_template;
+          }
         tenantId = tenantId.split('.')[0];
         var pdfResponse;
-        var pdfkey = config.pdf.consolidated_receipt_template;
         try {
           pdfResponse = await create_pdf(
             tenantId,
@@ -107,8 +117,8 @@ router.post(
             requestinfo
           );
         } catch (ex) {
-          console.log(ex.stack);
-          if (ex.response && ex.response.data) console.log(ex.response.data);
+        //  console.log(ex.stack);
+         // if (ex.response && ex.response.data) console.log(ex.response.data);
           return renderError(res, "Failed to generate PDF for payment", 500);
         }
 
