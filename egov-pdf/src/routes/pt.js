@@ -250,7 +250,7 @@ router.post(
           return renderError(res, `Failed to query bills for property`, 500);
         }
         var bills = billresponse.data;
-        console.log("bills orig--",JSON.stringify(bills));
+        //console.log("bills orig--",JSON.stringify(bills));
         var format = /[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
         if(format.test(properties.Properties[0].usageCategory))
         properties.Properties[0].usageCategory.replace(/./g,"_");
@@ -269,6 +269,7 @@ router.post(
         })
         //console.log("bills sorted--",JSON.stringify(bills));
         let temp =[];
+        let advanceCarryForward = null;
         //console.log(JSON.stringify(bills));
         bills.Bills[0].billDetails[0].billAccountDetails.map(function(x){
           let obj = {}
@@ -282,6 +283,8 @@ router.post(
              if(x.billAccountDetails.length>0)
              {
                x.billAccountDetails.map(function(billDtl){
+                 if(billDtl.taxHeadCode == "PT_ADVANCE_CARRYFORWARD")
+                 advanceCarryForward = billDtl.amount
                  if(par.taxHeadCode == billDtl.taxHeadCode)
                  {
                    if(par.arrears)
@@ -296,8 +299,11 @@ router.post(
          })
         })
         // write from here
-        //console.log(JSON.stringify(temp));
+        //console.log("advanceCarryForward--",advanceCarryForward);
         bills.Bills[0].arrearDtl = temp;
+        advanceCarryForward ? bills.Bills[0].advanceAmount = advanceCarryForward : bills.Bills[0].advanceAmount = 0;
+        bills.Bills[0].advanceAmount = advanceCarryForward;
+        bills.Bills[0].payableAmount = bills.Bills[0].totalAmount - bills.Bills[0].advanceAmount;
         //console.log("bills--",JSON.stringify(bills));
         if (bills && bills.Bills && bills.Bills.length > 0) {
           var pdfResponse;
@@ -461,12 +467,11 @@ router.post(
         properties.Properties &&
         properties.Properties.length > 0
       ) {
-        //var propertyid = properties.Properties[0].propertyId;
+        var propertyid = properties.Properties[0].propertyId;
         var paymentresponse;
         try {
-          paymentresponse = await search_payment_withReceiptNo(
-            receiptNo,
-            null,
+          paymentresponse = await search_payment(
+            propertyid,
             tenantId,
             requestinfo
           );
