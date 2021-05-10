@@ -10,8 +10,7 @@ var {
   create_pdf,
   search_workflow,
   search_property_with_propnumber,
-  sortTaxhead,
-  search_payment_withReceiptNo
+  sortTaxhead
 } = require("../api");
 
 const { asyncMiddleware } = require("../utils/asyncMiddleware");
@@ -240,7 +239,11 @@ router.post(
         properties.Properties &&
         properties.Properties.length > 0
       ) {
-        var propertyid = properties.Properties[0].propertyId;
+        var BillData = [];
+        for(let i=0;i<properties.Properties.length;i++)
+        {
+        var propertyid = properties.Properties[i].propertyId;
+        //console.log("property id---"+propertyid)
         var billresponse;
         try {
           billresponse = await search_bill(propertyid, tenantId, requestinfo);
@@ -251,13 +254,17 @@ router.post(
         }
         var bills = billresponse.data;
         //console.log("bills orig--",JSON.stringify(bills));
+        if( bills &&
+          bills.Bills &&
+          bills.Bills.length > 0)
+          {
         var format = /[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
-        if(format.test(properties.Properties[0].usageCategory))
-        properties.Properties[0].usageCategory.replace(/./g,"_");
-        bills.Bills[0].usageCategory = properties.Properties[0].usageCategory;
-        bills.Bills[0].oldPropertyId = properties.Properties[0].oldPropertyId;
-        if(properties.Properties[0].units)
-        bills.Bills[0].arv = properties.Properties[0].units[0].arv;
+        if(format.test(properties.Properties[i].usageCategory))
+        properties.Properties[i].usageCategory.replace(/./g,"_");
+        bills.Bills[0].usageCategory = properties.Properties[i].usageCategory;
+        bills.Bills[0].oldPropertyId = properties.Properties[i].oldPropertyId;
+        if(properties.Properties[i].units)
+        bills.Bills[0].arv = properties.Properties[i].units[0].arv;
         
         bills.Bills[0].billDetails.sort(function(x,y){
           return y.fromPeriod - x.fromPeriod
@@ -270,12 +277,19 @@ router.post(
         //console.log("bills sorted--",JSON.stringify(bills));
         let temp =[];
         let advanceCarryForward = null;
-        //console.log(JSON.stringify(bills));
+       // console.log(JSON.stringify(bills));
         bills.Bills[0].billDetails[0].billAccountDetails.map(function(x){
+          if(x.taxHeadCode == 'PT_ADVANCE_CARRYFORWARD')
+          {
+            advanceCarryForward = x.amount;
+          }
+          else
+          {
           let obj = {}
           obj.taxHeadCode = x.taxHeadCode;
           obj.currentDemand = x.amount
           temp.push(obj);
+          }
         })
         bills.Bills[0].billDetails.splice(0,1); //removed the zero obj
         temp.map(function(par){
@@ -301,16 +315,23 @@ router.post(
         // write from here
         //console.log("advanceCarryForward--",advanceCarryForward);
         bills.Bills[0].arrearDtl = temp;
-        advanceCarryForward ? bills.Bills[0].advanceAmount = advanceCarryForward : bills.Bills[0].advanceAmount = 0;
-        bills.Bills[0].advanceAmount = advanceCarryForward;
+        if(advanceCarryForward)
+        bills.Bills[0].advanceAmount = advanceCarryForward 
+        else
+        bills.Bills[0].advanceAmount = 0;
+        //bills.Bills[0].advanceAmount = advanceCarryForward;
         bills.Bills[0].payableAmount = bills.Bills[0].totalAmount - bills.Bills[0].advanceAmount;
         //console.log("bills--",JSON.stringify(bills));
-        if (bills && bills.Bills && bills.Bills.length > 0) {
+        BillData.push(...bills.Bills);
+        }
+      }
+      //console.log("bills--",JSON.stringify(BillData));
+        if (BillData && BillData.length > 0) {
           var pdfResponse;
           var pdfkey = config.pdf.ptbill_pdf_template;
           tenantId = tenantId.split('.')[0];
           try {
-            var billArray = { Bill: bills.Bills };
+            var billArray = { Bill: BillData };
             pdfResponse = await create_pdf(
               tenantId,
               pdfkey,
@@ -322,10 +343,6 @@ router.post(
           //  if (ex.response && ex.response.data) console.log(ex.response.data);
             return renderError(res, "Failed to generate PDF for property", 500);
           }
-
-
-           
-
           var filename = `${pdfkey}_${new Date().getTime()}`;
 
           //pdfData = pdfResponse.data.read();

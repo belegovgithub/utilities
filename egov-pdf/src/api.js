@@ -74,6 +74,9 @@ function compareAmount(a,b)
       return compiledObjs;
   }
 
+  
+
+
 async function search_user(uuid, tenantId, requestinfo) {
   return await axios({
     method: "post",
@@ -135,9 +138,9 @@ async function search_property_with_propnumber(
   allowCitizenTOSearchOthersRecords
 ) {
   // currently single property pdfs supported
-  if (propertyIds.split(",").length > 1) {
+ /* if (propertyIds.split(",").length > 1) {
     propertyIds = propertyIds.split(",")[0].trim();
-  }
+  }*/
   var params = {
     tenantId: tenantId,
     propertyIds: propertyIds,
@@ -150,7 +153,7 @@ async function search_property_with_propnumber(
     var userName = requestinfo.RequestInfo.userInfo.userName;
     //params["mobileNumber"] = mobileNumber || userName;
   }
-  //console.log(JSON.stringify(params));
+  //console.log("params---",JSON.stringify(params));
   return await axios({
     method: "post",
     url: url.resolve(config.host.pt, config.paths.pt_search),
@@ -299,6 +302,8 @@ async function create_pdf(tenantId, key, data, requestinfo) {
   //console.log("key--",key,"data--",JSON.stringify(data),"tenantId--",tenantId );
   //console.log("url",url.resolve(config.host.pdf, config.paths.pdf_create));
   //console.log("requestinfo--",url.resolve(config.host.pdf, config.paths.pdf_create));
+  //console.log("requestinfo---",JSON.stringify(requestinfo));
+  //console.log("data---",JSON.stringify(Object.assign(requestinfo, data)));
   return await axios({
     responseType: "stream",
     method: "post",
