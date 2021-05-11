@@ -75,6 +75,7 @@ module.exports = {
     sw: process.env.EGOV_SW_SERVICE_HOST || HOST,
     ws_calc:process.env.EGOV_WS_CALC_SERVICE_HOST || HOST,
     sw_calc:process.env.EGOV_SW_CALC_SERVICE_HOST || HOST,
+    bill_service:process.env.EGOV_BILL_SERVICE_HOST || HOST,
   },
   paths: {
     pdf_create: "/pdf-service/v1/_create",
@@ -95,6 +96,7 @@ module.exports = {
     sw_search:"/sw-services/swc/_search",
     estimate_sw:"/sw-calculator/sewerageCalculator/_estimate",
     wf_bs_search:"/egov-workflow-v2/egov-wf/businessservice/_search",
-    wf_process_search:"egov-workflow-v2/egov-wf/process/_search"
+    wf_process_search:"egov-workflow-v2/egov-wf/process/_search",
+    demand_search:"billing-service/demand/_search"
   },
 };

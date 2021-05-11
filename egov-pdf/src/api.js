@@ -231,6 +231,19 @@ async function search_bill(consumerCode, tenantId, requestinfo) {
   });
 }
 
+async function search_demand(consumerCode, tenantId, requestinfo) {
+  return await axios({
+    method: "post",
+    url: url.resolve(config.host.bill_service, config.paths.demand_search),
+    data: requestinfo,
+    params: {
+      tenantId: tenantId,
+      consumerCode: consumerCode,
+      businessService:"PT"
+    },
+  });
+}
+
 async function search_tllicense(applicationNumber, tenantId, requestinfo) {
   //console.log("applicationNumber--",applicationNumber,"tennant id--",tenantId);
   var params = {
@@ -411,6 +424,7 @@ module.exports = {
   search_property,
   search_property_with_propnumber,
   search_bill,
+  search_demand,
   search_payment,
   search_tllicense,
   search_workflow,

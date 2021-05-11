@@ -6,6 +6,7 @@ var config = require("../config");
 var {
   search_property,
   search_bill,
+  search_demand,
   search_payment,
   create_pdf,
   search_workflow,
@@ -243,7 +244,7 @@ router.post(
         for(let i=0;i<properties.Properties.length;i++)
         {
         var propertyid = properties.Properties[i].propertyId;
-        //console.log("property id---"+propertyid)
+        console.log("property id---"+propertyid)
         var billresponse;
         try {
           billresponse = await search_bill(propertyid, tenantId, requestinfo);
@@ -265,8 +266,92 @@ router.post(
         bills.Bills[0].oldPropertyId = properties.Properties[i].oldPropertyId;
         if(properties.Properties[i].units)
         bills.Bills[0].arv = properties.Properties[i].units[0].arv;
-        
-        bills.Bills[0].billDetails.sort(function(x,y){
+
+        var sortedObj = bills.Bills[0].billDetails;
+        var compArr = [];
+        sortedObj.map(billDtl =>{
+          billDtl.billAccountDetails.sort(sortTaxhead);
+          billDtl.billAccountDetails.forEach(billobj =>{
+             if(!compArr.includes(billobj.taxHeadCode))
+             compArr.push(billobj.taxHeadCode);
+          })
+        })
+        console.log("compArr---"+compArr);
+        if(true)
+        {
+        var demandresponse;
+        try {
+          demandresponse = await search_demand(propertyid, tenantId, requestinfo);
+        } catch (ex) {
+          console.log(ex.stack);
+          if (ex.response && ex.response.data) console.log(ex.response.data);
+          return renderError(res, `Failed to query bills for property`, 500);
+        }
+        var demand = demandresponse.data;
+       // console.log("demand orig--",JSON.stringify(demand));
+        var demandArr = [];
+        var currentDemandObj = demand.Demands[demand.Demands.length-1];
+        //console.log("currentDemandObj--",JSON.stringify(currentDemandObj));
+        var advanceDemand = 0;
+        var advanceCarryForward = 0;
+        var totalPaid = 0;
+        var totalArrear = 0;
+        var totalCurrent = 0;
+        if(!currentDemandObj.isPaymentCompleted)
+        {
+          compArr.forEach(taxhead=>{
+          currentDemandObj.demandDetails.map(function(x){
+            if(taxhead == x.taxHeadMasterCode)
+            {
+              if(x.taxHeadMasterCode == 'PT_ADVANCE_CARRYFORWARD')
+              {
+                advanceCarryForward = x.taxAmount;
+              }
+              else
+              {
+              let obj = {}
+              obj.taxHeadCode = x.taxHeadMasterCode;
+              obj.currentDemand = x.taxAmount;
+              obj.arrears = 0;
+              demandArr.push(obj);
+              totalPaid = totalPaid+x.collectionAmount;
+              totalCurrent = totalCurrent + x.taxAmount;
+            }
+          }
+        })
+      })
+      }
+     //console.log("advanceCarryforward--"+advanceCarryForward);
+      demand.Demands.splice(demand.Demands.length-1,1);
+      //console.log("demand after--",JSON.stringify(demand));
+      demandArr.map(function(par){
+        if(demand.Demands.length>0)
+        {
+        demand.Demands.map(function(x){
+           if(x.demandDetails.length>0)
+           {
+             x.demandDetails.map(function(billDtl){
+               if(billDtl.taxHeadCode == "PT_ADVANCE_CARRYFORWARD")
+               advanceDemand = advanceDemand + billDtl.taxAmount
+               if(par.taxHeadCode == billDtl.taxHeadMasterCode)
+               {
+                 par.arrears = par.arrears + billDtl.taxAmount; 
+                 par.total = par.arrears + par.currentDemand
+                 totalPaid = totalPaid+billDtl.collectionAmount;
+                 totalArrear = totalArrear + billDtl.taxAmount
+                 //console.log((par.taxHeadCode + "--" + par.arrears));
+               }
+             })
+           }
+       })
+      }
+      })
+     // console.log("demandArr--"+JSON.stringify(demandArr));
+     // console.log("totalPaid--"+totalPaid);
+    }
+
+
+       /* bills.Bills[0].billDetails.sort(function(x,y){
           return y.fromPeriod - x.fromPeriod
         })
         bills.Bills[0].billDetails.map(function(x){
@@ -311,16 +396,18 @@ router.post(
                })
              }
          })
-        })
+        })*/
         // write from here
         //console.log("advanceCarryForward--",advanceCarryForward);
-        bills.Bills[0].arrearDtl = temp;
-        if(advanceCarryForward)
-        bills.Bills[0].advanceAmount = advanceCarryForward 
-        else
-        bills.Bills[0].advanceAmount = 0;
-        //bills.Bills[0].advanceAmount = advanceCarryForward;
-        bills.Bills[0].payableAmount = bills.Bills[0].totalAmount - bills.Bills[0].advanceAmount;
+        bills.Bills[0].arrearDtl = demandArr;
+        
+        bills.Bills[0].advanceCarryforward = Math.abs(advanceCarryForward) 
+        bills.Bills[0].totalPaid = totalPaid + advanceDemand;
+        bills.Bills[0].totalArrear = totalArrear;
+        bills.Bills[0].totalCurrent = totalCurrent;
+        bills.Bills[0].adjustedAmount = totalPaid >= (totalArrear+totalCurrent) ? (totalArrear+totalCurrent) : totalPaid
+         bills.Bills[0].payableAmount = bills.Bills[0].adjustedAmount >= (totalArrear+totalCurrent) ? 0 :((totalArrear+totalCurrent) - bills.Bills[0].adjustedAmount) 
+      //  bills.Bills[0].payableAmount = bills.Bills[0].totalAmount - bills.Bills[0].advanceAmount;
         //console.log("bills--",JSON.stringify(bills));
         BillData.push(...bills.Bills);
         }
