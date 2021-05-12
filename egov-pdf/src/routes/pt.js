@@ -277,8 +277,7 @@ router.post(
           })
         })
         console.log("compArr---"+compArr);
-        if(true)
-        {
+        
         var demandresponse;
         try {
           demandresponse = await search_demand(propertyid, tenantId, requestinfo);
@@ -288,7 +287,11 @@ router.post(
           return renderError(res, `Failed to query bills for property`, 500);
         }
         var demand = demandresponse.data;
-       // console.log("demand orig--",JSON.stringify(demand));
+        //console.log("demand orig--",JSON.stringify(demand));
+        if(demand &&
+          demand.Demands &&
+          demand.Demands.length > 0)
+        {
         var demandArr = [];
         var currentDemandObj = demand.Demands[demand.Demands.length-1];
         //console.log("currentDemandObj--",JSON.stringify(currentDemandObj));
@@ -348,7 +351,7 @@ router.post(
       })
      // console.log("demandArr--"+JSON.stringify(demandArr));
      // console.log("totalPaid--"+totalPaid);
-    }
+    
 
 
        /* bills.Bills[0].billDetails.sort(function(x,y){
@@ -410,6 +413,7 @@ router.post(
       //  bills.Bills[0].payableAmount = bills.Bills[0].totalAmount - bills.Bills[0].advanceAmount;
         //console.log("bills--",JSON.stringify(bills));
         BillData.push(...bills.Bills);
+      }
         }
       }
       //console.log("bills--",JSON.stringify(BillData));
@@ -426,8 +430,8 @@ router.post(
               requestinfo
             );
           } catch (ex) {
-            //console.log(ex.stack);
-          //  if (ex.response && ex.response.data) console.log(ex.response.data);
+            console.log(ex.stack);
+          if (ex.response && ex.response.data) console.log(ex.response.data);
             return renderError(res, "Failed to generate PDF for property", 500);
           }
           var filename = `${pdfkey}_${new Date().getTime()}`;
@@ -439,7 +443,7 @@ router.post(
           });
           pdfResponse.data.pipe(res);
         } else {
-          return renderError(res, "There is no bill for this id", 404);
+          return renderError(res, "There is no demand for this id", 404);
         }
       } else {
         return renderError(
