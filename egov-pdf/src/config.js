@@ -75,7 +75,7 @@ module.exports = {
     sw: process.env.EGOV_SW_SERVICE_HOST || HOST,
     ws_calc:process.env.EGOV_WS_CALC_SERVICE_HOST || HOST,
     sw_calc:process.env.EGOV_SW_CALC_SERVICE_HOST || HOST,
-    bill_service:process.env.EGOV_BILL_SERVICE_HOST || HOST,
+    bill_service:process.env.EGOV_BILLING_HOST || HOST,
   },
   paths: {
     pdf_create: "/pdf-service/v1/_create",
