@@ -271,6 +271,7 @@ router.post(
       }
 
       // var wc = waterConnections.data;
+       //console.log("wc---",WaterConnection)
       var wcObj;
       if (WaterConnection && WaterConnection && WaterConnection.length > 0) {
         wcObj = WaterConnection[0];
@@ -305,7 +306,7 @@ router.post(
             );
           }
           var propertyDtl = propertyDtls.data;
-
+         // console.log("propertyDtl--"+propertyDtl)
           if (
             propertyDtl &&
             propertyDtl.Properties &&
@@ -371,7 +372,7 @@ router.post(
                 500
               );
             }
-
+            //console.log("estResponse--"+estResponse)
             wcObj.totalAmount = estResponse.data.Calculation[0].totalAmount;
             wcObj.applicationFee = estResponse.data.Calculation[0].fee;
             wcObj.serviceFee = estResponse.data.Calculation[0].charge;
@@ -384,8 +385,10 @@ router.post(
             workflowResp = await wf_bs_search(tenantId, "WS", requestinfo);
 
             var slaDetails = workflowResp.data;
+            //console.log("slaDetails---"+JSON.stringify(slaDetails));
             var states = [],
               findSLA = false;
+              var isModifyConnection = false;
             for (var i = 0; i < slaDetails.BusinessServices.length; i++) {
               states = slaDetails.BusinessServices[i].states;
               if (findSLA) break;
@@ -398,13 +401,19 @@ router.post(
                     states[j]["state"] !== "" &&
                     states[j]["state"] === "PENDING_FOR_CONNECTION_ACTIVATION"
                   ) {
+                    if(slaDetails.BusinessServices[i].businessService == "ModifyWSConnection1")
+                    {
+                      isModifyConnection = true;
+                      break;
+                    }
                     wcObj.sla = states[j]["sla"] / 86400000;
                     findSLA = true;
                     break;
                   }
                 }
               }
-
+              if(!isModifyConnection)
+              {
               try
               {
                 workflowRespObj  = await wf_process_search(tenantId, applicationNumber, true , requestinfo);
@@ -426,7 +435,15 @@ router.post(
               }catch(ex_wk){
                 console.log(ex_wk.stack);
               }    
-  
+            }
+            else
+            {
+              return renderError(
+                res,
+                "Sanction letter is not available for modify connection",
+                400
+              );
+            }
             }
             let connectionExecutionDate = new Date(
               wcObj.connectionExecutionDate
