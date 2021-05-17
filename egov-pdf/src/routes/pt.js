@@ -223,6 +223,7 @@ router.post(
     }
     try {
       try {
+        // can search multiple property ids
         resProperty = await search_property_with_propnumber(
           propertyId,
           tenantId,
@@ -241,13 +242,13 @@ router.post(
         properties.Properties.length > 0
       ) {
         var BillData = [];
-        for(let i=0;i<properties.Properties.length;i++)
+        for(let i=0;i<properties.Properties.length;i++) // Loop for multiple property ids
         {
         var propertyid = properties.Properties[i].propertyId;
         console.log("property id---"+propertyid)
         var billresponse;
         try {
-          billresponse = await search_bill(propertyid, tenantId, requestinfo);
+          billresponse = await search_bill(propertyid, tenantId, requestinfo); // search bill for the corresponding property id
         } catch (ex) {
           console.log(ex.stack);
           if (ex.response && ex.response.data) console.log(ex.response.data);
@@ -260,7 +261,7 @@ router.post(
           bills.Bills.length > 0)
           {
         var format = /[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
-        if(format.test(properties.Properties[i].usageCategory))
+        if(format.test(properties.Properties[i].usageCategory)) // check for . in usage category and replace it with _
         properties.Properties[i].usageCategory.replace(/./g,"_");
         bills.Bills[0].usageCategory = properties.Properties[i].usageCategory;
         bills.Bills[0].oldPropertyId = properties.Properties[i].oldPropertyId;
@@ -270,7 +271,7 @@ router.post(
         var sortedObj = bills.Bills[0].billDetails;
         var compArr = [];
         sortedObj.map(billDtl =>{
-          billDtl.billAccountDetails.sort(sortTaxhead);
+          billDtl.billAccountDetails.sort(sortTaxhead); // Sort taxheads based on order for current year bill
           billDtl.billAccountDetails.forEach(billobj =>{
              if(!compArr.includes(billobj.taxHeadCode))
              compArr.push(billobj.taxHeadCode);
@@ -280,7 +281,7 @@ router.post(
         
         var demandresponse;
         try {
-          demandresponse = await search_demand(propertyid, tenantId, requestinfo);
+          demandresponse = await search_demand(propertyid, tenantId, requestinfo); // Search demand details for the corresponding property id
         } catch (ex) {
           console.log(ex.stack);
           if (ex.response && ex.response.data) console.log(ex.response.data);
@@ -293,48 +294,48 @@ router.post(
           demand.Demands.length > 0)
         {
         var demandArr = [];
-        var currentDemandObj = demand.Demands[demand.Demands.length-1];
+        var currentDemandObj = demand.Demands[demand.Demands.length-1]; //get current year demand object
         //console.log("currentDemandObj--",JSON.stringify(currentDemandObj));
-        var advanceDemand = 0;
-        var advanceCarryForward = 0;
-        var totalPaid = 0;
-        var totalArrear = 0;
-        var totalCurrent = 0;
-        if(!currentDemandObj.isPaymentCompleted)
+        var advanceDemand = 0; // if advance is availabe for previous year
+        var advanceCarryForward = 0; // if advance is availabe for current year
+        var totalPaid = 0; //total amount paid
+        var totalArrear = 0; // total arrear amount
+        var totalCurrent = 0; // total current amount
+        if(!currentDemandObj.isPaymentCompleted) // if payment is still pending
         {
           compArr.forEach(taxhead=>{
           currentDemandObj.demandDetails.map(function(x){
             if(taxhead == x.taxHeadMasterCode)
             {
-              if(x.taxHeadMasterCode == 'PT_ADVANCE_CARRYFORWARD')
+              if(x.taxHeadMasterCode == 'PT_ADVANCE_CARRYFORWARD') //if advance amount available
               {
                 advanceCarryForward = x.taxAmount;
               }
               else
               {
               let obj = {}
-              obj.taxHeadCode = x.taxHeadMasterCode;
+              obj.taxHeadCode = x.taxHeadMasterCode; 
               obj.currentDemand = x.taxAmount;
               obj.arrears = 0;
               demandArr.push(obj);
-              totalPaid = totalPaid+x.collectionAmount;
-              totalCurrent = totalCurrent + x.taxAmount;
+              totalPaid = totalPaid+x.collectionAmount; //Total amount paid
+              totalCurrent = totalCurrent + x.taxAmount; // total amount paid for current demand
             }
           }
         })
       })
       }
      //console.log("advanceCarryforward--"+advanceCarryForward);
-      demand.Demands.splice(demand.Demands.length-1,1);
+      demand.Demands.splice(demand.Demands.length-1,1); //splice the demand object
       //console.log("demand after--",JSON.stringify(demand));
-      demandArr.map(function(par){
+      demandArr.map(function(par){ //loop over current demand object
         if(demand.Demands.length>0)
         {
         demand.Demands.map(function(x){
            if(x.demandDetails.length>0)
            {
              x.demandDetails.map(function(billDtl){
-               if(billDtl.taxHeadCode == "PT_ADVANCE_CARRYFORWARD")
+               if(billDtl.taxHeadCode == "PT_ADVANCE_CARRYFORWARD") //check for advance amount
                advanceDemand = advanceDemand + billDtl.taxAmount
                if(par.taxHeadCode == billDtl.taxHeadMasterCode)
                {
