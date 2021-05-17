@@ -57,7 +57,7 @@ router.post(
         if (ex.response && ex.response.data) console.log(ex.response.data);
         return renderError(res, "Failed to query connection details", 500);
       }
-      //console.log("WaterConnection--",WaterConnection);
+      //console.log("WaterConnection--",JSON.stringify(WaterConnection));
       // var wc = waterConnections.data;
       var wcObj;
       if (WaterConnection && WaterConnection && WaterConnection.length > 0) {
@@ -94,7 +94,7 @@ router.post(
             );
           }
           var propertyDtl = propertyDtls.data;
-          //console.log("propertyDtl--", JSON.stringify(propertyDtl));
+         // console.log("propertyDtl--", JSON.stringify(propertyDtl));
           if (
             propertyDtl &&
             propertyDtl.Properties &&
@@ -123,7 +123,7 @@ router.post(
                     wcObj.property.rainWaterHarvesting = false;
                   }
                 }
-                console.log("applicationNumber--",applicationNumber);
+               // console.log("applicationNumber--",applicationNumber);
                 var queryObjectForEst = [
                   {
                     applicationNo: applicationNumber,
@@ -160,7 +160,7 @@ router.post(
                 500
               );
             }
-            console.log("estResponse--",estResponse);
+           // console.log("estResponse--",estResponse);
             wcObj.totalAmount = estResponse.data.Calculation[0].totalAmount;
             wcObj.applicationFee = estResponse.data.Calculation[0].fee;
             wcObj.serviceFee = estResponse.data.Calculation[0].charge;
@@ -175,20 +175,21 @@ router.post(
             var pdfResponse;
             const defaultLocale = "en_IN"
             let locale = requestinfo.RequestInfo.msgId;
-            console.log("locale--",requestinfo.RequestInfo.msgId);
-            console.log("locale1--",locale);
+            //console.log("locale--",requestinfo.RequestInfo.msgId);
+            //console.log("locale1--",locale);
             if (null != locale) {
               locale = locale.split("|");
               locale = locale.length > 1 ? locale[1] : defaultLocale;
             } else {
               locale = defaultLocale;
             }
+            
             if (service == "WATER")
-            var pdfkey = locale == "hi_IN" ? config.pdf.ws_estimate_template_hi : config.pdf.ws_estimate_template
+            var pdfkey = locale == "hi_IN" ? wcObj.applicationType == 'NEW_WATER_CONNECTION' ? config.pdf.ws_estimate_template_hi : config.pdf.ws_modify_estimate_template_hi : wcObj.applicationType == 'NEW_WATER_CONNECTION' ? config.pdf.ws_estimate_template : config.pdf.ws_modify_estimate_template
             else
             var pdfkey = locale == "hi_IN" ? config.pdf.sw_estimate_template_hi : config.pdf.sw_estimate_template
             //var pdfkey = config.pdf.ws_estimate_template;
-            //console.log("pdfkey--",pdfkey);
+            console.log("pdfkey--",pdfkey);
             try {
               pdfResponse = await create_pdf(
                 tenantId,

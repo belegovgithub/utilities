@@ -33,14 +33,20 @@ module.exports = {
       process.env.MCOLLECT_BILL || "mcollect-bill",
     ws_estimate_template:
       process.env.WS_ESTIMATENOTICE || "ws-estimationnotice",
+    ws_modify_estimate_template:
+      process.env.WS_MODIFY_ESTIMATENOTICE || "ws-modify-estimationnotice",
     sw_estimate_template:
       process.env.SW_ESTIMATENOTICE || "sw-estimationnotice",
+    sw_estimate_template:
+      process.env.SW_MODIFY_ESTIMATENOTICE || "sw-modify-estimationnotice",
     ws_sanction_template:
       process.env.WS_ESTIMATENOTICE || "ws-sanctionletter",
     sw_sanction_template:
       process.env.SW_ESTIMATENOTICE || "sw-sanctionletter",
     ws_estimate_template_hi:
       process.env.WS_ESTIMATENOTICE_HI || "ws-estimationnotice-hi",
+    ws_modify_estimate_template_hi:
+      process.env.WS_MODIFY_ESTIMATENOTICE_HI || "ws--modify-estimationnotice-hi",
     ws_sanction_template_hi:
       process.env.WS_ESTIMATENOTICE_HI || "ws-sanctionletter-hi",
     sw_estimate_template_hi:
