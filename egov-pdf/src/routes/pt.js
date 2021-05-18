@@ -288,7 +288,7 @@ router.post(
           return renderError(res, `Failed to query bills for property`, 500);
         }
         var demand = demandresponse.data;
-        //console.log("demand orig--",JSON.stringify(demand));
+        console.log("demand orig--",JSON.stringify(demand));
         if(demand &&
           demand.Demands &&
           demand.Demands.length > 0)
@@ -296,7 +296,8 @@ router.post(
         var demandArr = [];
         var currentDemandObj = demand.Demands[demand.Demands.length-1]; //get current year demand object
         //console.log("currentDemandObj--",JSON.stringify(currentDemandObj));
-        var advanceDemand = 0; // if advance is availabe for previous year
+        var advanceDemand = 0;// if advance is availabe for previous year
+        var previousDemand=0; // to store the demand notice charge for previous year
         var advanceCarryForward = 0; // if advance is availabe for current year
         var totalPaid = 0; //total amount paid
         var totalArrear = 0; // total arrear amount
@@ -317,6 +318,7 @@ router.post(
               obj.taxHeadCode = x.taxHeadMasterCode; 
               obj.currentDemand = x.taxAmount;
               obj.arrears = 0;
+              obj.total = obj.arrears + obj.currentDemand;
               demandArr.push(obj);
               totalPaid = totalPaid+x.collectionAmount; //Total amount paid
               totalCurrent = totalCurrent + x.taxAmount; // total amount paid for current demand
@@ -335,8 +337,11 @@ router.post(
            if(x.demandDetails.length>0)
            {
              x.demandDetails.map(function(billDtl){
-               if(billDtl.taxHeadCode == "PT_ADVANCE_CARRYFORWARD") //check for advance amount
+               if(billDtl.taxHeadMasterCode == "PT_ADVANCE_CARRYFORWARD") //check for advance amount
                advanceDemand = advanceDemand + billDtl.taxAmount
+              //  if(billDtl.taxHeadMasterCode == "PT_DEMANDNOTICE_CHARGE")
+              //  {previousDemand = previousDemand + billDtl.taxAmount
+              //  console.log("demand---"+previousDemand);}
                if(par.taxHeadCode == billDtl.taxHeadMasterCode)
                {
                  par.arrears = par.arrears + billDtl.taxAmount; 
@@ -347,10 +352,23 @@ router.post(
                }
              })
            }
+           
        })
       }
       })
-     // console.log("demandArr--"+JSON.stringify(demandArr));
+      //console.log("demandArr--"+JSON.stringify(demandArr))
+    //   if(previousDemand >0)
+    //   {
+    //     let obj={};
+    //     obj.taxHeadCode = "PT_DEMANDNOTICE_CHARGE"; 
+    //     obj.currentDemand = 0;
+    //     obj.arrears = previousDemand;
+    //     obj.total = obj.arrears + obj.currentDemand;
+    //     demandArr.push(obj);
+    //     totalArrear=totalArrear+previousDemand;
+
+    //   }
+    //  console.log("demandArr--"+JSON.stringify(demandArr));
      // console.log("totalPaid--"+totalPaid);
     
 
@@ -406,7 +424,7 @@ router.post(
         bills.Bills[0].arrearDtl = demandArr;
         
         bills.Bills[0].advanceCarryforward = Math.abs(advanceCarryForward) 
-        bills.Bills[0].totalPaid = totalPaid + advanceDemand;
+        bills.Bills[0].totalPaid = totalPaid + advanceDemand + previousDemand;
         bills.Bills[0].totalArrear = totalArrear;
         bills.Bills[0].totalCurrent = totalCurrent;
         bills.Bills[0].adjustedAmount = totalPaid >= (totalArrear+totalCurrent) ? (totalArrear+totalCurrent) : totalPaid
