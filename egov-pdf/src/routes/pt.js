@@ -337,37 +337,40 @@ router.post(
            if(x.demandDetails.length>0)
            {
              x.demandDetails.map(function(billDtl){
-               if(billDtl.taxHeadMasterCode == "PT_ADVANCE_CARRYFORWARD") //check for advance amount
-               advanceDemand = advanceDemand + billDtl.taxAmount
-              //  if(billDtl.taxHeadMasterCode == "PT_DEMANDNOTICE_CHARGE")
-              //  {previousDemand = previousDemand + billDtl.taxAmount
-              //  console.log("demand---"+previousDemand);}
-               if(par.taxHeadCode == billDtl.taxHeadMasterCode)
-               {
-                 par.arrears = par.arrears + billDtl.taxAmount; 
-                 par.total = par.arrears + par.currentDemand
-                 totalPaid = totalPaid+billDtl.collectionAmount;
-                 totalArrear = totalArrear + billDtl.taxAmount
-                 //console.log((par.taxHeadCode + "--" + par.arrears));
-               }
+              //temp code
+              if(demandArr.filter(someobject => someobject.taxHeadCode == billDtl.taxHeadMasterCode).length>0)
+              {
+                if(par.taxHeadCode == billDtl.taxHeadMasterCode)
+                 {
+                  par.arrears = par.arrears + billDtl.taxAmount; 
+                  par.total = par.arrears + par.currentDemand
+                  totalPaid = totalPaid + billDtl.collectionAmount;
+                  totalArrear = totalArrear + billDtl.taxAmount
+                }
+              }
+              else{
+                if(billDtl.taxHeadMasterCode == "PT_ADVANCE_CARRYFORWARD" && advanceDemand ==0)
+                advanceDemand = advanceDemand + billDtl.taxAmount;
+                if(billDtl.taxHeadMasterCode == "PT_DEMANDNOTICE_CHARGE" && previousDemand ==0)
+                previousDemand = previousDemand + billDtl.taxAmount;
+              }
              })
            }
-           
        })
       }
       })
       //console.log("demandArr--"+JSON.stringify(demandArr))
-    //   if(previousDemand >0)
-    //   {
-    //     let obj={};
-    //     obj.taxHeadCode = "PT_DEMANDNOTICE_CHARGE"; 
-    //     obj.currentDemand = 0;
-    //     obj.arrears = previousDemand;
-    //     obj.total = obj.arrears + obj.currentDemand;
-    //     demandArr.push(obj);
-    //     totalArrear=totalArrear+previousDemand;
+      if(previousDemand >0)
+      {
+        let obj={};
+        obj.taxHeadCode = "PT_DEMANDNOTICE_CHARGE"; 
+        obj.currentDemand = 0;
+        obj.arrears = previousDemand;
+        obj.total = obj.arrears + obj.currentDemand;
+        demandArr.push(obj);
+        totalArrear=totalArrear+previousDemand;
 
-    //   }
+      }
     //  console.log("demandArr--"+JSON.stringify(demandArr));
      // console.log("totalPaid--"+totalPaid);
     
