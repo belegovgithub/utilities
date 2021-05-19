@@ -55,14 +55,29 @@ function compareAmount(a,b)
                 })
               }
               else{
+                if(billobj.taxHeadCode =="PT_ADVANCE_CARRYFORWARD")
+                {
+                  if(!compiledObjs.filter(someobject => someobject.taxHead == billobj.taxHeadCode).length>0){
+                  let ob  = {
+                 
+                    taxHead : billobj.taxHeadCode,
+                    amount : billobj.adjustedAmount,
+                    amountPaid : Math.abs(billobj.amount)
+                  }
+                  compiledObjs.push(ob);
+                }
+              }
+              else{
                 //console.log("in else-"+billobj.taxHeadCode);
                 let obj  = {
+                 
                   taxHead : billobj.taxHeadCode,
                   amount : billobj.amount,
                   amountPaid : billobj.adjustedAmount
                 }
                 compiledObjs.push(obj);
               }
+            }
              }
           })
         })
@@ -312,7 +327,7 @@ async function search_billV2(tenantId, consumerCode,serviceId,requestinfo) {
 }
 
 async function create_pdf(tenantId, key, data, requestinfo) {
-  //console.log("key--",key,"data--",JSON.stringify(data),"tenantId--",tenantId );
+  console.log("key--",key,"data--",JSON.stringify(data),"tenantId--",tenantId );
   //console.log("url",url.resolve(config.host.pdf, config.paths.pdf_create));
   //console.log("requestinfo--",url.resolve(config.host.pdf, config.paths.pdf_create));
   //console.log("requestinfo---",JSON.stringify(requestinfo));
