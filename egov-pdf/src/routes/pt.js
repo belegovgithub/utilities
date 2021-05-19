@@ -337,11 +337,15 @@ router.post(
            if(x.demandDetails.length>0)
            {
              x.demandDetails.map(function(billDtl){
-               if(billDtl.taxHeadMasterCode == "PT_ADVANCE_CARRYFORWARD") //check for advance amount
+               if(billDtl.taxHeadMasterCode == "PT_ADVANCE_CARRYFORWARD") {
+               if(!demandArr.filter(someobject => someobject.taxHeadCode == billDtl.taxHeadMasterCode).length>0)//check for advance amount
                advanceDemand = advanceDemand + billDtl.taxAmount
-              //  if(billDtl.taxHeadMasterCode == "PT_DEMANDNOTICE_CHARGE")
-              //  {previousDemand = previousDemand + billDtl.taxAmount
-              //  console.log("demand---"+previousDemand);}
+               }
+               if(billDtl.taxHeadMasterCode == "PT_DEMANDNOTICE_CHARGE"){
+                if(!demandArr.filter(someobject => someobject.taxHeadCode == billDtl.taxHeadMasterCode).length>0)
+               {previousDemand = previousDemand + billDtl.taxAmount
+               console.log("demand---"+previousDemand);}
+               }
                if(par.taxHeadCode == billDtl.taxHeadMasterCode)
                {
                  par.arrears = par.arrears + billDtl.taxAmount; 
@@ -357,17 +361,17 @@ router.post(
       }
       })
       //console.log("demandArr--"+JSON.stringify(demandArr))
-    //   if(previousDemand >0)
-    //   {
-    //     let obj={};
-    //     obj.taxHeadCode = "PT_DEMANDNOTICE_CHARGE"; 
-    //     obj.currentDemand = 0;
-    //     obj.arrears = previousDemand;
-    //     obj.total = obj.arrears + obj.currentDemand;
-    //     demandArr.push(obj);
-    //     totalArrear=totalArrear+previousDemand;
+      if(previousDemand >0)
+      {
+        let obj={};
+        obj.taxHeadCode = "PT_DEMANDNOTICE_CHARGE"; 
+        obj.currentDemand = 0;
+        obj.arrears = previousDemand;
+        obj.total = obj.arrears + obj.currentDemand;
+        demandArr.push(obj);
+        totalArrear=totalArrear+previousDemand;
 
-    //   }
+      }
     //  console.log("demandArr--"+JSON.stringify(demandArr));
      // console.log("totalPaid--"+totalPaid);
     
