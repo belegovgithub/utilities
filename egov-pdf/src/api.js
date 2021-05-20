@@ -55,7 +55,7 @@ function compareAmount(a,b)
                 })
               }
               else{
-                if(billobj.taxHeadCode =="PT_ADVANCE_CARRYFORWARD")
+                if(billobj.taxHeadCode =="PT_ADVANCE_CARRYFORWARD" || billobj.taxHeadCode =="WS_ADVANCE_CARRYFORWARD"||billobj.taxHeadCode =="SW_ADVANCE_CARRYFORWARD")
                 {
                   if(!compiledObjs.filter(someobject => someobject.taxHead == billobj.taxHeadCode).length>0){
                   let ob  = {
