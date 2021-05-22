@@ -15,6 +15,7 @@ var {
 } = require("../api");
 
 const { asyncMiddleware } = require("../utils/asyncMiddleware");
+const { count } = require("console");
 
 function renderError(res, errorMessage, errorCode) {
   if (errorCode == undefined) errorCode = 500;
@@ -288,7 +289,7 @@ router.post(
           return renderError(res, `Failed to query bills for property`, 500);
         }
         var demand = demandresponse.data;
-        console.log("demand orig--",JSON.stringify(demand));
+       // console.log("demand orig--",JSON.stringify(demand));
         if(demand &&
           demand.Demands &&
           demand.Demands.length > 0)
@@ -312,15 +313,35 @@ router.post(
               {
                 advanceCarryForward = x.taxAmount;
               }
+              
               else
               {
               let obj = {}
               obj.taxHeadCode = x.taxHeadMasterCode; 
               obj.currentDemand = x.taxAmount;
               obj.arrears = 0;
-              obj.total = obj.arrears + obj.currentDemand;
-              demandArr.push(obj);
-              totalPaid = totalPaid+x.collectionAmount; //Total amount paid
+              obj.total =( obj.arrears + obj.currentDemand).toFixed(2);
+              //demandArr.push(obj);       
+              // console.log("taxhead code--"+obj.taxHeadCode+" vlaue"+obj.currentDemand 
+               var taxheadpresent=false;
+                for(let i=0;i<demandArr.length;i++)
+                {
+                  someobject=demandArr[i];
+                  if(someobject.taxHeadCode == x.taxHeadMasterCode)
+                  {
+                    someobject.total=(someobject.total+x.taxAmount).toFixed(2);
+                    someobject.currentDemand=someobject.currentDemand+x.taxAmount;
+                    taxheadpresent=true;
+                 }
+                  
+                }
+                if(taxheadpresent==false)
+                {
+                  demandArr.push(obj);
+                }
+              //demandArr.push(obj);
+              //console.log("demandArr--"+JSON.stringify(demandArr));
+              totalPaid= totalPaid+x.collectionAmount; //Total amount paid
               totalCurrent = totalCurrent + x.taxAmount; // total amount paid for current demand
             }
           }
@@ -341,12 +362,14 @@ router.post(
               if(demandArr.filter(someobject => someobject.taxHeadCode == billDtl.taxHeadMasterCode).length>0)
               {
                 if(par.taxHeadCode == billDtl.taxHeadMasterCode)
-                 {
+               {
+                  //console.log("billDtl--"+JSON.stringify(billDtl));
                   par.arrears = par.arrears + billDtl.taxAmount; 
                   par.total = par.arrears + par.currentDemand
                   totalPaid = totalPaid + billDtl.collectionAmount;
                   totalArrear = totalArrear + billDtl.taxAmount
                 }
+                console.log("demandArr--"+JSON.stringify(demandArr))
               }
               else{
                 if(billDtl.taxHeadMasterCode == "PT_ADVANCE_CARRYFORWARD" && advanceDemand ==0)
@@ -359,6 +382,7 @@ router.post(
        })
       }
       })
+      
       //console.log("demandArr--"+JSON.stringify(demandArr))
       if(previousDemand >0)
       {
@@ -371,7 +395,7 @@ router.post(
         totalArrear=totalArrear+previousDemand;
 
       }
-    //  console.log("demandArr--"+JSON.stringify(demandArr));
+   //  console.log("demandArr--"+JSON.stringify(demandArr));
      // console.log("totalPaid--"+totalPaid);
     
 
@@ -426,12 +450,12 @@ router.post(
         //console.log("advanceCarryForward--",advanceCarryForward);
         bills.Bills[0].arrearDtl = demandArr;
         
-        bills.Bills[0].advanceCarryforward = Math.abs(advanceCarryForward) 
-        bills.Bills[0].totalPaid = totalPaid + advanceDemand + previousDemand;
-        bills.Bills[0].totalArrear = totalArrear;
-        bills.Bills[0].totalCurrent = totalCurrent;
-        bills.Bills[0].adjustedAmount = totalPaid >= (totalArrear+totalCurrent) ? (totalArrear+totalCurrent) : totalPaid
-         bills.Bills[0].payableAmount = bills.Bills[0].adjustedAmount >= (totalArrear+totalCurrent) ? 0 :((totalArrear+totalCurrent) - bills.Bills[0].adjustedAmount) 
+        bills.Bills[0].advanceCarryforward = Math.abs(advanceCarryForward).toFixed(2);
+        bills.Bills[0].totalPaid = (totalPaid + advanceDemand + previousDemand).toFixed(2);
+        bills.Bills[0].totalArrear = totalArrear.toFixed(2);
+        bills.Bills[0].totalCurrent = totalCurrent.toFixed(2);
+        bills.Bills[0].adjustedAmount = totalPaid.toFixed(2) >= (totalArrear+totalCurrent).toFixed(2) ? (totalArrear+totalCurrent).toFixed(2) : totalPaid.toFixed(2);
+         bills.Bills[0].payableAmount = bills.Bills[0].adjustedAmount>= (totalArrear+totalCurrent).toFixed(2) ? 0 :(((totalArrear+totalCurrent) - bills.Bills[0].adjustedAmount) ).toFixed(2);
       //  bills.Bills[0].payableAmount = bills.Bills[0].totalAmount - bills.Bills[0].advanceAmount;
         //console.log("bills--",JSON.stringify(bills));
         BillData.push(...bills.Bills);
