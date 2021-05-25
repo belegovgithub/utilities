@@ -450,12 +450,12 @@ router.post(
         //console.log("advanceCarryForward--",advanceCarryForward);
         bills.Bills[0].arrearDtl = demandArr;
         
-        bills.Bills[0].advanceCarryforward = Math.abs(advanceCarryForward).toFixed(2);
-        bills.Bills[0].totalPaid = (totalPaid + advanceDemand + previousDemand).toFixed(2);
-        bills.Bills[0].totalArrear = totalArrear.toFixed(2);
-        bills.Bills[0].totalCurrent = totalCurrent.toFixed(2);
-        bills.Bills[0].adjustedAmount = totalPaid>= (totalArrear+totalCurrent).toFixed(2) ? (totalArrear+totalCurrent).toFixed(2) : totalPaid.toFixed(2);
-         bills.Bills[0].payableAmount = bills.Bills[0].adjustedAmount>= (totalArrear+totalCurrent).toFixed(2) ? 0 :(((totalArrear+totalCurrent) - bills.Bills[0].adjustedAmount) ).toFixed(2);
+        bills.Bills[0].advanceCarryforward = Math.abs(advanceCarryForward);
+        bills.Bills[0].totalPaid = (totalPaid + advanceDemand + previousDemand);
+        bills.Bills[0].totalArrear = totalArrear;
+        bills.Bills[0].totalCurrent = totalCurrent;
+        bills.Bills[0].adjustedAmount = totalPaid>= (totalArrear+totalCurrent) ? (totalArrear+totalCurrent) : totalPaid;
+         bills.Bills[0].payableAmount = bills.Bills[0].adjustedAmount>= (totalArrear+totalCurrent) ? 0 :(((totalArrear+totalCurrent) - bills.Bills[0].adjustedAmount) );
       //  bills.Bills[0].payableAmount = bills.Bills[0].totalAmount - bills.Bills[0].advanceAmount;
         //console.log("bills--",JSON.stringify(bills));
         BillData.push(...bills.Bills);
