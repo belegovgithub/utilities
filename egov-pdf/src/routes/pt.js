@@ -127,7 +127,7 @@ router.post(
     var tenantId = req.query.tenantId;
     var uuid = req.query.uuid;
     var requestinfo = req.body;
-    //console.log("request--",req);
+  console.log("request--",req);
     if (requestinfo == undefined) {
       return renderError(res, "requestinfo can not be null", 400);
     }
@@ -320,7 +320,7 @@ router.post(
               obj.taxHeadCode = x.taxHeadMasterCode; 
               obj.currentDemand = x.taxAmount;
               obj.arrears = 0;
-              obj.total =( obj.arrears + obj.currentDemand).toFixed(2);
+              obj.total =obj.arrears + obj.currentDemand;
               //demandArr.push(obj);       
               // console.log("taxhead code--"+obj.taxHeadCode+" vlaue"+obj.currentDemand 
                var taxheadpresent=false;
@@ -329,7 +329,7 @@ router.post(
                   someobject=demandArr[i];
                   if(someobject.taxHeadCode == x.taxHeadMasterCode)
                   {
-                    someobject.total=(someobject.total+x.taxAmount).toFixed(2);
+                    someobject.total=someobject.total+x.taxAmount;
                     someobject.currentDemand=someobject.currentDemand+x.taxAmount;
                     taxheadpresent=true;
                  }
@@ -454,7 +454,7 @@ router.post(
         bills.Bills[0].totalPaid = (totalPaid + advanceDemand + previousDemand).toFixed(2);
         bills.Bills[0].totalArrear = totalArrear.toFixed(2);
         bills.Bills[0].totalCurrent = totalCurrent.toFixed(2);
-        bills.Bills[0].adjustedAmount = totalPaid.toFixed(2) >= (totalArrear+totalCurrent).toFixed(2) ? (totalArrear+totalCurrent).toFixed(2) : totalPaid.toFixed(2);
+        bills.Bills[0].adjustedAmount = totalPaid>= (totalArrear+totalCurrent).toFixed(2) ? (totalArrear+totalCurrent).toFixed(2) : totalPaid.toFixed(2);
          bills.Bills[0].payableAmount = bills.Bills[0].adjustedAmount>= (totalArrear+totalCurrent).toFixed(2) ? 0 :(((totalArrear+totalCurrent) - bills.Bills[0].adjustedAmount) ).toFixed(2);
       //  bills.Bills[0].payableAmount = bills.Bills[0].totalAmount - bills.Bills[0].advanceAmount;
         //console.log("bills--",JSON.stringify(bills));
