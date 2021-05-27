@@ -46,7 +46,7 @@ module.exports = {
     ws_estimate_template_hi:
       process.env.WS_ESTIMATENOTICE_HI || "ws-estimationnotice-hi",
     ws_modify_estimate_template_hi:
-      process.env.WS_MODIFY_ESTIMATENOTICE_HI || "ws--modify-estimationnotice-hi",
+      process.env.WS_MODIFY_ESTIMATENOTICE_HI || "ws-modify-estimationnotice-hi",
     ws_sanction_template_hi:
       process.env.WS_ESTIMATENOTICE_HI || "ws-sanctionletter-hi",
     sw_estimate_template_hi:
