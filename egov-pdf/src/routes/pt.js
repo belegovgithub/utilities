@@ -303,6 +303,8 @@ router.post(
         var totalPaid = 0; //total amount paid
         var totalArrear = 0; // total arrear amount
         var totalCurrent = 0; // total current amount
+        var previousInterest=0;
+        var previousRound=0;
         if(!currentDemandObj.isPaymentCompleted) // if payment is still pending
         {
           compArr.forEach(taxhead=>{
@@ -376,6 +378,10 @@ router.post(
                 advanceDemand = advanceDemand + billDtl.taxAmount;
                 if(billDtl.taxHeadMasterCode == "PT_DEMANDNOTICE_CHARGE" && previousDemand ==0)
                 previousDemand = previousDemand + billDtl.taxAmount;
+                if(billDtl.taxHeadMasterCode == "PT_TIME_INTEREST" && previousInterest ==0)
+                previousInterest = previousInterest + billDtl.taxAmount;
+                if(billDtl.taxHeadMasterCode == "PT_ROUNDOFF" && previousRound ==0)
+                previousRound = previousRound + billDtl.taxAmount;
               }
              })
            }
@@ -393,6 +399,28 @@ router.post(
         obj.total = obj.arrears + obj.currentDemand;
         demandArr.push(obj);
         totalArrear=totalArrear+previousDemand;
+
+      }
+      if(previousInterest >0)
+      {
+        let obj={};
+        obj.taxHeadCode = "PT_TIME_INTEREST"; 
+        obj.currentDemand = 0;
+        obj.arrears = previousInterest;
+        obj.total = obj.arrears + obj.currentDemand;
+        demandArr.push(obj);
+        totalArrear=totalArrear+previousInterest;
+
+      }
+      if(previousRound >0)
+      {
+        let obj={};
+        obj.taxHeadCode = "PT_ROUNDOFF"; 
+        obj.currentDemand = 0;
+        obj.arrears = previousRound;
+        obj.total = obj.arrears + obj.currentDemand;
+        demandArr.push(obj);
+        totalArrear=totalArrear+previousRound;
 
       }
    //  console.log("demandArr--"+JSON.stringify(demandArr));
@@ -451,7 +479,7 @@ router.post(
         bills.Bills[0].arrearDtl = demandArr;
         
         bills.Bills[0].advanceCarryforward = Math.abs(advanceCarryForward);
-        bills.Bills[0].totalPaid = (totalPaid + advanceDemand + previousDemand);
+        bills.Bills[0].totalPaid = totalPaid + advanceDemand + previousDemand+previousInterest+previousRound;
         bills.Bills[0].totalArrear = totalArrear;
         bills.Bills[0].totalCurrent = totalCurrent;
         bills.Bills[0].adjustedAmount = totalPaid>= (totalArrear+totalCurrent) ? (totalArrear+totalCurrent) : totalPaid;
