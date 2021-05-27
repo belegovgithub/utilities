@@ -476,15 +476,16 @@ router.post(
         })*/
         // write from here
         //console.log("advanceCarryForward--",advanceCarryForward);
+        var total=totalPaid + advanceDemand + previousDemand+previousInterest+previousRound;
         bills.Bills[0].arrearDtl = demandArr;
         
         bills.Bills[0].advanceCarryforward = Math.abs(advanceCarryForward);
-        bills.Bills[0].totalPaid = totalPaid + advanceDemand + previousDemand+previousInterest+previousRound;
+        bills.Bills[0].totalPaid = total;
         bills.Bills[0].totalArrear = totalArrear;
         bills.Bills[0].totalCurrent = totalCurrent;
-        bills.Bills[0].adjustedAmount = totalPaid>= (totalArrear+totalCurrent) ? (totalArrear+totalCurrent) : totalPaid;
-         bills.Bills[0].payableAmount = bills.Bills[0].adjustedAmount>= (totalArrear+totalCurrent) ? 0 :(((totalArrear+totalCurrent) - bills.Bills[0].adjustedAmount) );
-      //  bills.Bills[0].payableAmount = bills.Bills[0].totalAmount - bills.Bills[0].advanceAmount;
+        bills.Bills[0].adjustedAmount = total>= (totalArrear+totalCurrent) ? (totalArrear+totalCurrent) : total;
+        bills.Bills[0].payableAmount = bills.Bills[0].adjustedAmount>= (totalArrear+totalCurrent) ? 0 :(((totalArrear+totalCurrent) - bills.Bills[0].adjustedAmount) );
+      // bills.Bills[0].payableAmount = bills.Bills[0].totalAmount - bills.Bills[0].advanceAmount;
         //console.log("bills--",JSON.stringify(bills));
         BillData.push(...bills.Bills);
       }
