@@ -3,7 +3,9 @@ var router = express.Router();
 var config = require("../config");
 var {
   search_waterconnections,
-  search_property,
+  search_mdms,
+  search_water_bill,
+  search_demand_byid,
   search_property_with_propnumber,
   create_pdf,
   estimate,
@@ -175,7 +177,7 @@ router.post(
             var pdfResponse;
             const defaultLocale = "en_IN"
             let locale = requestinfo.RequestInfo.msgId;
-            //console.log("locale--",requestinfo.RequestInfo.msgId);
+           // console.log("locale--",requestinfo.RequestInfo.msgId);
             //console.log("locale1--",locale);
             if (null != locale) {
               locale = locale.split("|");
@@ -183,7 +185,7 @@ router.post(
             } else {
               locale = defaultLocale;
             }
-            
+            //console.log("locale1--",locale);
             if (service == "WATER")
             var pdfkey = locale == "hi_IN" ? wcObj.applicationType == 'NEW_WATER_CONNECTION' ? config.pdf.ws_estimate_template_hi : config.pdf.ws_modify_estimate_template_hi : wcObj.applicationType == 'NEW_WATER_CONNECTION' ? config.pdf.ws_estimate_template : config.pdf.ws_modify_estimate_template
             else
@@ -509,5 +511,177 @@ router.post(
     }
   })
 );
+
+
+router.post(
+  "/waterbill",
+  asyncMiddleware(async function (req, res, next) {
+    var tenantId = req.query.tenantId;
+    var consumerNo = req.query.consumerNo;
+    var businessServ = req.query.businessService;
+    var requestinfo = req.body;
+    const businessService = businessServ.includes("WS") ? "WS" : "SW";
+    //propertyIds = propertyId.split(",");
+    console.log("consumerNo---",consumerNo);
+    if (requestinfo == undefined) {
+      return renderError(res, "requestinfo can not be null", 400);
+    }
+    if (!tenantId || !consumerNo) {
+      return renderError(
+        res,
+        "tenantId and consumerNo are mandatory to generate the water bill",
+        400
+      );
+    }
+    
+    try {
+      const mdmsRequestBody = {
+        "MdmsCriteria": {
+            "tenantId": tenantId,
+            "moduleDetails": [
+                { "moduleName": "ws-services-masters", "masterDetails": [{ "name": "billingPeriod" }] },
+                { "moduleName": "sw-services-calculation", "masterDetails": [{ "name": "billingPeriod" }] }
+            ]
+        }
+    }
+       
+      if (consumerNo) {
+        var BillData = [];
+        var billresponse;
+        try {
+          billresponse = await search_water_bill(consumerNo, tenantId, requestinfo,businessService); // search bill for the corresponding property id
+        } catch (ex) {
+          console.log(ex.stack);
+          if (ex.response && ex.response.data) console.log(ex.response.data);
+          return renderError(res, `Failed to query bills for property`, 500);
+        }
+        var bills = billresponse.data;
+        //console.log("bills orig--",JSON.stringify(bills));
+        if( bills &&
+          bills.Bill &&
+          bills.Bill.length > 0)
+          {
+            for(let i=0;i<bills.Bill.length;i++) // Loop for multiple property ids
+            {
+            let data = [];
+            bills.Bill[i].billDetails.map(curEl => data.push(curEl));
+            let sortData = data.sort((a, b) => b.toPeriod - a.toPeriod);
+            let tenant = sortData[0].tenantId;
+            let demandId = sortData[0].demandId;
+            const queryString = [
+                { key: "demandId", value: demandId },
+                { key: "tenantId", value: tenant }
+            ]
+            let billTotalAmount = bills.Bill[i].totalAmount;
+            var demandResponse = await search_demand_byid(demandId, tenantId, requestinfo); 
+            var demandData = demandResponse.data;
+            //console.log("demandResponse orig--",JSON.stringify(demandData));
+            let demandAmount = demandData.Demands[0].demandDetails.reduce((accum, item) => accum + item.taxAmount, 0);
+            let partiallyPaid = demandData.Demands[0].demandDetails.reduce((accm, item) => accm + item.collectionAmount, 0);
+            if (billTotalAmount <= 0) {
+              // We do have Advance. This value is already adjusted from the actual demand.
+              // i.e. The entire demand is adjusted hence billTotalAmount becomes <= 0
+              bills.Bill[i].AdvanceAdjustedValue = partiallyPaid > 0 ? partiallyPaid : 0;
+          } else {
+                    // We have some Bill Amount. There are two possibilities.
+                    // 1 - There was some advance and it is adjusted
+                    // 2 - This is the balance of the previous Bill amount after partial payment - no adjustment
+                    if (partiallyPaid >= 0) {
+                      //There is some amount paid partially. Hence AdvanceAdjusted must be 0
+                      bills.Bill[i].AdvanceAdjustedValue = 0;
+                       } else {
+                                bills.Bill[i].AdvanceAdjustedValue = demandAmount - billTotalAmount;
+                              }
+          }
+          if (billTotalAmount > 0) {
+            sortData.shift();
+            let totalAmount = 0;
+            let previousArrears = 0;
+            if (sortData.length > 0) {
+                let totalArrearsAmount = sortData.map(el => el.amount + totalAmount);
+                previousArrears = totalArrearsAmount.reduce((a, b) => a + b);
+            }
+            bills.Bill[i].arrearAmount = previousArrears.toFixed(2);
+        }
+        bills.Bill[i].billDetails.sort((a, b) => b.toPeriod - a.toPeriod);
+        var mdmsResponse = await search_mdms(tenantId, mdmsRequestBody, requestinfo); 
+        console.log("mdmsResponse orig--",JSON.stringify(mdmsResponse.data.MdmsRes));
+        let waterMeteredDemandExipryDate = 0, waterNonMeteredDemandExipryDate = 0, sewerageNonMeteredDemandExpiryDate = 0;
+        const service = (bills.Bill && bills.Bill.length > 0 && bills.Bill[i].businessService) ? bills.Bill[i].businessService : 'WS';
+        if (service === 'WS' &&
+            mdmsResponse.data.MdmsRes['ws-services-masters'] &&
+            mdmsResponse.data.MdmsRes['ws-services-masters'].billingPeriod !== undefined &&
+            mdmsResponse.data.MdmsRes['ws-services-masters'].billingPeriod !== null) {
+              mdmsResponse.data.MdmsRes['ws-services-masters'].billingPeriod.forEach(obj => {
+                if (obj.connectionType === 'Metered') {
+                    bills.Bill[i].billDetails[0]['expiryDate'] = bills.Bill[i].billDetails[0].toPeriod + obj.demandExpiryDate;
+                } else if (obj.connectionType === 'Non Metered') {
+                    bills.Bill[i].billDetails[0]['expiryDate'] = bills.Bill[i].billDetails[0].toPeriod + obj.demandExpiryDate;
+                }
+            });
+        }
+
+        if (service === "SW" &&
+        mdmsResponse.data.MdmsRes['sw-services-calculation'] &&
+        mdmsResponse.data.MdmsRes['sw-services-calculation'].billingPeriod !== undefined &&
+        mdmsResponse.data.MdmsRes['sw-services-calculation'].billingPeriod !== null) {
+          mdmsResponse.data.MdmsRes['sw-services-calculation'].billingPeriod.forEach(obj => {
+                if (obj.connectionType === 'Non Metered') {
+                    bills.Bill[i].billDetails[0]['expiryDate'] = bills.Bill[i].billDetails[0].toPeriod + obj.demandExpiryDate;
+                }
+            });
+        }
+            //water data   
+        
+        
+        
+            BillData.push(bills.Bill[i]);
+       // console.log("demand orig--",JSON.stringify(demand));
+       
+    }
+        }
+      
+      console.log("bills--",JSON.stringify(BillData));
+        if (BillData && BillData.length > 0) {
+          var pdfResponse;
+          var pdfkey = config.pdf.wsbill_pdf_template;
+          tenantId = tenantId.split('.')[0];
+          try {
+            var billArray = { Bill: BillData };
+            pdfResponse = await create_pdf(
+              tenantId,
+              pdfkey,
+              billArray,
+              requestinfo
+            );
+          } catch (ex) {
+            console.log(ex.stack);
+          if (ex.response && ex.response.data) console.log(ex.response.data);
+            return renderError(res, "Failed to generate PDF for property", 500);
+          }
+          var filename = `${pdfkey}_${new Date().getTime()}`;
+
+          //pdfData = pdfResponse.data.read();
+          res.writeHead(200, {
+            "Content-Type": "application/pdf",
+            "Content-Disposition": `attachment; filename=${filename}.pdf`,
+          });
+          pdfResponse.data.pipe(res);
+        } else {
+          return renderError(res, "There is no demand for this id", 404);
+        }
+      } else {
+        return renderError(
+          res,
+          "There is no property for you for this id",
+          404
+        );
+      }
+    } catch (ex) {
+      console.log(ex.stack);
+    }
+  })
+);
+
 
 module.exports = router;
