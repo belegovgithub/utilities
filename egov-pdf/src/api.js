@@ -246,15 +246,58 @@ async function search_bill(consumerCode, tenantId, requestinfo) {
   });
 }
 
-async function search_demand(consumerCode, tenantId, requestinfo) {
+async function search_water_bill(consumerCode, tenantId, requestinfo , businessService) {
+  var params;
+  
+  if(businessService)
+    {
+        params = {
+          tenantId: tenantId,
+          consumerCode: consumerCode,
+          businessService:businessService
+      };
+    }
+    else
+    {
+      params = {
+        tenantId: tenantId,
+        consumerCode: consumerCode
+        
+    };
+    }
+    console.log("params---",JSON.stringify(params));
   return await axios({
     method: "post",
-    url: url.resolve(config.host.bill_service, config.paths.demand_search),
+    url: url.resolve(config.host.mcollectBilling, config.paths.bill_fetch),
+    data: requestinfo,
+    params
+  });
+}
+
+async function search_demand(consumerCode, tenantId, requestinfo) {
+  //console.log("searching demand--"+consumerCode);
+  return await axios({
+    method: "post",
+    url: url.resolve(config.host.mcollectBilling, config.paths.demand_search),
     data: requestinfo,
     params: {
       tenantId: tenantId,
       consumerCode: consumerCode,
       businessService:"PT"
+    },
+  });
+}
+
+async function search_demand_byid(demandId, tenantId, requestinfo) {
+  //console.log("searching demand--"+consumerCode);
+  return await axios({
+    method: "post",
+    url: url.resolve(config.host.mcollectBilling, config.paths.demand_search),
+    data: requestinfo,
+    action: "_demand",
+    params: {
+      tenantId: tenantId,
+      demandId: demandId
     },
   });
 }
@@ -353,6 +396,7 @@ function checkIfCitizen(requestinfo) {
 }
 
 async function search_waterconnections(tenantId, applicationNumber,requestinfo) {
+  console.log("application no---"+applicationNumber)
   return await axios({
     method: "post",
     url: url.resolve(config.host.ws, config.paths.ws_search),
@@ -456,5 +500,7 @@ module.exports = {
   estimate_sw,
   wf_bs_search,
   wf_process_search,
+  search_water_bill,
+  search_demand_byid,
   checkIfCitizen
 };
