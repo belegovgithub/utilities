@@ -23,6 +23,7 @@ module.exports = {
     ptmutationcertificate_pdf_template:
       process.env.PT_MUTATION_CERTIFICATE || "ptmutationcertificate",
     ptbill_pdf_template: process.env.PT_BILL || "pt-bill",
+    wsbill_pdf_template: process.env.WS_BILL || "ws-bill",
     consolidated_receipt_template:
       process.env.CONSOLIDATED_RECEIPT || "consolidatedreceipt",
     consolidated_bill_template:
@@ -103,6 +104,7 @@ module.exports = {
     estimate_sw:"/sw-calculator/sewerageCalculator/_estimate",
     wf_bs_search:"/egov-workflow-v2/egov-wf/businessservice/_search",
     wf_process_search:"egov-workflow-v2/egov-wf/process/_search",
-    demand_search:"billing-service/demand/_search"
+    demand_search:"billing-service/demand/_search",
+    bill_fetch:"/billing-service/bill/v2/_fetchbill"
   },
 };
