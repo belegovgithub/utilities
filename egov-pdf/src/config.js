@@ -105,6 +105,7 @@ module.exports = {
     wf_bs_search:"/egov-workflow-v2/egov-wf/businessservice/_search",
     wf_process_search:"egov-workflow-v2/egov-wf/process/_search",
     demand_search:"billing-service/demand/_search",
-    bill_fetch:"/billing-service/bill/v2/_fetchbill"
+    bill_fetch:"/billing-service/bill/v2/_fetchbill",
+    amend_search:"billing-service/amendment/_search"
   },
 };
