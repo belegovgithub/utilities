@@ -4,7 +4,7 @@ var router = express.Router();
 var url = require("url");
 var config = require("../config");
 
-var { search_payment_withReceiptNo, search_property_with_propnumber,create_pdf,compareAmount,checkIfCitizen, search_billV2,createForm46} = require("../api");
+var { search_payment_withReceiptNo, create_pdf,compareAmount,checkIfCitizen, search_billV2,createForm46} = require("../api");
 const { asyncMiddleware } = require("../utils/asyncMiddleware");
 
 function renderError(res, errorMessage, errorCode) {
@@ -75,9 +75,7 @@ router.post(
             return renderError(res, "Not Authorized to access resource", 403);
           }
         }
-
-        
-        if(false)
+        if(payments.Payments[0].fileStoreId)
         {
           respObj = {
             filestoreIds:[payments.Payments[0].fileStoreId],
@@ -99,31 +97,12 @@ router.post(
           if(service == "WS" || service == "SW" || service == "PT")
           {
             let sortedObj  = createForm46(payments.Payments[0]);
-            if(service == "PT")
-            {
-              var propertyId=payments.Payments[0].paymentDetails[0].bill.consumerCode;
-            //console.log("propertyId--"+propertyId);           
-              var resProperty = await search_property_with_propnumber(propertyId,tenantId,requestinfo);
-              var propDetail=resProperty.data;
-              console.log("propDetail pro--"+JSON.stringify(propDetail));
-              if(propDetail && propDetail.Properties[0] && propDetail.Properties[0].address)
-              {
-                payments.Payments[0].address = propDetail.Properties[0].address;
-                console.log("address---"+JSON.stringify(payments.Payments[0].address));
-              }
-              //console.log("response pro--"+JSON.stringify(resProperty.data));
-              
-            }
-          
-      
             payments.Payments[0].paymentDetails[0].bill.receiptObj = sortedObj;
-           
             pdfkey =  config.pdf.newptreceipt_pdf_template;
           }
           else
           {
             var sortedObj = payments.Payments[0].paymentDetails[0].bill.billDetails[0].billAccountDetails;
-         
             sortedObj.sort(compareAmount);
             payments.Payments[0].paymentDetails[0].bill.billDetails[0].billAccountDetails = sortedObj;
             pdfkey = config.pdf.consolidated_receipt_template;
