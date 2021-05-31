@@ -7,6 +7,7 @@ var {
   search_property,
   search_bill,
   search_demand,
+  search_amend,
   search_payment,
   create_pdf,
   search_workflow,
@@ -289,7 +290,42 @@ router.post(
           return renderError(res, `Failed to query bills for property`, 500);
         }
         var demand = demandresponse.data;
-       // console.log("demand orig--",JSON.stringify(demand));
+        var amendresponse;
+        try {
+          amendresponse = await search_amend(tenantId, requestinfo, propertyid); // Search demand details for the corresponding property id
+        } catch (ex) {
+          console.log(ex.stack);
+          if (ex.response && ex.response.data) console.log(ex.response.data);
+          return renderError(res, `Failed to query bills for property`, 500);
+        }
+        var amend = amendresponse.data;
+       // console.log("amend orig--",JSON.stringify(amend));
+      // console.log("demand orig--",JSON.stringify(demand));
+
+       if(amend && amend.Amendments && amend.Amendments.length > 0)
+      {
+      var amendArr = [];
+      var currentDemandObj = amend.Amendments[amend.Amendments.length-1];
+
+      
+          compArr.forEach(taxhead=>{
+          currentDemandObj.demandDetails.map(function(x){
+            if(taxhead == x.taxHeadMasterCode)
+            {      
+               let obj = {}
+               obj.taxHeadCode = x.taxHeadMasterCode; 
+               obj.currentDemand = x.taxAmount;
+               obj.arrears = 0;
+               obj.id=x.id;
+               //obj.total =obj.arrears + obj.currentDemand;
+               amendArr.push(obj);
+               //console.log("amendArr--"+JSON.stringify(amendArr));
+            }
+        })
+      })
+    }
+  
+       
         if(demand &&
           demand.Demands &&
           demand.Demands.length > 0)
@@ -323,26 +359,34 @@ router.post(
               obj.currentDemand = x.taxAmount;
               obj.arrears = 0;
               obj.total =obj.arrears + obj.currentDemand;
+              obj.id=x.id;
               //demandArr.push(obj);       
               // console.log("taxhead code--"+obj.taxHeadCode+" vlaue"+obj.currentDemand 
                var taxheadpresent=false;
                 for(let i=0;i<demandArr.length;i++)
                 {
                   someobject=demandArr[i];
+                  if(someobject.taxHeadCode =='PT_DEMANDNOTICE_CHARGE'||someobject.taxHeadCode =='PT_ROUNDOFF'||someobject.taxHeadCode =='PT_TIME_INTEREST'||someobject.taxHeadCode =='PT_TIME_REBATE') {
                   if(someobject.taxHeadCode == x.taxHeadMasterCode)
                   {
                     someobject.total=someobject.total+x.taxAmount;
                     someobject.currentDemand=someobject.currentDemand+x.taxAmount;
                     taxheadpresent=true;
                  }
+                }
                   
                 }
+               // console.log("demandArr--"+JSON.stringify(demandArr));
                 if(taxheadpresent==false)
                 {
+                  
                   demandArr.push(obj);
                 }
+                  
+              
               //demandArr.push(obj);
               //console.log("demandArr--"+JSON.stringify(demandArr));
+              //console.log("arr--"+JSON.stringify(arr));
               totalPaid= totalPaid+x.collectionAmount; //Total amount paid
               totalCurrent = totalCurrent + x.taxAmount; // total amount paid for current demand
             }
@@ -353,7 +397,9 @@ router.post(
      //console.log("advanceCarryforward--"+advanceCarryForward);
       demand.Demands.splice(demand.Demands.length-1,1); //splice the demand object
       //console.log("demand after--",JSON.stringify(demand));
-      demandArr.map(function(par){ //loop over current demand object
+      var j=0;
+      demandArr.map(function(par){ 
+      //loop over current demand object
         if(demand.Demands.length>0)
         {
         demand.Demands.map(function(x){
@@ -365,13 +411,29 @@ router.post(
               {
                 if(par.taxHeadCode == billDtl.taxHeadMasterCode)
                {
-                  //console.log("billDtl--"+JSON.stringify(billDtl));
-                  par.arrears = par.arrears + billDtl.taxAmount; 
-                  par.total = par.arrears + par.currentDemand
-                  totalPaid = totalPaid + billDtl.collectionAmount;
-                  totalArrear = totalArrear + billDtl.taxAmount
-                }
-                console.log("demandArr--"+JSON.stringify(demandArr))
+                 // console.log("demandArr--"+JSON.stringify(demandArr));
+                  var isadded=false;
+                  if(amendArr) {
+                  amendArr.map(function(amendDtl){
+                   // console.log("amendDtl--"+JSON.stringify(amendDtl));
+                    
+                  if(par.id== amendDtl.id || par.currentDemand<0)
+                  {
+                    console.log("par--"+JSON.stringify(par));
+                    par.arrears = 0; 
+                    isadded=true;               
+                  }
+                  
+                })
+              }
+                if(isadded == false) {
+                par.arrears = par.arrears + billDtl.taxAmount; 
+                par.total = par.arrears + par.currentDemand;
+                totalArrear = totalArrear + billDtl.taxAmount;
+                totalPaid = totalPaid + billDtl.collectionAmount;
+              }
+            }
+                //console.log("demandArr--"+JSON.stringify(demandArr))
               }
               else{
                 if(billDtl.taxHeadMasterCode == "PT_ADVANCE_CARRYFORWARD" && advanceDemand ==0)
