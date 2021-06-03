@@ -4,7 +4,7 @@ var router = express.Router();
 var url = require("url");
 var config = require("../config");
 
-var { search_payment_withReceiptNo, create_pdf,search_property_with_propnumber,compareAmount,checkIfCitizen, search_billV2,createForm46} = require("../api");
+var { search_payment_withReceiptNo, create_pdf,search_property_with_propnumber,compareAmount,checkIfCitizen, search_bill,search_billV2,createForm46} = require("../api");
 const { asyncMiddleware } = require("../utils/asyncMiddleware");
 
 function renderError(res, errorMessage, errorCode) {
@@ -103,14 +103,23 @@ router.post(
             //console.log("propertyId--"+propertyId);           
               var resProperty = await search_property_with_propnumber(propertyId,tenantId,requestinfo);
               var propDetail=resProperty.data;
-              console.log("propDetail pro--"+JSON.stringify(propDetail));
+              //console.log("propDetail pro--"+JSON.stringify(propDetail));
               if(propDetail && propDetail.Properties[0] && propDetail.Properties[0].address)
               {
                 payments.Payments[0].address = propDetail.Properties[0].address;
                 console.log("address---"+JSON.stringify(payments.Payments[0].address));
               }
-              //console.log("response pro--"+JSON.stringify(resProperty.data));
+              var billresponse = await search_bill(propertyId, tenantId, requestinfo);
+              var bills = billresponse.data;
+              //console.log("bills--"+JSON.stringify(bills));
               
+              if(bills && bills.Bills[0] && bills.Bills[0].billDate)
+              {
+                payments.Payments[0].billDate=bills.Bills[0].billDate;
+
+              }
+
+              //console.log("response pro--"+JSON.stringify(resProperty.data));
             }
             payments.Payments[0].paymentDetails[0].bill.receiptObj = sortedObj;
             pdfkey =  config.pdf.newptreceipt_pdf_template;
