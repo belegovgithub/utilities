@@ -279,7 +279,7 @@ router.post(
              compArr.push(billobj.taxHeadCode);
           })
         })
-        console.log("compArr---"+compArr);
+       // console.log("compArr---"+compArr);
         
         var demandresponse;
         try {
@@ -290,6 +290,7 @@ router.post(
           return renderError(res, `Failed to query bills for property`, 500);
         }
         var demand = demandresponse.data;
+        //console.log("demand-------"+JSON.stringify(demand));
         var amendresponse;
         try {
           amendresponse = await search_amend(tenantId, requestinfo, propertyid); // Search demand details for the corresponding property id
@@ -341,6 +342,7 @@ router.post(
         var totalCurrent = 0; // total current amount
         var previousInterest=0;
         var previousRound=0;
+        bills.Bills[0].billDate = demand.Demands[0].auditDetails.createdTime;
         if(!currentDemandObj.isPaymentCompleted) // if payment is still pending
         {
           compArr.forEach(taxhead=>{
@@ -385,7 +387,7 @@ router.post(
                   
               
               //demandArr.push(obj);
-              //console.log("demandArr--"+JSON.stringify(demandArr));
+              //("demandArr--"+JSON.stringify(demandArr));
               //console.log("arr--"+JSON.stringify(arr));
               totalPaid= totalPaid+x.collectionAmount; //Total amount paid
               totalCurrent = totalCurrent + x.taxAmount; // total amount paid for current demand
@@ -419,7 +421,7 @@ router.post(
                     
                   if(par.id== amendDtl.id || par.currentDemand<0)
                   {
-                    console.log("par--"+JSON.stringify(par));
+                   // console.log("par--"+JSON.stringify(par));
                     par.arrears = 0; 
                     isadded=true;               
                   }
@@ -771,9 +773,9 @@ router.post(
         //sortedObj.sort(sortTaxhead);
         compiledObjs.map(receiptObj =>{
           receiptObj.billNo = payments.Payments[0].paymentDetails[0].bill.billNumber;
-          receiptObj.billDate = payments.Payments[0].paymentDetails[0].bill.billDate;
+          //receiptObj.billDate = payments.Payments[0].paymentDetails[0].bill.billDate;
         });
-        // console.log("sorted obj---",JSON.stringify(compiledObjs));
+        console.log("receipt Obj---",JSON.stringify(receiptObj));
       payments.Payments[0].paymentDetails[0].bill.receiptObj = compiledObjs;
           var pdfResponse;
           var pdfkey = config.pdf.newptreceipt_pdf_template;
