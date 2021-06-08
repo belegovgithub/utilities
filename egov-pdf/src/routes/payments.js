@@ -103,11 +103,13 @@ router.post(
             //console.log("propertyId--"+propertyId);           
               var resProperty = await search_property_with_propnumber(propertyId,tenantId,requestinfo);
               var propDetail=resProperty.data;
-              //console.log("propDetail pro--"+JSON.stringify(propDetail));
+              console.log("propDetail pro--"+JSON.stringify(propDetail));
               if(propDetail && propDetail.Properties[0] && propDetail.Properties[0].address)
               {
                 payments.Payments[0].address = propDetail.Properties[0].address;
-                console.log("address---"+JSON.stringify(payments.Payments[0].address));
+                payments.Payments[0].owners=propDetail.Properties[0].owners;
+                console.log("owners---"+JSON.stringify( payments.Payments[0].owners));
+                //console.log("address---"+JSON.stringify(payments.Payments[0].address));
               }
               var billresponse = await search_bill(propertyId, tenantId, requestinfo);
               var bills = billresponse.data;
