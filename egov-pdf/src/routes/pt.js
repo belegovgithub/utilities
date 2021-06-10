@@ -247,7 +247,7 @@ router.post(
         for(let i=0;i<properties.Properties.length;i++) // Loop for multiple property ids
         {
         var propertyid = properties.Properties[i].propertyId;
-        console.log("property id---"+propertyid)
+       // console.log("property id---"+propertyid)
         var billresponse;
         try {
           billresponse = await search_bill(propertyid, tenantId, requestinfo); // search bill for the corresponding property id
@@ -306,11 +306,15 @@ router.post(
        if(amend && amend.Amendments && amend.Amendments.length > 0)
       {
       var amendArr = [];
-      var currentDemandObj = amend.Amendments[amend.Amendments.length-1];
+      // var currentDemandObj = amend.Amendments[amend.Amendments.length-1];
+      var currentDemandObj = amend.Amendments;
+      //console.log("currentDemandObj--"+JSON.stringify(currentDemandObj));
 
       
           compArr.forEach(taxhead=>{
-          currentDemandObj.demandDetails.map(function(x){
+
+          currentDemandObj.map(function(currentdemand){
+            currentdemand.demandDetails.map(function(x){           
             if(taxhead == x.taxHeadMasterCode)
             {      
                let obj = {}
@@ -320,9 +324,10 @@ router.post(
                obj.id=x.id;
                //obj.total =obj.arrears + obj.currentDemand;
                amendArr.push(obj);
-               //console.log("amendArr--"+JSON.stringify(amendArr));
+                // console.log("amendArr--"+JSON.stringify(amendArr));
             }
         })
+      })
       })
     }
   
@@ -342,6 +347,7 @@ router.post(
         var totalCurrent = 0; // total current amount
         var previousInterest=0;
         var previousRound=0;
+        var amendedAmt = 0;
         bills.Bills[0].billDate = demand.Demands[0].auditDetails.createdTime;
         if(!currentDemandObj.isPaymentCompleted) // if payment is still pending
         {
@@ -389,7 +395,33 @@ router.post(
               //demandArr.push(obj);
               //("demandArr--"+JSON.stringify(demandArr));
               //console.log("arr--"+JSON.stringify(arr));
-              totalPaid= totalPaid+x.collectionAmount; //Total amount paid
+              var  isAmended = false;
+              
+             // console.log("demandid :..."+x.id);
+              if(amendArr) {
+                amendArr.map(function(amendDtl){
+                // console.log("amendDtl--"+JSON.stringify(amendDtl));
+                
+                  
+                if(x.id == amendDtl.id )
+                {
+                  isAmended = true;
+                  
+
+
+                }
+              })
+            }
+
+              if(isAmended == false){
+                totalPaid= totalPaid+x.collectionAmount;
+               // console.log("totalPaidcc--",totalPaid);
+              }
+              if(x.taxAmount < 0){
+                amendedAmt = amendedAmt + x.taxAmount;
+
+              }
+            
               totalCurrent = totalCurrent + x.taxAmount; // total amount paid for current demand
             }
           }
@@ -408,6 +440,8 @@ router.post(
            if(x.demandDetails.length>0)
            {
              x.demandDetails.map(function(billDtl){
+              //console.log("billDtl--"+JSON.stringify(billDtl));
+              var isadded=false;
               //temp code
               if(demandArr.filter(someobject => someobject.taxHeadCode == billDtl.taxHeadMasterCode).length>0)
               {
@@ -433,12 +467,14 @@ router.post(
                 par.total = par.arrears + par.currentDemand;
                 totalArrear = totalArrear + billDtl.taxAmount;
                 totalPaid = totalPaid + billDtl.collectionAmount;
+                //console.log("billDtl.collectionAmount--",billDtl.collectionAmount);
+               // console.log("totalPaid--",totalPaid);
               }
             }
                 //console.log("demandArr--"+JSON.stringify(demandArr))
               }
               else{
-                if(billDtl.taxHeadMasterCode == "PT_ADVANCE_CARRYFORWARD" && advanceDemand ==0)
+                if(billDtl.taxHeadMasterCode == "PT_ADVANCE_CARRYFORWARD" && advanceDemand ==0 )
                 advanceDemand = advanceDemand + billDtl.taxAmount;
                 if(billDtl.taxHeadMasterCode == "PT_DEMANDNOTICE_CHARGE" && previousDemand ==0)
                 previousDemand = previousDemand + billDtl.taxAmount;
@@ -542,7 +578,8 @@ router.post(
         //console.log("advanceCarryForward--",advanceCarryForward);
         var total=totalPaid + advanceDemand + previousDemand+previousInterest+previousRound;
         bills.Bills[0].arrearDtl = demandArr;
-        
+        if(advanceCarryForward != amendedAmt )
+          total = total+amendedAmt;
         bills.Bills[0].advanceCarryforward = Math.abs(advanceCarryForward);
         bills.Bills[0].totalPaid = total;
         bills.Bills[0].totalArrear = totalArrear;
