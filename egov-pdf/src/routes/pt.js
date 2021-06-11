@@ -362,6 +362,14 @@ router.post(
               
               else
               {
+                if(amendArr) {
+                  amendArr.map(function(amendDtl){
+                if(x.id == amendDtl.id )
+                {
+                  x.taxHeadMasterCode=x.taxHeadMasterCode+" ADJUSTED"
+                }
+              })
+            }
               let obj = {}
               obj.taxHeadCode = x.taxHeadMasterCode; 
               obj.currentDemand = x.taxAmount;
@@ -457,6 +465,7 @@ router.post(
                   {
                    // console.log("par--"+JSON.stringify(par));
                     par.arrears = 0; 
+                    par.taxHeadCode= billDtl.taxHeadMasterCode + ' ADJUSTED';
                     isadded=true;               
                   }
                   
@@ -579,12 +588,12 @@ router.post(
         var total=totalPaid + advanceDemand + previousDemand+previousInterest+previousRound;
         bills.Bills[0].arrearDtl = demandArr;
         if(advanceCarryForward != amendedAmt )
-          total = total+amendedAmt;
+        totalPaid = totalPaid+amendedAmt;
         bills.Bills[0].advanceCarryforward = Math.abs(advanceCarryForward);
-        bills.Bills[0].totalPaid = total;
+        bills.Bills[0].totalPaid = totalPaid + advanceDemand;
         bills.Bills[0].totalArrear = totalArrear;
         bills.Bills[0].totalCurrent = totalCurrent;
-        bills.Bills[0].adjustedAmount = total>= (totalArrear+totalCurrent) ? (totalArrear+totalCurrent) : total;
+        bills.Bills[0].adjustedAmount = totalPaid>= (totalArrear+totalCurrent) ? (totalArrear+totalCurrent) : totalPaid;
         bills.Bills[0].payableAmount = bills.Bills[0].adjustedAmount>= (totalArrear+totalCurrent) ? 0 :(((totalArrear+totalCurrent) - bills.Bills[0].adjustedAmount) );
       // bills.Bills[0].payableAmount = bills.Bills[0].totalAmount - bills.Bills[0].advanceAmount;
         //console.log("bills--",JSON.stringify(bills));
