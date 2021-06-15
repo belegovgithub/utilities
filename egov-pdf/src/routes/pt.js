@@ -423,7 +423,7 @@ router.post(
 
               if(isAmended == false){
                 totalPaid= totalPaid+x.collectionAmount;
-               //console.log("totalPaidcc--",totalPaid);
+               // console.log("totalPaidcc--",totalPaid);
               }
               if(x.taxAmount < 0){
                 amendedAmt = amendedAmt + x.taxAmount;
@@ -477,7 +477,7 @@ router.post(
                 totalArrear = totalArrear + billDtl.taxAmount;
                 totalPaid = totalPaid + billDtl.collectionAmount;
                 //console.log("billDtl.collectionAmount--",billDtl.collectionAmount);
-               //console.log("totalPaid--",totalPaid);
+               // console.log("totalPaid--",totalPaid);
               }
             }
                 //console.log("demandArr--"+JSON.stringify(demandArr))
@@ -486,15 +486,9 @@ router.post(
                 if(billDtl.taxHeadMasterCode == "PT_ADVANCE_CARRYFORWARD" && advanceDemand ==0 )
                 advanceDemand = advanceDemand + billDtl.taxAmount;
                 if(billDtl.taxHeadMasterCode == "PT_DEMANDNOTICE_CHARGE" && previousDemand ==0)
-                {
                 previousDemand = previousDemand + billDtl.taxAmount;
-                totalPaid = totalPaid + billDtl.collectionAmount;
-                }
                 if(billDtl.taxHeadMasterCode == "PT_TIME_INTEREST" && previousInterest ==0)
-                {
                 previousInterest = previousInterest + billDtl.taxAmount;
-                totalPaid = totalPaid + billDtl.collectionAmount;
-                }
                 if(billDtl.taxHeadMasterCode == "PT_ROUNDOFF" && previousRound ==0)
                 previousRound = previousRound + billDtl.taxAmount;
               }
@@ -503,7 +497,6 @@ router.post(
        })
       }
       })
-      //console.log("totalPaidfinal--",totalPaid);
       
       //console.log("demandArr--"+JSON.stringify(demandArr))
       if(previousDemand >0)
@@ -515,6 +508,7 @@ router.post(
         obj.total = obj.arrears + obj.currentDemand;
         demandArr.push(obj);
         totalArrear=totalArrear+previousDemand;
+
       }
       if(previousInterest >0)
       {
@@ -591,16 +585,15 @@ router.post(
         })*/
         // write from here
         //console.log("advanceCarryForward--",advanceCarryForward);
-        var total=totalPaid + advanceDemand+previousRound;
-        //console.log("totalPaid--",totalPaid);
+        var total=totalPaid + advanceDemand + previousDemand+previousInterest+previousRound;
         bills.Bills[0].arrearDtl = demandArr;
         if(advanceCarryForward != amendedAmt )
-        total = total+amendedAmt;
+        totalPaid = totalPaid+amendedAmt;
         bills.Bills[0].advanceCarryforward = Math.abs(advanceCarryForward);
-        bills.Bills[0].totalPaid = total;
+        bills.Bills[0].totalPaid = totalPaid + advanceDemand;
         bills.Bills[0].totalArrear = totalArrear;
         bills.Bills[0].totalCurrent = totalCurrent;
-        bills.Bills[0].adjustedAmount = total>= (totalArrear+totalCurrent) ? (totalArrear+totalCurrent) : total;
+        bills.Bills[0].adjustedAmount = totalPaid>= (totalArrear+totalCurrent) ? (totalArrear+totalCurrent) : totalPaid;
         bills.Bills[0].payableAmount = bills.Bills[0].adjustedAmount>= (totalArrear+totalCurrent) ? 0 :(((totalArrear+totalCurrent) - bills.Bills[0].adjustedAmount) );
       // bills.Bills[0].payableAmount = bills.Bills[0].totalAmount - bills.Bills[0].advanceAmount;
         //console.log("bills--",JSON.stringify(bills));
