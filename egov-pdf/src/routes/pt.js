@@ -247,7 +247,7 @@ router.post(
         for(let i=0;i<properties.Properties.length;i++) // Loop for multiple property ids
         {
         var propertyid = properties.Properties[i].propertyId;
-       // console.log("property id---"+propertyid)
+        //console.log("property id---"+propertyid)
         var billresponse;
         try {
           billresponse = await search_bill(propertyid, tenantId, requestinfo); // search bill for the corresponding property id
@@ -265,6 +265,7 @@ router.post(
         var format = /[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
         if(format.test(properties.Properties[i].usageCategory)) // check for . in usage category and replace it with _
         properties.Properties[i].usageCategory.replace(/./g,"_");
+        bills.Bills[0].abasPropertyId=properties.Properties[i].abasPropertyId;
         bills.Bills[0].usageCategory = properties.Properties[i].usageCategory;
         bills.Bills[0].oldPropertyId = properties.Properties[i].oldPropertyId;
         if(properties.Properties[i].units)
@@ -429,7 +430,7 @@ router.post(
                 amendedAmt = amendedAmt + x.taxAmount;
 
               }
-            
+             // totalPaid= totalPaid+x.collectionAmount;
               totalCurrent = totalCurrent + x.taxAmount; // total amount paid for current demand
             }
           }
@@ -589,6 +590,8 @@ router.post(
         //console.log("advanceCarryForward--",advanceCarryForward);
         var total=totalPaid + advanceDemand + previousRound;
         bills.Bills[0].arrearDtl = demandArr;
+       // console.log("total--",total);
+        //console.log("amendedAmt--",amendedAmt);
         if(advanceCarryForward != amendedAmt )
         total = total+amendedAmt;
         bills.Bills[0].advanceCarryforward = Math.abs(advanceCarryForward);
