@@ -53,7 +53,7 @@ router.post(
         return renderError(res, "Failed to query details of the payment", 500);
       }
       var payments = resProperty.data;
-     // console.log("payment data--",JSON.stringify(payments));
+     //console.log("payment data--",JSON.stringify(payments));
       if (payments && payments.Payments && payments.Payments.length > 0) {
         service =get(payments,"Payments[0].paymentDetails[0].businessService",null) ;
         if (checkIfCitizen(requestinfo)) {
@@ -100,15 +100,18 @@ router.post(
             if(service == "PT")
             {
               var propertyId=payments.Payments[0].paymentDetails[0].bill.consumerCode;
-            //console.log("propertyId--"+propertyId);           
+              //console.log("propertyId--"+propertyId);           
               var resProperty = await search_property_with_propnumber(propertyId,tenantId,requestinfo);
               var propDetail=resProperty.data;
-              console.log("propDetail pro--"+JSON.stringify(propDetail));
+              //console.log("propDetail pro--"+JSON.stringify(propDetail));
               if(propDetail && propDetail.Properties[0] && propDetail.Properties[0].address)
               {
                 payments.Payments[0].address = propDetail.Properties[0].address;
+                payments.Payments[0].oldPropertyId = propDetail.Properties[0].oldPropertyId;
+                payments.Payments[0].abasPropertyId =  propDetail.Properties[0].abasPropertyId;
                 payments.Payments[0].owners=propDetail.Properties[0].owners;
-                console.log("owners---"+JSON.stringify( payments.Payments[0].owners));
+                //console.log("oldPropertyId---"+JSON.stringify( payments.Payments[0].oldPropertyId));
+                //console.log("owners---"+JSON.stringify( payments.Payments[0].owners));
                 //console.log("address---"+JSON.stringify(payments.Payments[0].address));
               }
               var billresponse = await search_bill(propertyId, tenantId, requestinfo);
