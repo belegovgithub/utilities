@@ -23,6 +23,7 @@ module.exports = {
     ptmutationcertificate_pdf_template:
       process.env.PT_MUTATION_CERTIFICATE || "ptmutationcertificate",
     ptbill_pdf_template: process.env.PT_BILL || "pt-bill",
+    ptbillack_pdf_template:process.env.PT_BILL_ACK || "pt-bill-ack",
     wsbill_pdf_template: process.env.WS_BILL || "ws-bill",
     consolidated_receipt_template:
       process.env.CONSOLIDATED_RECEIPT || "consolidatedreceipt",
@@ -42,7 +43,7 @@ module.exports = {
       process.env.SW_MODIFY_ESTIMATENOTICE || "sw-modify-estimationnotice",
     ws_sanction_template:
       process.env.WS_ESTIMATENOTICE || "ws-sanctionletter",
-    sw_sanction_template:
+	  sw_sanction_template:
       process.env.SW_ESTIMATENOTICE || "sw-sanctionletter",
     ws_estimate_template_hi:
       process.env.WS_ESTIMATENOTICE_HI || "ws-estimationnotice-hi",
@@ -81,7 +82,7 @@ module.exports = {
     ws: process.env.EGOV_WS_SERVICE_HOST || HOST,
     sw: process.env.EGOV_SW_SERVICE_HOST || HOST,
     ws_calc:process.env.EGOV_WS_CALC_SERVICE_HOST || HOST,
-    sw_calc:process.env.EGOV_SW_CALC_SERVICE_HOST || HOST,
+	  sw_calc:process.env.EGOV_SW_CALC_SERVICE_HOST || HOST,
     bill_service:process.env.EGOV_BILLING_HOST || HOST,
   },
   paths: {

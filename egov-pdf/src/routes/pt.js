@@ -211,7 +211,8 @@ router.post(
     var tenantId = req.query.tenantId;
     var propertyId = req.query.propertyId;
     var requestinfo = req.body;
-    //propertyIds = propertyId.split(",");
+    var propertyIds=[]; 
+    propertyIds = propertyId.split(",");
     //console.log("propertyIds---",propertyIds);
     if (requestinfo == undefined) {
       return renderError(res, "requestinfo can not be null", 400);
@@ -266,6 +267,7 @@ router.post(
         if(format.test(properties.Properties[i].usageCategory)) // check for . in usage category and replace it with _
         properties.Properties[i].usageCategory.replace(/./g,"_");
         bills.Bills[0].abasPropertyId=properties.Properties[i].abasPropertyId;
+        bills.Bills[0].address = properties.Properties[i].address;
         bills.Bills[0].usageCategory = properties.Properties[i].usageCategory;
         bills.Bills[0].oldPropertyId = properties.Properties[i].oldPropertyId;
         if(properties.Properties[i].units)
@@ -608,8 +610,10 @@ router.post(
       }
       //console.log("bills--",JSON.stringify(BillData));
         if (BillData && BillData.length > 0) {
-          var pdfResponse;
-          var pdfkey = config.pdf.ptbill_pdf_template;
+          var pdfResponse,pdfkey;
+          //console.log("propertyIds.length--",propertyIds.length);
+          pdfkey = (propertyIds.length > 1) ? config.pdf.ptbillack_pdf_template : config.pdf.ptbill_pdf_template;
+          //console.log("pdfkey--",pdfkey);
           tenantId = tenantId.split('.')[0];
           try {
             var billArray = { Bill: BillData };
