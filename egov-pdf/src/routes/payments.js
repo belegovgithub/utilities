@@ -104,9 +104,9 @@ router.post(
               var resProperty = await search_property_with_propnumber(propertyId,tenantId,requestinfo);
               var propDetail=resProperty.data;
               var hostname=config.app.host;
-              var redirect_url=`${hostname}citizen/withoutAuth/pt-mutation/viewReceipt?receiptNo=${param}&tenantId=${tenantId}`
+              var redirect_url=`${hostname}/citizen/withoutAuth/pt-mutation/viewReceipt?receiptNo=${param}&tenantId=${tenantId}`
+              console.log("redirect_url--"+redirect_url);
               var shorten_url=await get_shortened_url(redirect_url);
-
               //console.log("shorten_url--"+shorten_url.data);
               //console.log("propDetail pro--"+JSON.stringify(propDetail));
               if(propDetail && propDetail.Properties[0] && propDetail.Properties[0].address)
