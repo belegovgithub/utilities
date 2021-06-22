@@ -189,6 +189,17 @@ async function search_workflow(applicationNumber, tenantId, requestinfo) {
     params,
   });
 }
+async function get_shortened_url(redirect_url)
+{
+  //console.log("redirect_url--"+redirect_url);
+  return await axios({
+    method: "post",
+    url: url.resolve(config.host.shortning_service, config.paths.shortning_url),
+    data: {
+      url: redirect_url
+    },
+  });
+}
 
 async function search_payment(consumerCodes, tenantId, requestinfo) {
   //console.log("consumerCodes--",consumerCodes,"tennant id--",tenantId);
@@ -515,5 +526,6 @@ module.exports = {
   wf_process_search,
   search_water_bill,
   search_demand_byid,
-  checkIfCitizen
+  checkIfCitizen,
+  get_shortened_url
 };

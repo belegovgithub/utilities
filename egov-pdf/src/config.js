@@ -1,13 +1,10 @@
 // config.js
 // const env = process.env.NODE_ENV; // 'dev' or 'test'
-
 HOST = process.env.EGOV_HOST ;
-
 if (!HOST) {
   console.log("You need to set the HOST variable");
   process.exit(1);
 }
-
 module.exports = {
   auth_token: process.env.AUTH_TOKEN,
   pdf: {
@@ -23,7 +20,6 @@ module.exports = {
     ptmutationcertificate_pdf_template:
       process.env.PT_MUTATION_CERTIFICATE || "ptmutationcertificate",
     ptbill_pdf_template: process.env.PT_BILL || "pt-bill",
-    ptbillack_pdf_template:process.env.PT_BILL_ACK || "pt-bill-ack",
     wsbill_pdf_template: process.env.WS_BILL || "ws-bill",
     consolidated_receipt_template:
       process.env.CONSOLIDATED_RECEIPT || "consolidatedreceipt",
@@ -43,7 +39,7 @@ module.exports = {
       process.env.SW_MODIFY_ESTIMATENOTICE || "sw-modify-estimationnotice",
     ws_sanction_template:
       process.env.WS_ESTIMATENOTICE || "ws-sanctionletter",
-	  sw_sanction_template:
+	sw_sanction_template:
       process.env.SW_ESTIMATENOTICE || "sw-sanctionletter",
     ws_estimate_template_hi:
       process.env.WS_ESTIMATENOTICE_HI || "ws-estimationnotice-hi",
@@ -82,8 +78,9 @@ module.exports = {
     ws: process.env.EGOV_WS_SERVICE_HOST || HOST,
     sw: process.env.EGOV_SW_SERVICE_HOST || HOST,
     ws_calc:process.env.EGOV_WS_CALC_SERVICE_HOST || HOST,
-	  sw_calc:process.env.EGOV_SW_CALC_SERVICE_HOST || HOST,
+	 sw_calc:process.env.EGOV_SW_CALC_SERVICE_HOST || HOST,
     bill_service:process.env.EGOV_BILLING_HOST || HOST,
+	shortning_service:process.env.EGOV_SHORTNING_HOST || HOST
   },
   paths: {
     pdf_create: "/pdf-service/v1/_create",
@@ -107,6 +104,7 @@ module.exports = {
     wf_process_search:"egov-workflow-v2/egov-wf/process/_search",
     demand_search:"billing-service/demand/_search",
     bill_fetch:"/billing-service/bill/v2/_fetchbill",
-    amend_search:"billing-service/amendment/_search"
+    amend_search:"billing-service/amendment/_search",
+	shortning_url:"egov-url-shortening/shortener"
   },
 };

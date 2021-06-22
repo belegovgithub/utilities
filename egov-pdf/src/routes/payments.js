@@ -4,7 +4,7 @@ var router = express.Router();
 var url = require("url");
 var config = require("../config");
 
-var { search_payment_withReceiptNo, create_pdf,search_property_with_propnumber,compareAmount,checkIfCitizen, search_bill,search_billV2,createForm46} = require("../api");
+var { search_payment_withReceiptNo, create_pdf,search_property_with_propnumber,get_shortened_url,compareAmount,checkIfCitizen, search_bill,search_billV2,createForm46} = require("../api");
 const { asyncMiddleware } = require("../utils/asyncMiddleware");
 
 function renderError(res, errorMessage, errorCode) {
@@ -103,6 +103,11 @@ router.post(
               //console.log("propertyId--"+propertyId);           
               var resProperty = await search_property_with_propnumber(propertyId,tenantId,requestinfo);
               var propDetail=resProperty.data;
+              var hostname=config.app.host;
+              var redirect_url=`${hostname}citizen/withoutAuth/pt-mutation/viewReceipt?receiptNo=${param}&tenantId=${tenantId}`
+              var shorten_url=await get_shortened_url(redirect_url);
+
+              //console.log("shorten_url--"+shorten_url.data);
               //console.log("propDetail pro--"+JSON.stringify(propDetail));
               if(propDetail && propDetail.Properties[0] && propDetail.Properties[0].address)
               {
@@ -110,6 +115,7 @@ router.post(
                 payments.Payments[0].oldPropertyId = propDetail.Properties[0].oldPropertyId;
                 payments.Payments[0].abasPropertyId =  propDetail.Properties[0].abasPropertyId;
                 payments.Payments[0].owners=propDetail.Properties[0].owners;
+                payments.Payments[0].receiptLink = shorten_url.data;
                 //console.log("oldPropertyId---"+JSON.stringify( payments.Payments[0].oldPropertyId));
                 //console.log("owners---"+JSON.stringify( payments.Payments[0].owners));
                 //console.log("address---"+JSON.stringify(payments.Payments[0].address));
