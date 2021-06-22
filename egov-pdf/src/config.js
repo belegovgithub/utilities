@@ -20,6 +20,7 @@ module.exports = {
     ptmutationcertificate_pdf_template:
       process.env.PT_MUTATION_CERTIFICATE || "ptmutationcertificate",
     ptbill_pdf_template: process.env.PT_BILL || "pt-bill",
+    ptbillack_pdf_template:process.env.PT_BILL_ACK || "pt-bill-ack",
     wsbill_pdf_template: process.env.WS_BILL || "ws-bill",
     consolidated_receipt_template:
       process.env.CONSOLIDATED_RECEIPT || "consolidatedreceipt",
