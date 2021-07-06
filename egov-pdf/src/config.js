@@ -57,7 +57,9 @@ module.exports = {
     birth_certificate:
       process.env.BIRTH_CERTIFICATE || "birth-certificate-delhi",
     death_certificate:
-      process.env.BIRTH_CERTIFICATE || "death-certificate-delhi"
+      process.env.BIRTH_CERTIFICATE || "death-certificate-delhi",
+    ws_red_notice_template:
+      process.env.WS_REDNOTICE || "ws-red-notice",
   },
   app: {
     port: parseInt(process.env.APP_PORT) || 8080,
