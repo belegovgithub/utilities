@@ -293,7 +293,7 @@ router.post(
           return renderError(res, `Failed to query bills for property`, 500);
         }
         var demand = demandresponse.data;
-        //console.log("demand-------"+JSON.stringify(demand));
+        console.log("demand-------"+JSON.stringify(demand));
         var amendresponse;
         try {
           amendresponse = await search_amend(tenantId, requestinfo, propertyid); // Search demand details for the corresponding property id
@@ -395,7 +395,7 @@ router.post(
                 }
                   
                 }
-               // console.log("demandArr--"+JSON.stringify(demandArr));
+               //console.log("demandArr--"+JSON.stringify(demandArr));
                 if(taxheadpresent==false)
                 {
                   
@@ -432,8 +432,10 @@ router.post(
                 amendedAmt = amendedAmt + x.taxAmount;
 
               }
+              //console.log("totalCurrent--"+totalCurrent);
              // totalPaid= totalPaid+x.collectionAmount;
-              totalCurrent = totalCurrent + x.taxAmount; // total amount paid for current demand
+              totalCurrent = totalCurrent + x.taxAmount; 
+              // total amount paid for current demand
             }
           }
         })
@@ -495,7 +497,8 @@ router.post(
                { previousInterest = previousInterest + billDtl.taxAmount;
                 totalPaid = totalPaid + billDtl.collectionAmount;}
                 if(billDtl.taxHeadMasterCode == "PT_ROUNDOFF" && previousRound ==0)
-                previousRound = previousRound + billDtl.taxAmount;
+               { previousRound = previousRound + billDtl.taxAmount;
+                totalPaid = totalPaid + billDtl.collectionAmount;}
               }
              })
            }
@@ -590,19 +593,16 @@ router.post(
         })*/
         // write from here
         //console.log("advanceCarryForward--",advanceCarryForward);
-        var total=totalPaid + advanceDemand + previousRound;
+        var total=totalPaid + advanceDemand ;
         bills.Bills[0].arrearDtl = demandArr;
-       // console.log("total--",total);
-        //console.log("amendedAmt--",amendedAmt);
-        if(advanceCarryForward != amendedAmt )
-        total = total+amendedAmt;
         bills.Bills[0].advanceCarryforward = Math.abs(advanceCarryForward);
         bills.Bills[0].totalPaid = total;
         bills.Bills[0].totalArrear = totalArrear;
         bills.Bills[0].totalCurrent = totalCurrent;
         bills.Bills[0].adjustedAmount = total>= (totalArrear+totalCurrent) ? (totalArrear+totalCurrent) : total;
         bills.Bills[0].payableAmount = bills.Bills[0].adjustedAmount>= (totalArrear+totalCurrent) ? 0 :(((totalArrear+totalCurrent) - bills.Bills[0].adjustedAmount) );
-      // bills.Bills[0].payableAmount = bills.Bills[0].totalAmount - bills.Bills[0].advanceAmount;
+
+        // bills.Bills[0].payableAmount = bills.Bills[0].totalAmount - bills.Bills[0].advanceAmount;
         //console.log("bills--",JSON.stringify(bills));
         BillData.push(...bills.Bills);
       }

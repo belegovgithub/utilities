@@ -50,8 +50,10 @@ function compareAmount(a,b)
                 //console.log("in if-"+billobj.taxHeadCode);
                 compiledObjs.filter(someobject => someobject.taxHead == billobj.taxHeadCode)
                 .forEach(someobject => {
-                  someobject.amount = someobject.amount + billobj.amount;
-                  someobject.amountPaid = someobject.amountPaid + billobj.adjustedAmount;
+                  someobject.amount = (someobject.amount + billobj.amount).toFixed(2);
+                  someobject.amountPaid = (someobject.amountPaid + billobj.adjustedAmount).toFixed(2);
+                  // console.log("someobject.amount--"+someobject.amount);
+                  // console.log("someobject.amountPaid--"+someobject.amountPaid);
                 })
               }
               else{
