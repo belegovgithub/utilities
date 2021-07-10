@@ -208,9 +208,9 @@ router.post(
 router.post(
   "/propertybill",
   asyncMiddleware(async function (req, res, next) {
-    var tenantId = req.query.tenantId;
-    var propertyId = req.query.propertyId;
     var requestinfo = req.body;
+    var tenantId = requestinfo && requestinfo.tenantId;
+    var propertyId = requestinfo && requestinfo.propertyId;
     var propertyIds=[]; 
     propertyIds = propertyId.split(",");
     //console.log("propertyIds---",propertyIds);
