@@ -179,6 +179,34 @@ async function search_property_with_propnumber(
   });
 }
 
+async function search_property_with_propnumber_new(
+  propertyIds,
+  tenantId,
+  requestinfo,
+  allowCitizenTOSearchOthersRecords
+) {
+  console.log("property   id---",propertyIds)
+  if (
+    checkIfCitizen(requestinfo) &&
+    allowCitizenTOSearchOthersRecords != true
+  ) {
+    var mobileNumber = requestinfo.RequestInfo.userInfo.mobileNumber;
+    var userName = requestinfo.RequestInfo.userInfo.userName;
+    //params["mobileNumber"] = mobileNumber || userName;
+  }
+  return await axios({
+    method: "post",
+    url: url.resolve(config.host.pt, config.paths.pt_searchForPdf),
+    data: {
+      RequestInfo:requestinfo.RequestInfo,
+      propertyCriteria:{
+        tenantId:tenantId,
+        propertyIds:propertyIds
+    }
+    }
+  });
+}
+
 async function search_workflow(applicationNumber, tenantId, requestinfo) {
   var params = {
     tenantId: tenantId,
@@ -529,5 +557,6 @@ module.exports = {
   search_water_bill,
   search_demand_byid,
   checkIfCitizen,
-  get_shortened_url
+  get_shortened_url,
+  search_property_with_propnumber_new
 };

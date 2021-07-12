@@ -12,6 +12,7 @@ var {
   create_pdf,
   search_workflow,
   search_property_with_propnumber,
+  search_property_with_propnumber_new,
   sortTaxhead
 } = require("../api");
 
@@ -224,11 +225,12 @@ router.post(
         400
       );
     }
+
     try {
       try {
         // can search multiple property ids
-        resProperty = await search_property_with_propnumber(
-          propertyId,
+        resProperty = await search_property_with_propnumber_new(
+          propertyIds,
           tenantId,
           requestinfo
         );

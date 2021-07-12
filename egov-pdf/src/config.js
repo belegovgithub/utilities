@@ -108,6 +108,7 @@ module.exports = {
     demand_search:"billing-service/demand/_search",
     bill_fetch:"/billing-service/bill/v2/_fetchbill",
     amend_search:"billing-service/amendment/_search",
-	shortning_url:"egov-url-shortening/shortener"
+	  shortning_url:"egov-url-shortening/shortener",
+    pt_searchForPdf: "/property-services/property/_searchForPdf"
   },
 };
