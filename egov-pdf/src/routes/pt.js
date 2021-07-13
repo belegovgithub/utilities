@@ -295,7 +295,7 @@ router.post(
           return renderError(res, `Failed to query bills for property`, 500);
         }
         var demand = demandresponse.data;
-        console.log("demand-------"+JSON.stringify(demand));
+        //console.log("demand-------"+JSON.stringify(demand));
         var amendresponse;
         try {
           amendresponse = await search_amend(tenantId, requestinfo, propertyid); // Search demand details for the corresponding property id
@@ -354,6 +354,8 @@ router.post(
         var previousRound=0;
         var amendedAmt = 0;
         bills.Bills[0].billDate = demand.Demands[0].auditDetails.createdTime;
+        bills.Bills[0].taxFrom = currentDemandObj.taxPeriodFrom;
+        bills.Bills[0].taxTo = currentDemandObj.taxPeriodTo;
         if(!currentDemandObj.isPaymentCompleted) // if payment is still pending
         {
           compArr.forEach(taxhead=>{
