@@ -201,7 +201,8 @@ async function search_property_with_propnumber_new(
       RequestInfo:requestinfo.RequestInfo,
       propertyCriteria:{
         tenantId:tenantId,
-        propertyIds:propertyIds
+        propertyIds:propertyIds,
+        limit:propertyIds.length
     }
     }
   });
