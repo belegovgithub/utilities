@@ -493,24 +493,29 @@ router.post(
               }
               else{
                 if(billDtl.taxHeadMasterCode == "PT_ADVANCE_CARRYFORWARD" && advanceDemand ==0 )
+                {
                 advanceDemand = advanceDemand + billDtl.taxAmount;
+                totalPaid = totalPaid + billDtl.collectionAmount;
+                advanceCarryForward = advanceCarryForward + billDtl.taxAmount - billDtl.collectionAmount;
+                }
                 if(billDtl.taxHeadMasterCode == "PT_DEMANDNOTICE_CHARGE" && previousDemand ==0)
                { previousDemand = previousDemand + billDtl.taxAmount;
-                totalPaid = totalPaid + billDtl.collectionAmount;}
+                totalPaid = totalPaid + billDtl.collectionAmount;
+               }
                 if(billDtl.taxHeadMasterCode == "PT_TIME_INTEREST" && previousInterest ==0)
                { previousInterest = previousInterest + billDtl.taxAmount;
-                totalPaid = totalPaid + billDtl.collectionAmount;}
+                totalPaid = totalPaid + billDtl.collectionAmount;
+                }
                 if(billDtl.taxHeadMasterCode == "PT_ROUNDOFF" && previousRound ==0)
                { previousRound = previousRound + billDtl.taxAmount;
-                totalPaid = totalPaid + billDtl.collectionAmount;}
+                totalPaid = totalPaid + billDtl.collectionAmount;
+               }
               }
              })
            }
        })
       }
       })
-      
-      //console.log("demandArr--"+JSON.stringify(demandArr))
       if(previousDemand >0)
       {
         let obj={};
@@ -597,7 +602,7 @@ router.post(
         })*/
         // write from here
         //console.log("advanceCarryForward--",advanceCarryForward);
-        var total=totalPaid + advanceDemand ;
+        var total=totalPaid + Math.abs(advanceDemand) ;
         bills.Bills[0].arrearDtl = demandArr;
         bills.Bills[0].advanceCarryforward = Math.abs(advanceCarryForward);
         bills.Bills[0].totalPaid = total;
@@ -605,9 +610,6 @@ router.post(
         bills.Bills[0].totalCurrent = totalCurrent;
         bills.Bills[0].adjustedAmount = total>= (totalArrear+totalCurrent) ? (totalArrear+totalCurrent) : total;
         bills.Bills[0].payableAmount = bills.Bills[0].adjustedAmount>= (totalArrear+totalCurrent) ? 0 :(((totalArrear+totalCurrent) - bills.Bills[0].adjustedAmount) );
-
-        // bills.Bills[0].payableAmount = bills.Bills[0].totalAmount - bills.Bills[0].advanceAmount;
-        //console.log("bills--",JSON.stringify(bills));
         BillData.push(...bills.Bills);
       }
         }
