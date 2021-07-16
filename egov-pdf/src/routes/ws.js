@@ -64,7 +64,7 @@ router.post(
       var wcObj;
       if (WaterConnection && WaterConnection && WaterConnection.length > 0) {
         wcObj = WaterConnection[0];
-        if (wcObj.additionalDetails.estimationFileStoreId) {
+        if (false) {
           respObj = {
             filestoreIds: [wcObj.additionalDetails.estimationFileStoreId],
             ResponseInfo: requestinfo,
@@ -79,7 +79,7 @@ router.post(
         } else {
           var propertId = WaterConnection[0].propertyId;
           var propertyDtls;
-          console.log("propertyID--",propertId);
+          //console.log("propertyID--",propertId);
           try {
             propertyDtls = await search_property_with_propnumber(
               propertId,
@@ -96,7 +96,7 @@ router.post(
             );
           }
           var propertyDtl = propertyDtls.data;
-         // console.log("propertyDtl--", JSON.stringify(propertyDtl));
+          //console.log("propertyDtl--", JSON.stringify(propertyDtl));
           if (
             propertyDtl &&
             propertyDtl.Properties &&
@@ -125,7 +125,7 @@ router.post(
                     wcObj.property.rainWaterHarvesting = false;
                   }
                 }
-               // console.log("applicationNumber--",applicationNumber);
+                console.log("applicationNumber--",applicationNumber);
                 var queryObjectForEst = [
                   {
                     applicationNo: applicationNumber,
@@ -162,7 +162,7 @@ router.post(
                 500
               );
             }
-           // console.log("estResponse--",estResponse);
+           //console.log("estResponse--",estResponse);
             wcObj.totalAmount = estResponse.data.Calculation[0].totalAmount;
             wcObj.applicationFee = estResponse.data.Calculation[0].fee;
             wcObj.serviceFee = estResponse.data.Calculation[0].charge;
@@ -274,11 +274,11 @@ router.post(
       }
 
       // var wc = waterConnections.data;
-       //console.log("wc---",WaterConnection)
+      // console.log("wc---",WaterConnection)
       var wcObj;
       if (WaterConnection && WaterConnection && WaterConnection.length > 0) {
         wcObj = WaterConnection[0];
-        if (wcObj.additionalDetails.sanctionFileStoreId) {
+        if (false) {
           respObj = {
             filestoreIds: [wcObj.additionalDetails.sanctionFileStoreId],
             ResponseInfo: requestinfo,
@@ -375,7 +375,7 @@ router.post(
                 500
               );
             }
-            //console.log("estResponse--"+estResponse)
+           // console.log("estResponse--"+estResponse)
             wcObj.totalAmount = estResponse.data.Calculation[0].totalAmount;
             wcObj.applicationFee = estResponse.data.Calculation[0].fee;
             wcObj.serviceFee = estResponse.data.Calculation[0].charge;
@@ -471,6 +471,7 @@ router.post(
            var pdfkey = locale == "hi_IN" ? config.pdf.ws_sanction_template_hi : config.pdf.ws_sanction_template
            else
            var pdfkey = locale == "hi_IN" ? config.pdf.sw_sanction_template_hi : config.pdf.sw_sanction_template
+           console.log("pdfkey--"+pdfkey);
             try {
               pdfResponse = await create_pdf(
                 tenantId,
