@@ -64,7 +64,7 @@ router.post(
       var wcObj;
       if (WaterConnection && WaterConnection && WaterConnection.length > 0) {
         wcObj = WaterConnection[0];
-        if (wcObj.additionalDetails.estimationFileStoreId) {
+        if (false) {
           respObj = {
             filestoreIds: [wcObj.additionalDetails.estimationFileStoreId],
             ResponseInfo: requestinfo,
@@ -191,7 +191,7 @@ router.post(
             else
             var pdfkey = locale == "hi_IN" ? config.pdf.sw_estimate_template_hi : config.pdf.sw_estimate_template
             //var pdfkey = config.pdf.ws_estimate_template;
-            console.log("pdfkey--",pdfkey);
+            console.log("pdfkey--------",pdfkey);
             try {
               pdfResponse = await create_pdf(
                 tenantId,
