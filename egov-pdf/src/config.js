@@ -36,8 +36,6 @@ module.exports = {
       process.env.WS_MODIFY_ESTIMATENOTICE || "ws-modify-estimationnotice",
     sw_estimate_template:
       process.env.SW_ESTIMATENOTICE || "sw-estimationnotice",
-    sw_estimate_template:
-      process.env.SW_MODIFY_ESTIMATENOTICE || "sw-modify-estimationnotice",
     ws_sanction_template:
       process.env.WS_ESTIMATENOTICE || "ws-sanctionletter",
 	sw_sanction_template:
