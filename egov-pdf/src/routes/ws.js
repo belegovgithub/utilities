@@ -27,6 +27,7 @@ router.post(
     var applicationNumber = req.query.applicationNumber;
     var requestinfo = req.body;
     var service = req.query.service;
+    let locale = requestinfo.RequestInfo.msgId;
     if (requestinfo == undefined) {
       return renderError(res, "requestinfo can not be null", 400);
     }
@@ -64,11 +65,16 @@ router.post(
       var wcObj;
       if (WaterConnection && WaterConnection && WaterConnection.length > 0) {
         wcObj = WaterConnection[0];
-        if (false) {
+        console.log("wcObj.additionalDetails.estimationFileStoreId--"+wcObj.additionalDetails.estimationFileStoreId);
+        if (wcObj.additionalDetails.estimationFileStoreId) {
+          if (service == "WATER")
+            var pdfkey = locale == "hi_IN" ? wcObj.applicationType == 'NEW_WATER_CONNECTION' ? config.pdf.ws_estimate_template_hi : config.pdf.ws_modify_estimate_template_hi : wcObj.applicationType == 'NEW_WATER_CONNECTION' ? config.pdf.ws_estimate_template : config.pdf.ws_modify_estimate_template
+            else
+            var pdfkey = locale == "hi_IN" ? config.pdf.sw_estimate_template_hi : config.pdf.sw_estimate_template
           respObj = {
             filestoreIds: [wcObj.additionalDetails.estimationFileStoreId],
             ResponseInfo: requestinfo,
-            key: config.pdf.ws_estimate_template,
+            key: pdfkey,
           };
           var filename = `${pdfkey}_${new Date().getTime()}`;
           res.writeHead(200, {
@@ -176,7 +182,6 @@ router.post(
             tenantId = tenantId.split(".")[0];
             var pdfResponse;
             const defaultLocale = "en_IN"
-            let locale = requestinfo.RequestInfo.msgId;
            // console.log("locale--",requestinfo.RequestInfo.msgId);
             //console.log("locale1--",locale);
             if (null != locale) {
@@ -240,6 +245,7 @@ router.post(
     var applicationNumber = req.query.applicationNumber;
     var requestinfo = req.body;
     var service = req.query.service;
+    let locale = requestinfo.RequestInfo.msgId;
     if (requestinfo == undefined) {
       return renderError(res, "requestinfo can not be null", 400);
     }
@@ -279,10 +285,14 @@ router.post(
       if (WaterConnection && WaterConnection && WaterConnection.length > 0) {
         wcObj = WaterConnection[0];
         if (wcObj.additionalDetails.sanctionFileStoreId) {
+          if (service == "WATER")
+           var pdfkey = locale == "hi_IN" ? config.pdf.ws_sanction_template_hi : config.pdf.ws_sanction_template
+           else
+           var pdfkey = locale == "hi_IN" ? config.pdf.sw_sanction_template_hi : config.pdf.sw_sanction_template
           respObj = {
             filestoreIds: [wcObj.additionalDetails.sanctionFileStoreId],
             ResponseInfo: requestinfo,
-            key: config.pdf.ws_sanction_template,
+            key: pdfkey,
           };
           var filename = `${pdfkey}_${new Date().getTime()}`;
           res.writeHead(200, {
@@ -459,7 +469,6 @@ router.post(
             tenantId = tenantId.split(".")[0];
             var pdfResponse;
             const defaultLocale = "en_IN"
-            let locale = requestinfo.RequestInfo.msgId;
             if (null != locale) {
               locale = locale.split("|");
               locale = locale.length > 1 ? locale[1] : defaultLocale;
