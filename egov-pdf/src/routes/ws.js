@@ -64,7 +64,7 @@ router.post(
       var wcObj;
       if (WaterConnection && WaterConnection && WaterConnection.length > 0) {
         wcObj = WaterConnection[0];
-        if (false) {
+        if (wcObj.additionalDetails.estimationFileStoreId) {
           respObj = {
             filestoreIds: [wcObj.additionalDetails.estimationFileStoreId],
             ResponseInfo: requestinfo,
@@ -278,7 +278,7 @@ router.post(
       var wcObj;
       if (WaterConnection && WaterConnection && WaterConnection.length > 0) {
         wcObj = WaterConnection[0];
-        if (false) {
+        if (wcObj.additionalDetails.sanctionFileStoreId) {
           respObj = {
             filestoreIds: [wcObj.additionalDetails.sanctionFileStoreId],
             ResponseInfo: requestinfo,
@@ -921,7 +921,7 @@ router.post(
     }
         }
       
-      console.log("bills--",JSON.stringify(BillData));
+      //console.log("bills--",JSON.stringify(BillData));
         if (BillData && BillData.length > 0) {
           var pdfResponse;
           var pdfkey = config.pdf.wsbill_pdf_template;
