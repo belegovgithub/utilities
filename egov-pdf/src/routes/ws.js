@@ -567,11 +567,11 @@ router.post(
       var wcObj;
       if (WaterConnection && WaterConnection && WaterConnection.length > 0) {
         wcObj = WaterConnection[0];
-        if (wcObj.additionalDetails.sanctionFileStoreId) {
+        if (wcObj.additionalDetails.redNoticeFileStoreId) {
           respObj = {
-            filestoreIds: [wcObj.additionalDetails.sanctionFileStoreId],
+            filestoreIds: [wcObj.additionalDetails.redNoticeFileStoreId],
             ResponseInfo: requestinfo,
-            key: config.pdf.ws_sanction_template,
+            key: config.pdf.ws_red_notice_template,
           };
           var filename = `${pdfkey}_${new Date().getTime()}`;
           res.writeHead(200, {
